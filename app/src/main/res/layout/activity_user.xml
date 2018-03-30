@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_insetEdge="bottom">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/main.collapsing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@null"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:background="@color/applicationLight">
+
+                        <ImageView
+                            android:id="@+id/button_back"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:contentDescription="@string/back"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_arrow_back_black_black_24dp" />
+
+                        <TextView
+                            android:id="@+id/nickname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@+id/user_photo"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="20dp"
+                            android:alpha="0.6"
+                            android:fontFamily="sans-serif-smallcaps"
+                            android:text="@string/pashaborisyk"
+                            android:textColor="@color/applicationDark" />
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/user_photo"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:src="@drawable/me_photo" />
+
+                        <TextView
+                            android:id="@+id/events_count"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_alignEnd="@+id/user_photo"
+                            android:layout_alignRight="@+id/user_photo"
+                            android:layout_alignTop="@+id/user_photo"
+                            android:background="@drawable/circle_dark"
+                            android:gravity="center"
+                            android:text="@string/_9"
+                            android:textAlignment="center"
+                            android:textColor="@color/applicationLight"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            tools:ignore="SmallSp" />
+
+                        <TextView
+                            android:id="@+id/name_surname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/user_photo"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="sans-serif-smallcaps"
+                            android:text="@string/pasha_borisyk"
+                            android:textColor="@color/applicationDark"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/user_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/name_surname"
+                            android:layout_centerHorizontal="true"
+                            android:alpha="0.5"
+                            android:fontFamily="sans-serif-smallcaps"
+                            android:text="@string/get_on_the_table_and_dance"
+                            android:textColor="@color/applicationDark"
+                            android:textSize="12sp"
+                            android:textStyle="italic" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:background="#fff"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        android:weightSum="4">
+
+                        <LinearLayout
+                            android:id="@+id/user_activity_button_follow"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/follow_indicator"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="#0000"
+                                android:contentDescription="@string/follow"
+                                android:scaleType="center"
+                                android:src="@drawable/add_user_to_friends_selector" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:alpha="0.6"
+                                android:fontFamily="sans-serif-smallcaps"
+                                android:text="@string/follow"
+                                android:textColor="@color/applicationDark"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/user_activity_button_invite"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/invite_indicator"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="#0000"
+                                android:contentDescription="@string/invite"
+                                android:scaleType="center"
+                                android:src="@drawable/invite_user_selector" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:alpha="0.6"
+                                android:fontFamily="sans-serif-smallcaps"
+                                android:text="@string/invite"
+                                android:textColor="@color/applicationDark"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/user_activity_button_show_events"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <android.support.v7.widget.AppCompatImageButton
+                                android:id="@+id/user_events_indicator"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="#0000"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_hipe_dark_56_dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:alpha="0.6"
+                                android:fontFamily="sans-serif-smallcaps"
+                                android:text="@string/events"
+                                android:textColor="@color/applicationDark"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/user_activity_button_show_contacts"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/user_contacts_indicator"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="#0000"
+                                android:contentDescription="@string/contacts"
+                                android:scaleType="center"
+                                android:src="@drawable/user_activity_contacts_list_is_shown_selector" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:alpha="0.6"
+                                android:fontFamily="sans-serif-smallcaps"
+                                android:text="@string/contacts"
+                                android:textColor="@color/applicationDark"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/user_activity_data_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</android.support.design.widget.CoordinatorLayout>

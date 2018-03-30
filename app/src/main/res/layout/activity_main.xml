@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/applicationLight"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/main_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/main_tab_layout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/main_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#fff"
+            android:clipChildren="false"
+            app:paddingStart="0dp"
+            app:tabGravity="center"
+            app:tabIndicatorHeight="0dp"
+            app:tabMinWidth="48dp"
+            app:tabPadding="0dp"
+            app:tabPaddingEnd="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabPaddingTop="0dp" />
+
+        <View
+            android:id="@+id/view_tint_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:alpha="0"
+            android:background="#000000"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/rrr"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_above="@+id/main_tab_layout"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true">
+
+            <com.bori.hipe.controllers.views.WaveView
+                android:id="@+id/wave_view"
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_mini_new_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="1"
+        android:src="@drawable/ic_1482207268_mail_email_envelope_send_message_dark"
+        android:visibility="gone"
+        app:backgroundTint="@color/applicationLight"
+        app:elevation="1dp"
+        app:fabSize="mini"
+        app:layout_anchor="@id/rrr"
+        app:layout_anchorGravity="center"
+        app:layout_dodgeInsetEdges="all"
+        app:pressedTranslationZ="5dp" />
+
+    <!--48dp to get to the border of big fab-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_mini_new_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:src="@drawable/ic_1482206348_logo_social_media_location_dark"
+        android:visibility="gone"
+        app:backgroundTint="@color/applicationLight"
+        app:elevation="1dp"
+        app:fabSize="mini"
+        app:layout_anchor="@id/rrr"
+        app:layout_anchorGravity="center"
+        app:layout_dodgeInsetEdges="all"
+        app:pressedTranslationZ="5dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_normal_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="28dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_1484929550_add_80px"
+        app:elevation="1dp"
+        app:fabSize="normal"
+        app:layout_anchor="@id/rrr"
+        app:layout_anchorGravity="center"
+        app:layout_dodgeInsetEdges="all"
+        app:pressedTranslationZ="3dp" />
+
+</android.support.design.widget.CoordinatorLayout>

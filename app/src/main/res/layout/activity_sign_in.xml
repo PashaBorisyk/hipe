@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/applicationLight"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/base_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/main_background"
+        android:tint="#ebffffff" />
+
+
+    <!--android:tint="#71dfc2"-->
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+
+            android:orientation="vertical"
+            android:padding="30dp">
+
+
+            <!--android:src="@mipmap/ic_launcher"-->
+            <!--android:src="@drawable/hipe_logo2_small_slices_black_with_traseparent_cums_anti_alias_white_fixed_for_phone"-->
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/hipe_logo"
+                android:src="@drawable/hipe_logotype"
+                android:tint="@color/applicationDark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/hipe_name"
+                android:textColor="@color/applicationDark"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/slogan"
+                android:textColor="#7c1e2735"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/input_border"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/account_image"
+                    android:inputType="textPersonName"
+                    android:padding="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_1480004634_user_dark" />
+
+                <EditText
+                    android:id="@+id/name_surname"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/input_border"
+                    android:hint="@string/name_and_surname"
+                    android:inputType="textPersonName"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/pasha_borisyk"
+                    android:textColor="@color/applicationDark"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/name_surname_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                android:text="@string/not_less_than_8_characters"
+                android:textColor="#FFF12652"
+                android:textSize="9sp"
+                android:visibility="gone"
+                tools:ignore="SmallSp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/input_border"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="10dp"
+                    android:text="@string/pooch"
+                    android:textColor="@color/applicationDark"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/input_border"
+                    android:hint="@string/nickname"
+                    android:inputType="text"
+                    android:maxLength="14"
+                    android:maxLines="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/pashaborisyk"
+                    android:textColor="@color/applicationDark"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/nickname_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/not_less_than_8_characters"
+                android:textColor="#FFF12652"
+                android:textSize="9sp"
+                android:visibility="gone"
+                tools:ignore="SmallSp" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/input_border"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/lock"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_1480006231_streamline_68_dark" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/input_border"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/default_password_text"
+                    android:textColor="@color/applicationDark"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/password_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/not_less_than_8_characters"
+                android:textColor="#FFF12652"
+                android:textSize="9sp"
+                android:visibility="gone"
+                tools:ignore="SmallSp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="70dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/input_border"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/lock"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_1480006231_streamline_68_dark" />
+
+                <EditText
+                    android:id="@+id/confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/input_border"
+                    android:hint="@string/repeat_password"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/default_password_text"
+                    android:textColor="@color/applicationDark"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/gradient_tranceparent_white">
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="60dp"
+            android:layout_marginStart="60dp"
+            android:background="@drawable/accent_button_background"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="@string/next"
+            android:textColor="#fff" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/main_tint_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#bf000000"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.bori.hipe.controllers.views.SpinningScaleView
+            android:id="@+id/spining_scale_view_progress_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            android:src="@drawable/ic_1484173478_wheat_beer_glass" />
+
+        <TextView
+            android:id="@+id/text_view_wait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/wait"
+            android:textColor="@color/applicationLight"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

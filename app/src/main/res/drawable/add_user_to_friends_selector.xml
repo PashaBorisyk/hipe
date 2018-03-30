@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/ic_1493737927_office_47_accent" android:state_selected="true" />
+    <item android:drawable="@drawable/ic_1493737927_office_47_dark" android:state_selected="false" />
+
+</selector>

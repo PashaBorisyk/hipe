@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <string-array name="notification_content_titles">
+        <item>You will be drunk.. again!</item>
+        <item>Girls and boys are waiting for you</item>
+        <item>On more party for you</item>
+        <item>Make sure you mom doesn\'t know about it</item>
+    </string-array>
+
+</resources>

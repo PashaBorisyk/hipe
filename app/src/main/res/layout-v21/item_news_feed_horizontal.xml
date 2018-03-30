@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ecedef"
+    android:clipChildren="false">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/root_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="2dp"
+        android:background="#fff"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="290dp"
+            android:clipChildren="false">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="10dp"
+                android:clipChildren="false"
+                android:src="@drawable/me_photo">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/user_photo"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/me_photo" />
+
+                <TextView
+                    android:id="@+id/nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/user_photo"
+                    android:layout_alignStart="@+id/user_photo"
+                    android:layout_alignTop="@+id/user_photo"
+                    android:layout_marginLeft="45dp"
+                    android:layout_marginStart="45dp"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/pashaborisyk"
+                    android:textColor="#4b4b4b"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/description_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/nickname"
+                    android:layout_alignBottom="@+id/nickname"
+                    android:layout_toEndOf="@+id/nickname"
+                    android:layout_toRightOf="@+id/nickname"
+                    android:text="@string/created_an_event"
+                    android:textColor="#4b4b4b" />
+
+                <TextView
+                    android:id="@+id/description_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/nickname"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignStart="@+id/nickname"
+                    android:layout_marginBottom="5dp"
+                    android:maxLines="2"
+                    android:text="@string/default_event_description"
+                    android:textSize="10sp"
+                    tools:ignore="SmallSp" />
+
+                <ImageView
+                    android:id="@+id/access_indicator"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/event_type_ring"
+                    android:src="@drawable/circle_red" />
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/image_card_view"
+                android:layout_width="match_parent"
+                android:layout_height="185dp"
+                android:layout_centerVertical="true"
+                android:clipChildren="false"
+                android:clipToPadding="true"
+                android:elevation="6dp"
+                android:scaleX="1.0"
+                android:scaleY="1.0"
+                android:translationY="5dp"
+                android:translationZ="6dp"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="6dp"
+                app:cardUseCompatPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/image_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:clipChildren="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/event_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/event_img" />
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <LinearLayout
+                    android:id="@+id/button_add"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_1480796191_add" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Иду"
+                        android:textColor="#FF979A9F" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/button_chat"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_1480797203_message_01" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Чат"
+                        android:textColor="#FF979A9F" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/button_expand_info"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:scaleType="center"
+                        android:src="@drawable/ic_1480797893_info_2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Инфа"
+                        android:textColor="#FF979A9F" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

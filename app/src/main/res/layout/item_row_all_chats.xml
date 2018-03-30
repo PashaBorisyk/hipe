@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/event_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/me_photo" />
+
+    <TextView
+        android:id="@+id/all_chats_event_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/event_photo"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_toEndOf="@+id/event_photo"
+        android:layout_toRightOf="@+id/event_photo"
+        android:text="@string/party"
+        android:textColor="@color/applicationDark"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/all_chats_last_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/all_chats_event_name"
+        android:layout_alignStart="@+id/all_chats_event_name"
+        android:layout_below="@+id/all_chats_event_name"
+        android:text="@string/pashaborisyk_hello_there"
+        android:textSize="10sp"
+        tools:ignore="SmallSp" />
+
+    <TextView
+        android:id="@+id/all_chats_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/event_photo"
+        android:layout_alignLeft="@+id/all_chats_last_message"
+        android:layout_alignStart="@+id/all_chats_last_message"
+        android:text="@string/_9_members"
+        android:textSize="10sp"
+        tools:ignore="SmallSp" />
+
+
+</RelativeLayout>

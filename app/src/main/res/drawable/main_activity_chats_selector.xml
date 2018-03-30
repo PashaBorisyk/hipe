@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="150" android:visible="true">
+
+    <item android:drawable="@drawable/ic_1482207268_mail_email_envelope_send_message_dark" android:state_activated="false" />
+
+    <item android:drawable="@drawable/ic_1482207268_mail_email_envelope_send_message_light" android:state_activated="true" />
+
+</selector>

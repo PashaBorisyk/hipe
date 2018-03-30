@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+
+    <com.bori.hipe.controllers.views.BubblesView
+        android:id="@+id/bubbles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true" />
+
+    <View
+        android:id="@+id/background_circle_view"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/background_circle_dark"
+        android:scaleX="0"
+        android:scaleY="0" />
+
+    <ImageButton
+        android:id="@+id/item_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#0000"
+        android:contentDescription="@string/search"
+        android:src="@drawable/main_activity_search_selector" />
+
+
+</RelativeLayout>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "208256905690",
+    "project_id": "hipe-155313"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:208256905690:android:a850922ab637f975",
+        "android_client_info": {
+          "package_name": "com.bori.hipe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "208256905690-e18qpi80dammil1fnrlism8esni48jmr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bori.hipe",
+            "certificate_hash": "28FA20A7F1AA6947ABD6AAB57D96694A88FB3874"
+          }
+        },
+        {
+          "client_id": "208256905690-384efcf8tcjoh1jicse2bjiuu3q9endk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-WEegQxKWc637LwsaYLK-FKHMWNYvR7Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

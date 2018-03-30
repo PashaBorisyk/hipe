@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/status_bar"
+        layout="@layout/status_bar_header" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/applicationLight">
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/search_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="1dp"
+            app:cardElevation="2dp"
+            tools:ignore="UnusedAttribute">
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/search_query"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#fff"
+                    android:gravity="center|start"
+                    android:hint="@string/search"
+                    android:inputType="text"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingStart="10dp"
+                    android:textSize="18sp"
+                    tools:ignore="RtlSymmetry" />
+
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <TextView
+            android:id="@+id/no_result_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_card_view"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/no_results"
+            android:textSize="20sp"
+            android:textStyle="italic" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/result_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_card_view"
+            android:alpha="1" />
+
+        <LinearLayout
+            android:id="@+id/progress_bar_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_card_view"
+            android:alpha="0"
+            android:background="@color/applicationLight"
+            android:gravity="center|top"
+            android:orientation="horizontal"
+            android:translationZ="1dp"
+            tools:ignore="UnusedAttribute">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:translationZ="1dp" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+    <!--android:id="@+id/button_search"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginRight="15dp"-->
+    <!--android:src="@drawable/ic_1483822755_arrow_right"-->
+    <!--app:elevation="2dp"-->
+    <!--app:fabSize="mini"-->
+    <!--app:layout_anchor="@id/search_card_view"-->
+    <!--app:layout_anchorGravity="bottom|right"-->
+    <!--app:layout_dodgeInsetEdges="all"-->
+    <!--app:pressedTranslationZ="3dp" />-->
+
+</LinearLayout>
+

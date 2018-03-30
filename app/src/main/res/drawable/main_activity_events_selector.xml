@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="150" android:visible="true">
+
+    <item android:drawable="@drawable/ic_1482206348_logo_social_media_location_light" android:state_activated="true">
+        <scale android:drawable="@drawable/ic_1482206348_logo_social_media_location_light" android:scaleGravity="center" />
+    </item>
+
+    <item android:drawable="@drawable/ic_1482206348_logo_social_media_location_dark" android:state_activated="false">
+
+    </item>
+
+
+</selector>
