@@ -1,11 +1,12 @@
 package com.bori.hipe.controllers.activities
 
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import android.support.design.widget.Snackbar
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -20,6 +21,7 @@ import com.bori.hipe.util.Status
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
+
 private const val TAG = "LoginActivity"
 private const val LOGIN_USER_ID = 8L
 
@@ -27,6 +29,8 @@ class LoginActivity : Activity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var restCallback: LoginActivityRestCallbackAdapter
+
+    private lateinit var snackbar:Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,31 +46,41 @@ class LoginActivity : Activity() {
 
     private fun init() {
         Log.d(TAG, "init() called")
-
         restCallback = LoginActivityRestCallbackAdapter()
-
-        login_button.setOnClickListener(myOnClickListener)
-        sign_in_user_button.setOnClickListener(myOnClickListener)
-        fault_hint.visibility = View.GONE
+        snackbar = Snackbar.make(findViewById<View>(R.id.main_coordinator_layout), R.string.no_connection_detected , Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction(R.string.dismiss){
+            snackbar.dismiss()
+        }
+        snackbar.show()
 
         sharedPreferences = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, MODE_PRIVATE)
 
+    }
+
+    private fun setInputsValidator(){
+        password.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                s?:return
+
+                if(s.length > password_input_layout.counterMaxLength)
+                    password_input_layout.error = resources.getString(R.string.max_length_msg)
+                else
+                    password_input_layout.error = ""
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        })
     }
 
     private fun validateData(): Boolean {
         Log.d(TAG, "validateData() called")
 
         if (!BootReciever.isConnected) {
-
-            AlertDialog.Builder(this)
-                    .setMessage("Отсутствует подключение к интернету")
-                    .setIcon(R.drawable.hipe_dark_56_dp)
-                    .setPositiveButton("ok") { dialog: DialogInterface, _ ->
-                        Unit
-                        dialog.dismiss()
-                    }
-                    .create().show()
-
             return false
         }
 
@@ -88,14 +102,11 @@ class LoginActivity : Activity() {
 
             when (requestID) {
                 LOGIN_USER_ID -> if (serverCode == Status.OK) {
-
-                    fault_hint.visibility = View.GONE
                     val editor = sharedPreferences.edit()
                     editor.putLong(Const.USER_ID, response as Long).apply()
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
-                } else
-                    fault_hint.visibility = View.VISIBLE
+                } else -> {}
             }
         }
 
@@ -105,16 +116,13 @@ class LoginActivity : Activity() {
 
         override fun onFailure(requestID: Long, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")
-
             Toast.makeText(this@LoginActivity, "Ошибка входа. Повторите позже", Toast.LENGTH_SHORT).show()
-            fault_hint.visibility = View.VISIBLE
-
         }
 
     }
 
-    private val myOnClickListener = { v: View ->
-        Unit
+    private val myOnClickListener = {
+        v: View -> Unit
 
         Log.d(TAG, "onClick() called with: v = [$v]")
 

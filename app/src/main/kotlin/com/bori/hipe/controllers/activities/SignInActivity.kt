@@ -1,5 +1,6 @@
 package com.bori.hipe.controllers.activities
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,7 +11,6 @@ import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.Toast
-import com.bori.hipe.Manifest
 import com.bori.hipe.R
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter

@@ -47,9 +47,9 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
     private var id: Long = 0
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        v = inflater!!.inflate(R.layout.fragment_chats_dialog, container, false)
+        v = inflater.inflate(R.layout.fragment_chats_dialog, container, false)
 
         val toolbar: Toolbar = v.findViewById(R.id.toolbar2)
 
@@ -63,7 +63,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         }
         nickname = User.thisUser.nickName
         nickname = "pashaborisyk"
-        url = getActivity().getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Activity.MODE_PRIVATE).getString(Const.USER_IMAGE_SMALL, null)
+        url = getActivity()!!.getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Activity.MODE_PRIVATE).getString(Const.USER_IMAGE_SMALL, null)
 
         message = v.findViewById(R.id.edit_message)
 
@@ -117,7 +117,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
     private inner class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.VH>(), View.OnClickListener {
 
         private val chatMessages = arrayListOf<ChatMessageNOSQL>()
-        private val layoutInflater: LayoutInflater = activity.layoutInflater
+        private val layoutInflater: LayoutInflater = activity!!.layoutInflater
 
         private val imageLoader = ImageLoader.getInstance()
         private val displayImageOptions: DisplayImageOptions = DisplayImageOptions.Builder()

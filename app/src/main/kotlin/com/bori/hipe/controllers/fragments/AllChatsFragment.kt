@@ -24,9 +24,9 @@ class AllChatsFragment : Fragment() {
     private var recyclerView: RecyclerView? = null
     private var eventChatsAdapter: EventChatsAdapter? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        v = inflater!!.inflate(R.layout.fragment_all_chats, container, false)
+        v = inflater.inflate(R.layout.fragment_all_chats, container, false)
         recyclerView = v?.findViewById(R.id.fragment_all_chats_last_messages_list)
         recyclerView!!.layoutManager = LinearLayoutManager(context)
 
@@ -48,7 +48,7 @@ class AllChatsFragment : Fragment() {
 
         private val eventList = arrayListOf<Event>()
         private val lastChatMessages = arrayListOf<ChatMessageNOSQL>()
-        private val layoutInflater: LayoutInflater = activity.layoutInflater
+        private val layoutInflater: LayoutInflater = activity!!.layoutInflater
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
                 VH(layoutInflater.inflate(R.layout.item_row_all_chats, parent, false))
@@ -76,7 +76,7 @@ class AllChatsFragment : Fragment() {
                 bundle.putLong(Const.EVENT_ID, eventId)
                 val intent = Intent(activity, ConversationActivity::class.java)
                 intent.putExtras(bundle)
-                activity.startActivity(intent)
+                activity!!.startActivity(intent)
 
             }
 

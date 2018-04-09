@@ -26,7 +26,7 @@ class PhotoDialogFragment : DialogFragment(), View.OnClickListener {
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the Builder class for convenient dialog construction
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity!!)
         val rootView = LayoutInflater.from(activity).inflate(R.layout.dialog_event_image_chooser, null)
         val camera: View = rootView.findViewById(R.id.dialog_select_camera)
         camera.setOnClickListener(this)

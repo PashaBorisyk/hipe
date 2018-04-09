@@ -1,179 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <ImageView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/base_image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/main_background"
-        android:tint="#7f000000" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:gravity="center|center_horizontal|center_vertical"
         android:orientation="vertical"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
-        android:paddingTop="0dp">
+        android:weightSum="3">
 
-        <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="false"
-            android:contentDescription="@string/hipe_logo"
-            android:cropToPadding="false"
-            android:scaleType="centerCrop"
-            android:src="@drawable/hipe_logotype" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="100dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="monospace"
-            android:text="@string/hipe_name"
-            android:textColor="#fff"
-            android:textSize="23sp" />
-
-        <LinearLayout
+        <TextureView
+            android:id="@+id/enter_show_texture_view"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="0dp"
-            android:background="#40ffffff"
-            android:orientation="horizontal">
+            android:layout_height="match_parent" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_1480004634_user_light" />
+    </RelativeLayout>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="3dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="3dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
-                android:background="#80ffffff" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="@color/applicationLight"
+        android:padding="20dp">
 
-            <EditText
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/username_input_layout"
+            style="@style/LoginScreenFormsInputStyle"
+            app:counterMaxLength="16"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+            app:hintAnimationEnabled="true"
+            app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="not">
+
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/login"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#0000"
+                android:layout_height="wrap_content"
                 android:hint="@string/username"
-                android:inputType="textEmailAddress"
-                android:padding="3dp"
-                android:text="@string/pashaborisyk"
-                android:textColor="#fff"
-                android:textColorHint="#80ffffff"
-                android:textSize="15sp" />
+                android:inputType="textPersonName"
+                android:maxLength="16"
+                android:maxLines="1"
+                android:singleLine="false" />
 
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
 
-        <TextView
-            android:id="@+id/fault_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="30dp"
-            android:layout_marginStart="30dp"
-            android:gravity="left"
-            android:text="@string/auth_error_message"
-            android:textColor="#FFF12652"
-            tools:ignore="RtlHardcoded" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/password_input_layout"
+            style="@style/LoginScreenFormsInputStyle"
+            app:counterMaxLength="16"
+            app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
+            app:counterTextAppearance="@null"
+            app:errorEnabled="true"
+            app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+            app:hintAnimationEnabled="true"
+            app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username_input_layout"
+            app:passwordToggleEnabled="true">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="15dp"
-            android:background="#40ffffff"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:contentDescription="@string/lock"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_1480006231_streamline_68_light" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="3dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="3dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="8dp"
-                android:background="#80ffffff" />
-
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#0000"
-                android:hint="@string/password_text"
-                android:inputType="textPassword"
-                android:padding="3dp"
-                android:text="@string/default_password_text"
-                android:textColor="#fff"
-                android:textColorHint="#80ffffff"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/login_button"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/rect_white"
-            android:text="@string/sign_in_text"
-            android:textColor="#4b4b4b"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/sign_in_user_button"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/don_t_have_account_yet"
-                android:textColor="#88ffffff"
-                android:textStyle="italic" />
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="false" />
 
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-</RelativeLayout>
+
+</LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

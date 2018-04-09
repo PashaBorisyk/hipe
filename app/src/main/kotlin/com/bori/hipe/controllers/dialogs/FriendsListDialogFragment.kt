@@ -36,15 +36,15 @@ class FriendsListDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         Log.d(TAG, "onCreateDialog() called with: savedInstanceState = [$savedInstanceState]")
 
-        val builder = AlertDialog.Builder(activity)
-        val rootView = activity.layoutInflater.inflate(R.layout.dialog_friends_list, null, false)
+        val builder = AlertDialog.Builder(activity!!)
+        val rootView = activity!!.layoutInflater.inflate(R.layout.dialog_friends_list, null, false)
         recyclerView = rootView.findViewById(R.id.dialog_fragment_friends_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = Adapter()
         recyclerView.adapter = adapter
         RestService.registerCallback(adapter.restCallback)
 
-        builder.setCustomTitle(activity.layoutInflater.inflate(R.layout.add_friends_dialog_title, null, false))
+        builder.setCustomTitle(activity!!.layoutInflater.inflate(R.layout.add_friends_dialog_title, null, false))
         builder.setView(rootView)
         builder.setPositiveButton("OK") { _, _ ->
             this@FriendsListDialogFragment.dialog.dismiss()
@@ -69,7 +69,7 @@ class FriendsListDialogFragment : DialogFragment() {
             addedIds = (activity as CreateNewEventActivity).addedUsers
 
             UserService.getFriendsList(GET_FRIENDS_LIST_ID, User.thisUser.id)
-            layoutInflater = activity.layoutInflater
+            layoutInflater = activity!!.layoutInflater
 
         }
 

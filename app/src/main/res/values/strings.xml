@@ -20,7 +20,7 @@
     <string name="base_image">base image</string>
     <string name="hipe_logo">hipe logo</string>
     <string name="hipe_name">H I P E</string>
-    <string name="username">USERNAME</string>
+    <string name="username">Username</string>
     <string name="auth_error_message">Incorrect username or password</string>
     <string name="lock">lock</string>
     <string name="password_text">PASSWORD</string>
@@ -91,6 +91,12 @@
     <string name="event_default_hash_tag">#Pashas_event</string>
     <string name="_12_photos">12 photos</string>
     <string name="type_message">Type message</string>
+    <string name="no_connection_detected">No connection detected</string>
+    <string name="hide">Hide</string>
+    <string name="repeat">Repeat</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="max_length_msg">Max length is </string>
+
 
 
 </resources>

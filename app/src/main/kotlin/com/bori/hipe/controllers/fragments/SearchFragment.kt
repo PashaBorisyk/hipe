@@ -51,14 +51,14 @@ class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
 
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         Log.d(TAG, "onCreateViewIn Search Fragment: ")
 
         val vb = View(context)
         vb.animate().alpha(0f).translationX(10f).rotation(10f).start()
 
-        v = inflater!!.inflate(R.layout.fragment_search, container, false)
+        v = inflater.inflate(R.layout.fragment_search, container, false)
 
         resultsAdapter = ResultsAdapter()
 
@@ -93,7 +93,7 @@ class SearchFragment : Fragment() {
 
         override fun run() {
             try {
-                activity.runOnUiThread {
+                activity!!.runOnUiThread {
 
                     val query = this@SearchFragment.search_query.text.toString()
 
@@ -203,7 +203,7 @@ class SearchFragment : Fragment() {
 
     private inner class ResultsAdapter internal constructor() : RecyclerView.Adapter<ResultsAdapter.VH>(), View.OnClickListener {
 
-        val inflater: LayoutInflater = activity.layoutInflater
+        val inflater: LayoutInflater = activity!!.layoutInflater
         val users = mutableListOf<Tuple<User, HipeImage>>()
         val friendsIds = arrayListOf<Long>()
         val usersStack = arrayListOf<Long>()

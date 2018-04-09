@@ -39,15 +39,15 @@ class FragmentNewsFeed : Fragment() {
     private lateinit var recyclerViewAdapter: RecyclerViewAdapter
     private lateinit var views: LinkedHashMap<View, View>
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "onCreateView: ")
 
         views = linkedMapOf()
 
-        v = inflater!!.inflate(R.layout.fragment_news_feed, container, false)
+        v = inflater.inflate(R.layout.fragment_news_feed, container, false)
         recyclerView = findViewById(R.id.news_feed_recycler_view)
         recyclerViewAdapter = RecyclerViewAdapter()
-        val linearLayoutManager = LinearLayoutManager(activity.applicationContext)
+        val linearLayoutManager = LinearLayoutManager(activity!!.applicationContext)
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
@@ -108,7 +108,7 @@ class FragmentNewsFeed : Fragment() {
 
         init {
 
-            layoutInflater = activity.layoutInflater
+            layoutInflater = activity!!.layoutInflater
 
             displayImageOptions = DisplayImageOptions.Builder()
                     .cacheOnDisk(true)

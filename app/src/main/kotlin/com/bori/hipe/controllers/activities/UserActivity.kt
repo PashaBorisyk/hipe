@@ -236,7 +236,7 @@ class UserActivity : AppCompatActivity() {
         val events = arrayListOf<Tuple<Event, HipeImage>>()
         val users = arrayListOf<Tuple<User, HipeImage>>()
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH? {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
 
             if (data_type == DataType.TYPE_USERS) {
                 return VH(layoutInflater.inflate(R.layout.item_row_user_small, parent, false), data_type)
@@ -245,7 +245,7 @@ class UserActivity : AppCompatActivity() {
                 return VH(layoutInflater.inflate(R.layout.item_row_event_small, parent, false), data_type)
             }
 
-            return null
+            return VH(View(applicationContext),data_type)
         }
 
         override fun onBindViewHolder(holder: VH, position: Int) {
