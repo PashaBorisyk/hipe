@@ -98,7 +98,6 @@ class BubblesView : View {
 
     private fun randomize(i: Int) {
 
-
         gonePixels[i] = 0
         currentSmallRAdiuses[i] = smallRadius * random.nextFloat()
         currentBigRadiuses[i] = random.nextFloat() * bigRadius
@@ -109,7 +108,7 @@ class BubblesView : View {
 
     private fun calculate(deltaTime: Float, k: Int) {
 
-        val currentSmallRAdius = currentSmallRAdiuses[k]
+        val currentSmallRadius = currentSmallRAdiuses[k]
         val currentBigRadius = currentBigRadiuses[k]
         val angle = angles[k]
         gonePixels[k] += (randomSpeed[k] * deltaTime).toInt()
@@ -120,10 +119,10 @@ class BubblesView : View {
 
         val rectF = rects[k]
 
-        rectF.left = (centerX + currentGonePixels * Math.cos(angle.toDouble()) - currentSmallRAdius).toFloat()
-        rectF.top = (centerY.toDouble() - currentGonePixels * Math.sin(angle.toDouble()) - currentSmallRAdius.toDouble()).toFloat()
-        rectF.right = (centerX.toDouble() + currentGonePixels * Math.cos(angle.toDouble()) + currentSmallRAdius.toDouble()).toFloat()
-        rectF.bottom = (centerY - currentGonePixels * Math.sin(angle.toDouble()) + currentSmallRAdius).toFloat()
+        rectF.left = (centerX + currentGonePixels * Math.cos(angle.toDouble()) - currentSmallRadius).toFloat()
+        rectF.top = (centerY.toDouble() - currentGonePixels * Math.sin(angle.toDouble()) - currentSmallRadius.toDouble()).toFloat()
+        rectF.right = (centerX.toDouble() + currentGonePixels * Math.cos(angle.toDouble()) + currentSmallRadius.toDouble()).toFloat()
+        rectF.bottom = (centerY - currentGonePixels * Math.sin(angle.toDouble()) + currentSmallRadius).toFloat()
 
     }
 
@@ -177,7 +176,7 @@ class BubblesView : View {
             current = System.currentTimeMillis()
             delta = (current - prev).toFloat()
             prev = current
-            for (i in 0..BubblesView.OVALS_COUNT - 1)
+            for (i in 0 until BubblesView.OVALS_COUNT)
                 calculate(delta, i)
 
             if (!isRun)
@@ -227,8 +226,7 @@ class BubblesView : View {
         private val TAG = "BubblesView"
 
         var OVALS_COUNT = 50
-        private val DEGREE_360 = (2 * Math.PI).toFloat()
-        private val S = " "
+        private const val DEGREE_360 = (2 * Math.PI).toFloat()
     }
 
 }

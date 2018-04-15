@@ -54,6 +54,9 @@ class LoginActivity : Activity() {
         snackbar.show()
 
         sharedPreferences = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, MODE_PRIVATE)
+        test_view_id.setOnClickListener{
+            test_view_id.show()
+        }
 
     }
 

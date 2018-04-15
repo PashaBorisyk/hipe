@@ -28,12 +28,8 @@ class TriangleView : View {
         Log.e(TAG, "init: " + backGround)
     }
 
-    private fun init() {
-
-    }
-
     private fun invalidateColor() {
-        backGround = (background as ColorDrawable).color
+        backGround = (background as? ColorDrawable)?.color ?: 0xffff00
         setBackgroundColor(0x00000000)
     }
 
