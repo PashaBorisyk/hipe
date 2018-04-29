@@ -157,7 +157,7 @@ class UserActivity : AppCompatActivity() {
 
     }
 
-    internal var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
+    private var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
 
         override fun onFailure(requestID: Long, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")

@@ -27,7 +27,7 @@
                     android:layout_height="match_parent"
                     android:contentDescription="@string/location"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_1482206348_logo_social_media_location_dark" />
+                    app:srcCompat="@drawable/ic_1482206348_logo_social_media_location_dark" />
 
                 <TextView
                     android:id="@+id/main_address_text_view"

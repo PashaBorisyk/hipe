@@ -27,7 +27,7 @@
                 android:alpha="0"
                 android:contentDescription="@string/action_settings"
                 android:scaleType="centerCrop"
-                android:src="@drawable/me_photo" />
+                card_view:srcCompat="@drawable/me_photo" />
 
             <ImageView
                 android:id="@+id/event_photo1"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/action_settings"
                 android:scaleType="centerCrop"
-                android:src="@drawable/me_photo" />
+                card_view:srcCompat="@drawable/me_photo" />
 
 
         </FrameLayout>

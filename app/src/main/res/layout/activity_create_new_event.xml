@@ -50,7 +50,7 @@
                     android:background="@drawable/circle_accent"
                     android:contentDescription="@string/add_photo"
                     android:scaleType="center"
-                    android:src="@drawable/ic_add_a_photo_black_24dp" />
+                    app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
             </FrameLayout>
 
@@ -100,7 +100,7 @@
                     android:inputType="textPersonName"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_1485114380_tag" />
+                    app:srcCompat="@drawable/ic_1485114380_tag" />
 
                 <EditText
                     android:id="@+id/event_name"
@@ -157,7 +157,7 @@
                     android:inputType="textPersonName"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_1485141047_calendar" />
+                    app:srcCompat="@drawable/ic_1485141047_calendar" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -231,7 +231,7 @@
                     android:inputType="textPersonName"
                     android:padding="6dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_1482206348_logo_social_media_location_dark_small" />
+                    app:srcCompat="@drawable/ic_1482206348_logo_social_media_location_dark_small" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -263,7 +263,7 @@
                         android:layout_weight="2"
                         android:background="#0000"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/new_event_activity_at_home_selector" />
+                        app:srcCompat="@drawable/new_event_activity_at_home_selector" />
 
                 </LinearLayout>
 
@@ -312,7 +312,7 @@
                     android:inputType="textPersonName"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/new_event_activity_private_selector" />
+                    app:srcCompat="@drawable/new_event_activity_private_selector" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -401,7 +401,7 @@
                         android:background="#0000"
                         android:contentDescription="@string/gender_man"
                         android:scaleType="centerInside"
-                        android:src="@drawable/gender_signin_man_selector" />
+                        app:srcCompat="@drawable/gender_signin_man_selector" />
 
                     <View
                         android:layout_width="1dp"
@@ -419,7 +419,7 @@
                         android:background="#0000"
                         android:contentDescription="@string/gender_woman"
                         android:scaleType="centerInside"
-                        android:src="@drawable/gender_signin_woman_selector" />
+                        app:srcCompat="@drawable/gender_signin_woman_selector" />
 
 
                 </LinearLayout>
@@ -457,7 +457,7 @@
                     android:inputType="textPersonName"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_1485136428_user_add" />
+                    app:srcCompat="@drawable/ic_1485136428_user_add" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -74,4 +74,7 @@ object Const {
     const val IMG_SIZE_SMALL_WIDTH = 360
     const val IMG_SIZE_MINI_WIDTH = 90
 
+    const val MIN_PASSWORD_SIZE = 8
+    const val MIN_USERNAME_SIZE = 4
+
 }

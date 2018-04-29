@@ -1,13 +1,13 @@
 package com.bori.hipe.models
 
-import com.bori.hipe.MyApplication
+import com.bori.hipe.HipeApplication
 import java.io.Serializable
 
 
 data class Event(
 
         val id: Long = 0L,
-        val creatorId: Long = MyApplication.THIS_USER_ID,
+        val creatorId: Long = HipeApplication.THIS_USER_ID,
         val dateMills: Long = 0L,
         val creationDateMills: Long = 0L,
         val maxMembers: Long = 0L,

@@ -19,7 +19,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
-import com.bori.hipe.MyApplication
+import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.animators.TabViewBackgroundAnimation
 import com.bori.hipe.controllers.fragments.AllChatsFragment
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceConnectio
 //            finish()
 //        }
 
-        Log.d(TAG, "onCreate: data: user - " + MyApplication.NICKNAME)
+        Log.d(TAG, "onCreate: data: user - " + HipeApplication.NICKNAME)
 
         try {
             bindService(Intent(this, HipeService::class.java), this, BIND_AUTO_CREATE)
@@ -211,18 +211,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceConnectio
 
         fab_mini_new_event.animate()
                 .alpha(1f)
-                .translationY(-MyApplication.pixelsPerDp * 60)
+                .translationY(-HipeApplication.pixelsPerDp * 60)
                 .setStartDelay(FAB_ANIMATION_DELAY).duration = FAB_ANIMATION_DURATION
 
         fab_mini_new_message.animate()
                 .alpha(1f)
-                .translationY(-MyApplication.pixelsPerDp * 42)
-                .translationX(-MyApplication.pixelsPerDp * 42)
+                .translationY(-HipeApplication.pixelsPerDp * 42)
+                .translationX(-HipeApplication.pixelsPerDp * 42)
                 .setStartDelay(FAB_ANIMATION_DELAY).duration = FAB_ANIMATION_DURATION
 
 //        main_tab_layout.animate()
 //                .alpha(0f)
-//                .translationY(MyApplication.pixelsPerDp * 48).duration = FAB_ANIMATION_DURATION
+//                .translationY(HipeApplication.pixelsPerDp * 48).duration = FAB_ANIMATION_DURATION
 
     }
 

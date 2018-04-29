@@ -86,7 +86,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:contentDescription="@string/event_type_ring"
-                    android:src="@drawable/circle_red" />
+                    app:srcCompat="@drawable/circle_red" />
 
             </RelativeLayout>
 
@@ -122,7 +122,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="@string/event_image"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/event_img" />
+                        app:srcCompat="@drawable/event_img" />
 
                 </LinearLayout>
 
@@ -150,7 +150,7 @@
                         android:layout_width="15dp"
                         android:layout_height="15dp"
                         android:contentDescription="@string/go"
-                        android:src="@drawable/ic_1480796191_add" />
+                        app:srcCompat="@drawable/ic_1480796191_add" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -172,7 +172,7 @@
                         android:layout_width="15dp"
                         android:layout_height="15dp"
                         android:contentDescription="@string/chat"
-                        android:src="@drawable/ic_1480797203_message_01" />
+                        app:srcCompat="@drawable/ic_1480797203_message_01" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -195,7 +195,7 @@
                         android:layout_height="15dp"
                         android:contentDescription="@string/info"
                         android:scaleType="center"
-                        android:src="@drawable/ic_1480797893_info_2" />
+                        app:srcCompat="@drawable/ic_1480797893_info_2" />
 
                     <TextView
                         android:layout_width="wrap_content"

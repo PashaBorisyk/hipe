@@ -25,7 +25,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class MyApplication : SugarApp() {
+class HipeApplication : SugarApp() {
 
     override fun onCreate() {
         super.onCreate()
@@ -77,7 +77,7 @@ class MyApplication : SugarApp() {
 
     companion object {
 
-        private const val TAG = "MyApplication"
+        private const val TAG = "HipeApplication"
         const val SERVER_PATH = "http://192.168.0.31:9000/"
 
         val LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP

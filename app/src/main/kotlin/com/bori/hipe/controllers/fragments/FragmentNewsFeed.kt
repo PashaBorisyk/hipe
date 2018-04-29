@@ -13,9 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bori.hipe.MyApplication
-import com.bori.hipe.MyApplication.Companion.KIT_KAT
-import com.bori.hipe.MyApplication.Companion.LOLLIPOP
+import com.bori.hipe.HipeApplication
+import com.bori.hipe.HipeApplication.Companion.KIT_KAT
+import com.bori.hipe.HipeApplication.Companion.LOLLIPOP
 import com.bori.hipe.R
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
@@ -51,9 +51,9 @@ class FragmentNewsFeed : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
-        val halfOfScreen = MyApplication.screenHeight / 2
-        val doubledMargin = 15 * MyApplication.pixelsPerDp * 2
-        val startWidth = MyApplication.screenWidth - doubledMargin
+        val halfOfScreen = HipeApplication.screenHeight / 2
+        val doubledMargin = 15 * HipeApplication.pixelsPerDp * 2
+        val startWidth = HipeApplication.screenWidth - doubledMargin
         val maxMargin = doubledMargin * 0.95f
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {

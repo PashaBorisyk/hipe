@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,7 +11,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/base_image"
         android:scaleType="centerCrop"
-        android:src="@drawable/main_background"
+        app:srcCompat="@drawable/main_background"
         android:tint="#7f000000" />
 
     <LinearLayout
@@ -33,7 +34,7 @@
             android:contentDescription="@string/hipe_logo"
             android:cropToPadding="false"
             android:scaleType="centerCrop"
-            android:src="@drawable/hipe_logotype" />
+            app:srcCompat="@drawable/hipe_logotype" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -61,7 +62,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_1480004634_user_light" />
+                app:srcCompat="@drawable/ic_1480004634_user_light" />
 
             <View
                 android:layout_width="1dp"
@@ -117,7 +118,7 @@
                 android:layout_marginTop="10dp"
                 android:contentDescription="@string/lock"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_1480006231_streamline_68_light" />
+                app:srcCompat="@drawable/ic_1480006231_streamline_68_light" />
 
             <View
                 android:layout_width="1dp"

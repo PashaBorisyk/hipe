@@ -9,13 +9,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.bori.hipe.R
 import com.bori.hipe.controllers.crypto.encode
-import com.bori.hipe.controllers.receiver.BootReciever
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserService
+import com.bori.hipe.controllers.views.FlippingEdgesView
 import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
 import kotlinx.android.synthetic.main.activity_login.*
@@ -27,6 +26,7 @@ private const val LOGIN_USER_ID = 8L
 
 class LoginActivity : Activity() {
 
+    private lateinit var loginButton:FlippingEdgesView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var restCallback: LoginActivityRestCallbackAdapter
 
@@ -36,6 +36,7 @@ class LoginActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         init()
+        setInputsValidator()
         RestService.registerCallback(restCallback)
     }
 
@@ -46,31 +47,31 @@ class LoginActivity : Activity() {
 
     private fun init() {
         Log.d(TAG, "init() called")
+        loginButton = findViewById(R.id.login_button)
+        loginButton.setOnClickListener(myOnClickListener)
         restCallback = LoginActivityRestCallbackAdapter()
         snackbar = Snackbar.make(findViewById<View>(R.id.main_coordinator_layout), R.string.no_connection_detected , Snackbar.LENGTH_INDEFINITE)
         snackbar.setAction(R.string.dismiss){
             snackbar.dismiss()
         }
-        snackbar.show()
 
         sharedPreferences = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, MODE_PRIVATE)
-        test_view_id.setOnClickListener{
-            test_view_id.show()
-        }
-
     }
 
     private fun setInputsValidator(){
         password.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-                s?:return
+            override fun afterTextChanged(password: Editable?) = loginButton.show(validateData(login.editableText,password))
 
-                if(s.length > password_input_layout.counterMaxLength)
-                    password_input_layout.error = resources.getString(R.string.max_length_msg)
-                else
-                    password_input_layout.error = ""
-
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        })
+
+        login.addTextChangedListener(object : TextWatcher{
+
+            override fun afterTextChanged(login: Editable?) = loginButton.show(validateData(login,password.editableText))
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -80,17 +81,37 @@ class LoginActivity : Activity() {
         })
     }
 
-    private fun validateData(): Boolean {
-        Log.d(TAG, "validateData() called")
+    private fun validateData(login:Editable?,password:Editable?) : Boolean {
 
-        if (!BootReciever.isConnected) {
-            return false
+        login?:return false
+        password?:return false
+
+        var result = true
+
+        if (login.length > Const.MIN_USERNAME_SIZE) {
+
+            if (login.length > login_input_layout.counterMaxLength) {
+                login_input_layout.error = resources.getString(R.string.max_length_msg) + login_input_layout.counterMaxLength
+                result = false
+            } else {
+                login_input_layout.error = ""
+            }
         }
+        else
+            result = false
 
-        if (password.text.length < 8 || login.text.length < 10)
-            return false
+        if (password.length > Const.MIN_USERNAME_SIZE) {
+            if (password.length > password_input_layout.counterMaxLength) {
+                password_input_layout.error = resources.getString(R.string.max_length_msg) + " ${password_input_layout.counterMaxLength}"
+                result = false
+            } else {
+                password_input_layout.error = ""
+            }
+        }
+        else
+            result = false
 
-        return true
+        return result
     }
 
     override fun onStop() {
@@ -119,7 +140,7 @@ class LoginActivity : Activity() {
 
         override fun onFailure(requestID: Long, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")
-            Toast.makeText(this@LoginActivity, "Ошибка входа. Повторите позже", Toast.LENGTH_SHORT).show()
+            snackbar.setText(getString(R.string.cannot_obtain_connection_message)).show()
         }
 
     }
@@ -131,8 +152,9 @@ class LoginActivity : Activity() {
 
         when (v.id) {
 
-            R.id.login_button -> if (validateData()) {
+            R.id.login_button -> {
                 Log.d(TAG, "onClick: Data Validated!!!")
+                loginButton.showLoading()
                 UserService.loginUser(
                         requestID = LOGIN_USER_ID,
                         nickName = login.text.toString(),
@@ -142,7 +164,6 @@ class LoginActivity : Activity() {
             }
 
             R.id.sign_in_user_button -> startActivity(Intent(this, SignInActivity::class.java))
-
         }
 
     }

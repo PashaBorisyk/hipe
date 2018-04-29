@@ -1,7 +1,7 @@
 package com.bori.hipe.controllers.rest.service
 
 import android.util.Log
-import com.bori.hipe.MyApplication
+import com.bori.hipe.HipeApplication
 import com.bori.hipe.controllers.rest.*
 import com.bori.hipe.controllers.rest.routes.UserRouter
 import com.bori.hipe.models.User
@@ -47,17 +47,17 @@ object UserService {
         userRouter.checkUserExistence(nickName).enqueue(BooleanCallback(requestID))
     }
 
-    fun getFriendsList(requestID: Long, userId: Long = MyApplication.THIS_USER_ID) {
+    fun getFriendsList(requestID: Long, userId: Long = HipeApplication.THIS_USER_ID) {
         Log.d(TAG, "getFriendsList() called with: userId = [$userId]")
         userRouter.getFriends(userId).enqueue(UserListCallback(requestID))
     }
 
-    fun getFriendsIdsList(requestID: Long, userId: Long = MyApplication.THIS_USER_ID) {
+    fun getFriendsIdsList(requestID: Long, userId: Long = HipeApplication.THIS_USER_ID) {
         Log.d(TAG, "getFriendsIdsList() called with: userId = [$userId]")
         userRouter.getFriendsIds(userId).enqueue(LongListCallback(requestID))
     }
 
-    fun getUserById(requestID: Long, userID: Long = MyApplication.THIS_USER_ID) {
+    fun getUserById(requestID: Long, userID: Long = HipeApplication.THIS_USER_ID) {
         Log.d(TAG, "getUserById  $userID")
         userRouter.getById(userID).enqueue(UserCallback(requestID))
     }

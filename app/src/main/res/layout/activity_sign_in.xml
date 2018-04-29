@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +13,7 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/base_image"
         android:scaleType="centerCrop"
-        android:src="@drawable/main_background"
+        app:srcCompat="@drawable/main_background"
         android:tint="#ebffffff" />
 
 
@@ -42,7 +43,7 @@
                 android:layout_height="160dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/hipe_logo"
-                android:src="@drawable/hipe_logotype"
+                app:srcCompat="@drawable/hipe_logotype"
                 android:tint="@color/applicationDark" />
 
             <TextView
@@ -83,7 +84,7 @@
                     android:inputType="textPersonName"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_1480004634_user_dark" />
+                    app:srcCompat="@drawable/ic_1480004634_user_dark" />
 
                 <EditText
                     android:id="@+id/name_surname"
@@ -180,7 +181,7 @@
                     android:layout_gravity="center"
                     android:contentDescription="@string/lock"
                     android:padding="10dp"
-                    android:src="@drawable/ic_1480006231_streamline_68_dark" />
+                    app:srcCompat="@drawable/ic_1480006231_streamline_68_dark" />
 
                 <EditText
                     android:id="@+id/password"
@@ -228,7 +229,7 @@
                     android:layout_gravity="center"
                     android:contentDescription="@string/lock"
                     android:padding="10dp"
-                    android:src="@drawable/ic_1480006231_streamline_68_dark" />
+                    app:srcCompat="@drawable/ic_1480006231_streamline_68_dark" />
 
                 <EditText
                     android:id="@+id/confirm_password"

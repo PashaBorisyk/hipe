@@ -23,7 +23,7 @@
 //import com.bori.hipe.Models.ChatMessage;
 //import com.bori.hipe.Models.Event;
 //import com.bori.hipe.Models.User;
-//import com.bori.hipe.MyApplication;
+//import com.bori.hipe.HipeApplication;
 //import com.bori.hipe.R;
 //
 //import java.util.HashMap;
@@ -69,7 +69,7 @@
 //        resourceInit();
 //
 //        webSocketServiceHashMap = new HashMap<>();
-//        alkosSharedPreferences = getSharedPreferences(MyApplication.ALKOS_SHARED, MODE_PRIVATE);
+//        alkosSharedPreferences = getSharedPreferences(HipeApplication.ALKOS_SHARED, MODE_PRIVATE);
 //        idStringSet = alkosSharedPreferences.getStringSet(SHARED_IDS_KEY, null);
 //        idSet = new HashSet<>();
 //
