@@ -1,5 +1,6 @@
 package com.bori.hipe.controllers.views
 
+import android.animation.Animator
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -10,6 +11,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.Button
+import com.bori.hipe.util.extensions.zeroIfNegative
 import kotlin.math.absoluteValue
 
 
@@ -18,6 +20,12 @@ private const val TAG = "FlippingEdgesView."
 class FlippingEdgesView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Button(context, attrs, defStyleAttr) {
+
+    companion object {
+        private const val BUTTON_LINES_ANIMATOR_DURATION = 100L
+        private const val LOADING_LINES_ANIMATOR_DURATION = 300L
+        private const val LOADING_SPINNING_ANIMATOR_DURATION = 500L
+    }
 
     enum class Mode {
         BUTTON, LOADING
@@ -42,16 +50,23 @@ class FlippingEdgesView @JvmOverloads constructor(
     private var drawRadius = 0f
 
     private var circleLength = 0f
-    private var topButtomLineLength = 0f
+    private var halfTopBottomLineLength = 0f
 
-    private var revertingAnimation = false
+    private var isRevertingAnimation = false
+    private var isEndingAnimation = false
+    private var isInFinalStageOfSpinning = false
+
     private lateinit var buttonLinesAnimator: ValueAnimator
     private lateinit var loadingLinesAnimator: ValueAnimator
+    private lateinit var loadingSpinningAnimator: ValueAnimator
+    private lateinit var loadingEndedCircleAnimation: ValueAnimator
+
     private lateinit var colorAnimator: ObjectAnimator
     private val decelerateInterpolator = DecelerateInterpolator()
     private val evaluator = ArgbEvaluator()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
 
     private val rightBorderRect = RectF()
@@ -62,6 +77,9 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     private var buttonModeAnimatedValue = 0f
     private var loadingModeAnimatedValue = 0f
+    private var spinningLoadingAnimatedValue = 0f
+    private var circleResizingAnimatedValue = 0f
+
     private var lineLength: Float = 0f
 
     var strokeWidth: Float = 10f
@@ -106,6 +124,8 @@ class FlippingEdgesView @JvmOverloads constructor(
         textPaint.textSize = 50f
         textPaint.strokeWidth = 8f
         textWidth = textPaint.measureText(mText)
+
+        circlePaint.style = Paint.Style.FILL
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -152,13 +172,13 @@ class FlippingEdgesView @JvmOverloads constructor(
         xPositionsTop.xBegin = -_length
         xPositionsBottom.xBegin = width + _length
 
-        topButtomLineLength = rightBorder - leftBorder - drawRadius*2
+        halfTopBottomLineLength = (rightBorder - leftBorder) / 2
 
         // 3/4 PI == 135 degrees
         lineLength = xPositionsBottom.length
 
         buttonLinesAnimator = ValueAnimator.ofFloat(0f, lineLength + leftBorder)
-        buttonLinesAnimator.duration = 300
+        buttonLinesAnimator.duration = BUTTON_LINES_ANIMATOR_DURATION
         buttonLinesAnimator.interpolator = decelerateInterpolator
         buttonLinesAnimator.addUpdateListener { animation ->
             buttonModeAnimatedValue = animation.animatedValue as Float
@@ -166,15 +186,66 @@ class FlippingEdgesView @JvmOverloads constructor(
             requestLayout()
         }
 
+        loadingSpinningAnimator = ValueAnimator.ofFloat(0f, 360f)
+        loadingSpinningAnimator.duration = LOADING_SPINNING_ANIMATOR_DURATION
+        loadingSpinningAnimator.repeatCount = 100
+        loadingSpinningAnimator.repeatMode = ValueAnimator.RESTART
+        loadingSpinningAnimator.interpolator = null
+        loadingSpinningAnimator.addUpdateListener { animation ->
+            spinningLoadingAnimatedValue = animation.animatedValue as Float
+            invalidate()
+            requestLayout()
 
-        loadingLinesAnimator = ValueAnimator.ofFloat(0f, topButtomLineLength/2)
-        loadingLinesAnimator.duration = 300
-        loadingLinesAnimator.interpolator = decelerateInterpolator
+        }
+
+        loadingSpinningAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+                if (isEndingAnimation && !isInFinalStageOfSpinning) {
+                    loadingEndedCircleAnimation.start()
+                    isInFinalStageOfSpinning = true
+                }
+
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {}
+
+            override fun onAnimationStart(animation: Animator?) {}
+
+            override fun onAnimationEnd(animation: Animator?) {}
+        })
+
+        loadingLinesAnimator = ValueAnimator.ofFloat(0f, halfTopBottomLineLength)
+        loadingLinesAnimator.duration = LOADING_LINES_ANIMATOR_DURATION
+        loadingLinesAnimator.interpolator = null
         loadingLinesAnimator.addUpdateListener { animation ->
             loadingModeAnimatedValue = animation.animatedValue as Float
             invalidate()
             requestLayout()
+
+            if (loadingModeAnimatedValue >= halfTopBottomLineLength) {
+                loadingSpinningAnimator.start()
+            }
         }
+
+        loadingLinesAnimator.addListener(object : Animator.AnimatorListener {
+
+            override fun onAnimationRepeat(animation: Animator?) {
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                if (isRevertingAnimation) {
+                    mode = Mode.BUTTON
+                    isRevertingAnimation = false
+                }
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+
+        })
 
         colorAnimator = ObjectAnimator.ofObject(paint, "color", evaluator, Color.GRAY, 0xffee5350.toInt())
         colorAnimator.duration = 2000
@@ -182,9 +253,41 @@ class FlippingEdgesView @JvmOverloads constructor(
         colorAnimator.repeatCount = ObjectAnimator.INFINITE
         colorAnimator.addUpdateListener {
             textPaint.color = it.animatedValue as Int
+            circlePaint.color = it.animatedValue as Int
             invalidate()
             requestLayout()
         }
+
+        loadingEndedCircleAnimation = ValueAnimator.ofFloat(0f, drawRadius)
+        loadingEndedCircleAnimation.repeatMode = ValueAnimator.RESTART
+        loadingEndedCircleAnimation.duration = LOADING_SPINNING_ANIMATOR_DURATION
+        loadingEndedCircleAnimation.interpolator = null
+        loadingEndedCircleAnimation.addUpdateListener { animation ->
+            circleResizingAnimatedValue = animation.animatedValue as Float
+            invalidate()
+            requestLayout()
+        }
+
+        loadingEndedCircleAnimation.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                isRevertingAnimation = true
+                isEndingAnimation = true
+                loadingSpinningAnimator.repeatCount = 0
+                loadingSpinningAnimator.end()
+                if (isRevertingAnimation)
+                    loadingLinesAnimator.reverse()
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+
+        })
 
     }
 
@@ -194,6 +297,7 @@ class FlippingEdgesView @JvmOverloads constructor(
         canvas ?: return
 
         val path = xPositionsTop.xEnd + buttonModeAnimatedValue - rightBorder
+        val degree = 360 * (path / circleLength)
 
         if (mode == Mode.BUTTON) {
 
@@ -202,13 +306,11 @@ class FlippingEdgesView @JvmOverloads constructor(
                 canvas.drawLine(rightBorder - xPositionsTop.length + path, topBorder, rightBorder, topBorder, paint)
                 canvas.drawLine(leftBorder + xPositionsBottom.length - path, bottomBorder, leftBorder, bottomBorder, paint)
 
-                val degree = 360 * (path / circleLength)
-
                 leftArcPath.reset()
                 rightArcPath.reset()
 
-                leftArcPath.arcTo(leftBorderRect, 90f, degree.toFloat(), false)
-                rightArcPath.arcTo(rightBorderRect, 270f, degree.toFloat(), false)
+                leftArcPath.arcTo(leftBorderRect, 90f, degree, false)
+                rightArcPath.arcTo(rightBorderRect, 270f, degree, false)
 
                 canvas.drawPath(leftArcPath, paint)
                 canvas.drawPath(rightArcPath, paint)
@@ -226,45 +328,70 @@ class FlippingEdgesView @JvmOverloads constructor(
 
         } else if (mode == Mode.LOADING) {
 
-            val padding = if (!revertingAnimation)
-                -loadingModeAnimatedValue
-            else
-                (lineLength - loadingModeAnimatedValue)
+            if (loadingModeAnimatedValue < halfTopBottomLineLength) {
+
+                canvas.drawLine(
+                        rightBorder - xPositionsTop.length + path + loadingModeAnimatedValue,
+                        topBorder,
+                        rightBorder - loadingModeAnimatedValue,
+                        topBorder,
+                        paint
+                )
+                canvas.drawLine(
+                        leftBorder + xPositionsBottom.length - path - loadingModeAnimatedValue,
+                        bottomBorder,
+                        leftBorder + loadingModeAnimatedValue,
+                        bottomBorder,
+                        paint
+                )
+
+                leftArcPath.reset()
+                rightArcPath.reset()
+
+                leftBorderRect.left = leftBorder - drawRadius + loadingModeAnimatedValue
+                leftBorderRect.right = leftBorder + drawRadius + loadingModeAnimatedValue
+                leftArcPath.arcTo(leftBorderRect, 90f, degree, false)
+
+                rightBorderRect.left = rightBorder - drawRadius - loadingModeAnimatedValue
+                rightBorderRect.right = rightBorder + drawRadius - loadingModeAnimatedValue
+                rightArcPath.arcTo(rightBorderRect, 270f, degree, false)
+
+                canvas.drawPath(leftArcPath, paint)
+                canvas.drawPath(rightArcPath, paint)
 
 
-            canvas.drawLine(
-                    leftBorder + drawRadius - padding,
-                    topBorder,
-                    rightBorder - drawRadius + padding,
-                    topBorder,
-                    paint)
+            } else {
 
-            canvas.drawLine(
-                    leftBorder + drawRadius - padding,
-                    bottomBorder,
-                    rightBorder - drawRadius + padding,
-                    bottomBorder,
-                    paint)
+                leftArcPath.reset()
+                rightArcPath.reset()
 
+                leftBorderRect.left = leftBorder - drawRadius + loadingModeAnimatedValue
+                leftBorderRect.right = leftBorder + drawRadius + loadingModeAnimatedValue
+                leftArcPath.arcTo(leftBorderRect, 90f + spinningLoadingAnimatedValue, degree, false)
 
-            val circleLength = Math.PI * (drawHeight)
-            val degree = 360 * (path / circleLength)
+                rightBorderRect.left = rightBorder - drawRadius - loadingModeAnimatedValue
+                rightBorderRect.right = rightBorder + drawRadius - loadingModeAnimatedValue
+                rightArcPath.arcTo(rightBorderRect, 270f + spinningLoadingAnimatedValue, degree, false)
 
-            leftArcPath.reset()
-            rightArcPath.reset()
+                canvas.drawPath(leftArcPath, paint)
+                canvas.drawPath(rightArcPath, paint)
 
-            leftBorderRect.left = leftBorder - padding
-            leftBorderRect.right = leftBorder + drawRadius*2 - padding
-            leftArcPath.arcTo(leftBorderRect, 90f, degree.toFloat(), false)
+                if (isEndingAnimation) {
 
-            rightBorderRect.left = rightBorder - drawRadius*2 + padding
-            rightBorderRect.right = rightBorder + padding
-            rightArcPath.arcTo(rightBorderRect, 270f, degree.toFloat(), false)
+                    val ratio = circleResizingAnimatedValue / (drawRadius)
+                    circlePaint.alpha = (255f * (1 - ratio)).zeroIfNegative().toInt()
+                    canvas.drawCircle(width / 2f, height / 2f, circleResizingAnimatedValue, circlePaint)
 
-            canvas.drawPath(leftArcPath, paint)
-            canvas.drawPath(rightArcPath, paint)
+                }
 
+            }
+
+            val ratio = loadingModeAnimatedValue / (halfTopBottomLineLength)
+            textPaint.alpha = (255 * (1f - ratio * 3).zeroIfNegative()).toInt()
+            canvas.drawText(mText, (width / 2f) * 1.01f, ((height + mTextSize )/2f) * 0.97f, textPaint)
         }
+
+
     }
 
     fun show(hasToShow: Boolean) {
@@ -277,6 +404,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             colorAnimator.start()
             buttonLinesAnimator.start()
             isVisible = true
+
         } else {
 
             if (!isVisible)
@@ -289,10 +417,20 @@ class FlippingEdgesView @JvmOverloads constructor(
         }
     }
 
-    fun showLoading() {
+    fun startLoading() {
+
+        isRevertingAnimation = false
+        isEndingAnimation = false
+        isInFinalStageOfSpinning = false
+        circleResizingAnimatedValue = 0f
         mode = Mode.LOADING
         loadingLinesAnimator.start()
 
+    }
+
+    fun stopLoading() {
+        isEndingAnimation = true
+        isInFinalStageOfSpinning = false
     }
 
     data class XPositions(var xBegin: Float, var xEnd: Float) {

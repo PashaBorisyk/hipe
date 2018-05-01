@@ -1,20 +1,21 @@
-package com.bori.hipe.controllers.activities
+package com.bori.hipe.controllers.fragments.root
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bori.hipe.R
+import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.EventService
@@ -25,6 +26,7 @@ import com.bori.hipe.models.Tuple
 import com.bori.hipe.models.User
 import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
+import com.bori.hipe.util.extensions.setContentView
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.assist.FailReason
@@ -33,17 +35,20 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_user.*
 
-private const val CROSSFADE_DURATION: Long = 500
-private const val CROSSFADE_DELAY: Long = 1500
+class UserFragment : HipeBaseFragment(){
 
-private const val TAG = "UserActivity"
-private const val GET_USER_BY_ID = 12L
-private const val GET_EVENTS_BY_MEMBER_ID = 14L
-private const val GET_FRIENDS_LIST_ID = 16L
-private const val ADD_USER_TO_FRIEND_ID = 13L
-private const val RECYCLER_VIEW_ANIMATION_DURATION = 100L
+    companion object {
+        private const val TAG = "UserFragment"
+        private const val CROSSFADE_DURATION: Long = 500
+        private const val CROSSFADE_DELAY: Long = 1500
 
-class UserActivity : AppCompatActivity() {
+        private const val GET_USER_BY_ID = 12L
+        private const val GET_EVENTS_BY_MEMBER_ID = 14L
+        private const val GET_FRIENDS_LIST_ID = 16L
+        private const val ADD_USER_TO_FRIEND_ID = 13L
+        private const val RECYCLER_VIEW_ANIMATION_DURATION = 100L
+
+    }
 
     lateinit var displayImageOptions: DisplayImageOptions
     private lateinit var dataAdapter: DataAdapter
@@ -54,20 +59,21 @@ class UserActivity : AppCompatActivity() {
 
     private var userID: Long = 0
     private val imageLoader = ImageLoader.getInstance()
-    private var data_type = DataType.TYPE_USERS
+    private var dataType = DataType.TYPE_USERS
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        setContentView(R.layout.activity_user,inflater,container)
         init()
 
-        userID = intent.getLongExtra(Const.ADVANCED_USER_ID, -1)
+        userID = arguments!![Const.ADVANCED_USER_ID] as Long
 
         RestService.registerCallback(restCallbackAdapter)
         UserService.getUserById(GET_USER_BY_ID, userID)
         EventService.getByMemberId(GET_EVENTS_BY_MEMBER_ID, userID)
         UserService.getFriendsList(GET_FRIENDS_LIST_ID, userID)
 
+        return rootView
     }
 
     override fun onDestroy() {
@@ -121,16 +127,16 @@ class UserActivity : AppCompatActivity() {
         } else if (id == R.id.user_activity_button_show_events || id == R.id.user_events_indicator) {
 
             animateDataView()
-            data_type = DataType.TYPE_EVENTS
+            dataType = DataType.TYPE_EVENTS
             user_contacts_indicator.isSelected = false
-            user_events_indicator.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorAccent))
+            user_events_indicator.setColorFilter(ContextCompat.getColor(context!!, R.color.colorAccent))
         } else if (id == R.id.user_activity_button_show_contacts || id == R.id.user_contacts_indicator) {
             animateDataView()
-            data_type = DataType.TYPE_USERS
+            dataType = DataType.TYPE_USERS
             user_contacts_indicator.isSelected = true
-            user_events_indicator.setColorFilter(ContextCompat.getColor(applicationContext, R.color.colorPrimaryDark))
+            user_events_indicator.setColorFilter(ContextCompat.getColor(context!!, R.color.colorPrimaryDark))
         } else if (id == R.id.button_back)
-            onBackPressed()
+            activity?.onBackPressed()
 
     }
 
@@ -219,7 +225,7 @@ class UserActivity : AppCompatActivity() {
             if (serverCode == Status.OK) {
                 //user added
                 follow_indicator.isSelected = true
-                Toast.makeText(this@UserActivity, "пользователь законтачен", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "пользователь законтачен", Toast.LENGTH_SHORT).show()
             }
 
             if (serverCode == Status.ACCEPTED) {
@@ -238,19 +244,19 @@ class UserActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
 
-            if (data_type == DataType.TYPE_USERS) {
-                return VH(layoutInflater.inflate(R.layout.item_row_user_small, parent, false), data_type)
+            if (dataType == DataType.TYPE_USERS) {
+                return VH(layoutInflater.inflate(R.layout.item_row_user_small, parent, false), dataType)
             }
-            if (data_type == DataType.TYPE_EVENTS) {
-                return VH(layoutInflater.inflate(R.layout.item_row_event_small, parent, false), data_type)
+            if (dataType == DataType.TYPE_EVENTS) {
+                return VH(layoutInflater.inflate(R.layout.item_row_event_small, parent, false), dataType)
             }
 
-            return VH(View(applicationContext),data_type)
+            return VH(View(context),dataType)
         }
 
         override fun onBindViewHolder(holder: VH, position: Int) {
 
-            when (data_type) {
+            when (dataType) {
 
                 DataType.TYPE_USERS -> {
                     val user = users[position]
@@ -268,7 +274,7 @@ class UserActivity : AppCompatActivity() {
 
             }
 
-            val image = if (data_type == DataType.TYPE_EVENTS)
+            val image = if (dataType == DataType.TYPE_EVENTS)
                 events[position]._2
             else
                 users[position]._2
@@ -277,13 +283,13 @@ class UserActivity : AppCompatActivity() {
 
         }
 
-        override fun getItemCount() = when (data_type) {
+        override fun getItemCount() = when (dataType) {
             DataType.TYPE_EVENTS -> events.size
             DataType.TYPE_USERS -> users.size
             else -> 10
         }
 
-        override fun getItemViewType(position: Int) = data_type.ordinal
+        override fun getItemViewType(position: Int) = dataType.ordinal
 
         internal inner class VH(rootView: View, dataType: DataType) : RecyclerView.ViewHolder(rootView) {
 
@@ -367,4 +373,6 @@ class UserActivity : AppCompatActivity() {
             }
         }
     }
+
+
 }

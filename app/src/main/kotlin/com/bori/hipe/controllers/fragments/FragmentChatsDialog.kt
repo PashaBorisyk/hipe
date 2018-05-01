@@ -1,7 +1,6 @@
 package com.bori.hipe.controllers.fragments
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -15,7 +14,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.bori.hipe.R
-import com.bori.hipe.controllers.activities.UserActivity
 import com.bori.hipe.controllers.messenger.WebSocketConnector
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
 import com.bori.hipe.controllers.rest.RestService
@@ -192,10 +190,10 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
             if (v.tag != null && v.tag is String) {
 
-                val nickName = v.tag as String
-                val intent = Intent(activity, UserActivity::class.java)
-                intent.putExtra(Const.USER_SELF_NICK, nickName)
-                startActivity(intent)
+//                val nickName = v.tag as String
+//                val intent = Intent(activity, UserActivity::class.java)
+//                intent.putExtra(Const.USER_SELF_NICK, nickName)
+//                startActivity(intent)
                 return
             }
 

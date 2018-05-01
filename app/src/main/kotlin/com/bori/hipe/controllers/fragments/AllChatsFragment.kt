@@ -1,9 +1,7 @@
 package com.bori.hipe.controllers.fragments
 
 
-import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,14 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bori.hipe.R
-import com.bori.hipe.controllers.activities.ConversationActivity
+import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
 import com.bori.hipe.models.ChatMessageNOSQL
 import com.bori.hipe.models.Event
-import com.bori.hipe.util.Const
+import com.bori.hipe.util.extensions.findViewById
+import com.bori.hipe.util.extensions.setContentView
 
 
-class AllChatsFragment : Fragment() {
+class AllChatsFragment : HipeBaseFragment() {
 
     private var v: View? = null
     private var recyclerView: RecyclerView? = null
@@ -26,15 +25,14 @@ class AllChatsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        v = inflater.inflate(R.layout.fragment_all_chats, container, false)
-        recyclerView = v?.findViewById(R.id.fragment_all_chats_last_messages_list)
-        recyclerView!!.layoutManager = LinearLayoutManager(context)
+        setContentView(R.layout.fragment_all_chats, inflater ,container)
+        recyclerView = findViewById(R.id.fragment_all_chats_last_messages_list)
+        recyclerView?.layoutManager = LinearLayoutManager(context)
 
         eventChatsAdapter = EventChatsAdapter()
-        recyclerView!!.adapter = eventChatsAdapter
+        recyclerView?.adapter = eventChatsAdapter
 
-        return v
-
+        return null
     }
 
     private val onMessageListener = object : MessageCallbackAdapter() {
@@ -71,12 +69,12 @@ class AllChatsFragment : Fragment() {
 
             val tag = v.tag ?: return
             if (tag is Int) {
-                val eventId = eventList[tag].id
-                val bundle = Bundle()
-                bundle.putLong(Const.EVENT_ID, eventId)
-                val intent = Intent(activity, ConversationActivity::class.java)
-                intent.putExtras(bundle)
-                activity!!.startActivity(intent)
+//                val eventId = eventList[tag].id
+//                val bundle = Bundle()
+//                bundle.putLong(Const.EVENT_ID, eventId)
+//                val intent = Intent(activity, ConversationActivity::class.java)
+//                intent.putExtras(bundle)
+//                activity!!.startActivity(intent)
 
             }
 

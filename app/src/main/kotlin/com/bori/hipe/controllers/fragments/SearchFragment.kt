@@ -1,7 +1,6 @@
 package com.bori.hipe.controllers.fragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.CheckableImageButton
 import android.support.v4.app.Fragment
@@ -15,14 +14,12 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bori.hipe.R
-import com.bori.hipe.controllers.activities.UserActivity
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.models.HipeImage
 import com.bori.hipe.models.Tuple
 import com.bori.hipe.models.User
-import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
@@ -296,10 +293,10 @@ class SearchFragment : Fragment() {
             }
             if (view.tag != null && view.tag is Long) {
 
-                val id = view.tag as Long
-                val intent = Intent(activity, UserActivity::class.java)
-                intent.putExtra(Const.ADVANCED_USER_ID, id)
-                startActivity(intent)
+//                val id = view.tag as Long
+//                val intent = Intent(activity, UserActivity::class.java)
+//                intent.putExtra(Const.ADVANCED_USER_ID, id)
+//                startActivity(intent)
 
             }
 

@@ -2,6 +2,7 @@ package com.bori.hipe
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Build
 import android.util.DisplayMetrics
@@ -18,6 +19,7 @@ import com.bori.hipe.controllers.rest.service.EventService
 import com.bori.hipe.controllers.rest.service.HipeImageService
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.controllers.services.HipeService
+import com.bori.hipe.util.Const
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
 import com.orm.SugarApp
@@ -32,6 +34,7 @@ class HipeApplication : SugarApp() {
         Log.e(TAG, "onCreate: ")
 
         pixelsPerDp = resources.displayMetrics.density
+        sharedPreferencies = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         val networkInfo = (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo
         BootReciever.isConnected = networkInfo != null && networkInfo.isConnected
@@ -78,12 +81,15 @@ class HipeApplication : SugarApp() {
     companion object {
 
         private const val TAG = "HipeApplication"
+
         const val SERVER_PATH = "http://192.168.0.31:9000/"
 
-        val LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        val KIT_KAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        lateinit var sharedPreferencies:SharedPreferences
 
-        var NICKNAME: String? = null
+        val IS_LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        val IS_KIT_KAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+
+        lateinit var username: String
 
         var pixelsPerDp = 1f
         var screenWidth = 1

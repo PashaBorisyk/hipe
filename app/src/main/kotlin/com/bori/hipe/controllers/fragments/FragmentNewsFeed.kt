@@ -14,8 +14,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bori.hipe.HipeApplication
-import com.bori.hipe.HipeApplication.Companion.KIT_KAT
-import com.bori.hipe.HipeApplication.Companion.LOLLIPOP
+import com.bori.hipe.HipeApplication.Companion.IS_KIT_KAT
+import com.bori.hipe.HipeApplication.Companion.IS_LOLLIPOP
 import com.bori.hipe.R
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
@@ -178,7 +178,7 @@ class FragmentNewsFeed : Fragment() {
             holder.buttonInfo?.tag = position - 1
             holder.buttonInfo?.setOnClickListener(this)
 
-            if (LOLLIPOP) {
+            if (IS_LOLLIPOP) {
                 holder.rootCardView?.clipToOutline = false
                 holder.imageCardView?.clipToOutline = false
             }
@@ -186,7 +186,7 @@ class FragmentNewsFeed : Fragment() {
 
         override fun getItemViewType(position: Int): Int {
 
-            if (KIT_KAT && position == 0)
+            if (IS_KIT_KAT && position == 0)
                 return TYPE_HEADER
 
             if (!events[position - 1]._2.exist)
