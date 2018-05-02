@@ -41,7 +41,7 @@
     <string name="nickname">nickname</string>
     <string name="pashaborisyk">pashaborisyk</string>
     <string name="password">Password</string>
-    <string name="repeat_password">Repeat password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="next">Next</string>
     <string name="pashaborisyk_colon">pashaborisyk:</string>
     <string name="default_message_string">As described, there are 10 different perspectives of early psychology.</string>

@@ -7,4 +7,12 @@ open class HipeBaseFragment : Fragment() {
 
     lateinit var rootView: View
 
+    var shouldCallOnFragment:Boolean = false
+        protected set
+
+    open fun onBackPressed(){
+        shouldCallOnFragment = false
+
+    }
+
 }

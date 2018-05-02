@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import com.bori.hipe.R
@@ -49,6 +50,7 @@ class LoginFragment : HipeBaseFragment(){
     private lateinit var usernameInputLayout: TextInputLayout
     private lateinit var username: TextInputEditText
 
+
     private lateinit var snackbar: Snackbar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,8 +78,18 @@ class LoginFragment : HipeBaseFragment(){
         passwordInputLayout = findViewById(R.id.password_input_layout)
         password = findViewById(R.id.password)
 
+        createAccountText = findViewById(R.id.create_account_text)
         circularRevavalView = findViewById(R.id.circular_revaval_view)
-        circularRevavalView.coveredView = passwordInputLayout
+        circularRevavalView.additionalView = createAccountText
+
+        createAccountText.setOnTouchListener { v, event ->
+            if(event.action == MotionEvent.ACTION_UP) {
+                circularRevavalView.showIn(event = event)
+                shouldCallOnFragment = true
+            }
+            return@setOnTouchListener true
+        }
+        createAccountText.setOnClickListener(myOnClickListener)
 
         loginButton.setOnClickListener(myOnClickListener)
         restCallback = LoginActivityRestCallbackAdapter()
@@ -85,8 +97,6 @@ class LoginFragment : HipeBaseFragment(){
         snackbar.setAction(R.string.dismiss){
             snackbar.dismiss()
         }
-
-
 
     }
 
@@ -197,10 +207,19 @@ class LoginFragment : HipeBaseFragment(){
 
             }
 
+            R.id.create_account_text ->
+                createAccountText.visibility = View.GONE
+
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
         }
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(circularRevavalView.direction == CircularRevavalView.Direction.OUT)
+            circularRevavalView.showOut()
+
+    }
 
 }

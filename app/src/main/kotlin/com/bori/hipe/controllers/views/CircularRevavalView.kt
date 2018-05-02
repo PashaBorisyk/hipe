@@ -1,22 +1,99 @@
 package com.bori.hipe.controllers.views
 
+import android.animation.Animator
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import com.bori.hipe.HipeApplication
+
 
 class CircularRevavalView @JvmOverloads constructor(
         context:Context? = null,
         attributes:AttributeSet? = null,
         defStyleAttr:Int = 0) : View(context,attributes,defStyleAttr){
 
-    var circleRadius = 0L
-    var coveredView:View? = null
-        set(value) {
-            field = value
-            field?.isDrawingCacheEnabled = true
+    companion object {
+        private const val TAG = "CircularRevavalView.kt"
+        private const val DURATION = 300L
+    }
+
+    enum class Direction{
+        IN,OUT
+    }
+
+    var additionalView:View? = null
+
+    private var animatedValue = 0f
+
+    private val animator = ValueAnimator.ofFloat(0f,1f)
+
+    private var fromX = 0f
+    private var fromY = 0f
+    private var radius = 0f
+
+    var direction = Direction.IN
+        private set
+
+    private val mTransparentPaint: Paint = Paint()
+    private val mSemiBlackPaint: Paint= Paint()
+    private val mPath = Path()
+
+    init {
+
+        animator.duration = DURATION
+        animator.repeatMode = ValueAnimator.RESTART
+        animator.interpolator = null
+        animator.addUpdateListener {
+            animatedValue = it.animatedValue as Float
+            invalidate()
+            requestLayout()
         }
 
+        animator.addListener(object : Animator.AnimatorListener{
+            override fun onAnimationRepeat(animation: Animator?) {}
+
+            override fun onAnimationEnd(animation: Animator?) {
+                if(direction == Direction.OUT) {
+                    direction = Direction.IN
+
+                } else if(direction == Direction.IN) {
+                    direction = Direction.OUT
+                }
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {}
+
+            override fun onAnimationStart(animation: Animator?) {
+
+                if(direction == Direction.IN){
+                    additionalView?.visibility = GONE
+                }else{
+                    additionalView?.alpha = 0f
+                    additionalView?.visibility = VISIBLE
+                }
+
+
+            }
+
+        })
+
+        mTransparentPaint.color = 0x00000000
+        mTransparentPaint.strokeWidth = 10f
+
+        mSemiBlackPaint.color = Color.TRANSPARENT
+        mSemiBlackPaint.strokeWidth = 10f
+
+    }
+
+    @SuppressLint("DrawAllocation")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
@@ -39,28 +116,55 @@ class CircularRevavalView @JvmOverloads constructor(
         }
 
         setMeasuredDimension(width, height)
+        radius = Math.sqrt((width*width+height*height).toDouble()).toFloat() / 2f
 
     }
 
     override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
 
-        coveredView?.destroyDrawingCache()
-        coveredView?.buildDrawingCache()
-        val original = Bitmap.createBitmap(coveredView?.drawingCache)
-        val originalCanvas = Canvas(original)
-        original.eraseColor()
-        super.onDraw(originalCanvas)
+        mPath.reset()
 
-        canvas?:return
+        val _x = fromX + (width/2f - fromX)*animatedValue
+        val _y = fromY + (height/2f - fromY)*animatedValue
 
-        val shader = BitmapShader(original, Shader.TileMode.CLAMP,Shader.TileMode.CLAMP)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.shader = shader
-        canvas.drawColor(Color.GRAY)
-        canvas.drawCircle(width.toFloat()/2f,height.toFloat()/2f,100f,paint)
-        requestLayout()
-        invalidate()
+        mPath.addCircle(_x, _y, radius*animatedValue, Path.Direction.CW)
+        mPath.fillType = Path.FillType.INVERSE_EVEN_ODD
+
+        mTransparentPaint.alpha = (5f * (1f - animatedValue)).toInt()
+        canvas?.drawCircle(_x, _y, radius*animatedValue, mTransparentPaint)
+
+        if(direction == Direction.OUT)
+            additionalView?.alpha = (1f - animatedValue*4)
+
+        canvas?.drawPath(mPath, mSemiBlackPaint)
+        canvas?.clipPath(mPath)
+        canvas?.drawColor(Color.parseColor("#FFf6f6f6"))
 
     }
 
+    fun showIn(fromX:Float = 0f, fromY:Float = 0f, event:MotionEvent? = null) {
+
+        Log.d(TAG,"${y}")
+        if(event == null) {
+            this.fromX = fromX
+            this.fromY = fromY
+        } else {
+            this.fromX = event.rawX - (HipeApplication.screenWidth - width)
+            this.fromY = event.rawY - (HipeApplication.screenHeight - height)
+        }
+        animator.start()
+
+    }
+
+    fun showOut(fromX: Float = this.fromX,fromY: Float = this.fromY){
+        this.fromX = fromX
+        this.fromY = fromY
+        animator.reverse()
+    }
+
 }
+
+
+
+

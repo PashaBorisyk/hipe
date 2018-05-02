@@ -237,7 +237,7 @@
                     android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:background="@drawable/input_border"
-                    android:hint="@string/repeat_password"
+                    android:hint="@string/confirm_password"
                     android:inputType="textPassword"
                     android:maxLength="20"
                     android:maxLines="1"

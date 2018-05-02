@@ -8,5 +8,6 @@
     <color name="applicationLight">#f6f6f6</color>
     <color name="allowed">#00887b</color>
     <color name="forbidden">#ee5350</color>
+    <color name="exampleColor">#1e000000</color>
 
 </resources>
