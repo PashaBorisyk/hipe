@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity(){
         val rootView = FrameLayout(this)
         rootView.id = CONTENT_VIEW_ID
         setContentView(rootView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT))
-        supportFragmentManager.beginTransaction().add(CONTENT_VIEW_ID,LoginFragment()).commit()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.add(CONTENT_VIEW_ID,LoginFragment()).commit()
 
     }
 

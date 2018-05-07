@@ -2,6 +2,7 @@ package com.bori.hipe.controllers.fragments.root
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputEditText
@@ -22,6 +23,7 @@ import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.controllers.views.CircularRevavalView
+import com.bori.hipe.controllers.views.CircularRevealFrameLayout
 import com.bori.hipe.controllers.views.FlippingEdgesView
 import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
@@ -29,7 +31,7 @@ import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
 import java.util.*
 
-class LoginFragment : HipeBaseFragment(){
+class LoginFragment : HipeBaseFragment() {
 
     companion object {
         private const val TAG = "LoginFragment.kt"
@@ -40,9 +42,9 @@ class LoginFragment : HipeBaseFragment(){
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var restCallback: LoginActivityRestCallbackAdapter
 
-    private lateinit var createAccountText:View
+    private lateinit var createAccountText: View
 
-    private lateinit var circularRevavalView:CircularRevavalView
+    private lateinit var circularRevavalView: CircularRevavalView
 
     private lateinit var passwordInputLayout: TextInputLayout
     private lateinit var password: TextInputEditText
@@ -50,12 +52,13 @@ class LoginFragment : HipeBaseFragment(){
     private lateinit var usernameInputLayout: TextInputLayout
     private lateinit var username: TextInputEditText
 
+    private lateinit var mainRevealFrameLayout: CircularRevealFrameLayout
 
     private lateinit var snackbar: Snackbar
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        setContentView(R.layout.activity_login,inflater,container)
+        setContentView(R.layout.activity_login, inflater, container)
         init()
         setInputsValidator()
         RestService.registerCallback(restCallback)
@@ -79,12 +82,18 @@ class LoginFragment : HipeBaseFragment(){
         password = findViewById(R.id.password)
 
         createAccountText = findViewById(R.id.create_account_text)
-        circularRevavalView = findViewById(R.id.circular_revaval_view)
-        circularRevavalView.additionalView = createAccountText
+        mainRevealFrameLayout = findViewById(R.id.main_reveal)
+        mainRevealFrameLayout.visibility = View.GONE
+
+        loginButton.mainText = getString(R.string.sign_in)
 
         createAccountText.setOnTouchListener { v, event ->
-            if(event.action == MotionEvent.ACTION_UP) {
-                circularRevavalView.showIn(event = event)
+            if (event.action == MotionEvent.ACTION_UP) {
+                createAccountText.visibility = View.GONE
+                mainRevealFrameLayout.visibility = View.VISIBLE
+                mainRevealFrameLayout.show()
+                loginButton.changeText(getString(R.string.sign_up))
+                loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.allowed))
                 shouldCallOnFragment = true
             }
             return@setOnTouchListener true
@@ -93,16 +102,16 @@ class LoginFragment : HipeBaseFragment(){
 
         loginButton.setOnClickListener(myOnClickListener)
         restCallback = LoginActivityRestCallbackAdapter()
-        snackbar = Snackbar.make(findViewById(R.id.main_coordinator_layout), R.string.no_connection_detected , Snackbar.LENGTH_INDEFINITE)
-        snackbar.setAction(R.string.dismiss){
+        snackbar = Snackbar.make(findViewById(R.id.main_coordinator_layout), R.string.no_connection_detected, Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction(R.string.dismiss) {
             snackbar.dismiss()
         }
 
     }
 
-    private fun setInputsValidator(){
+    private fun setInputsValidator() {
         password.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(password: Editable?) = loginButton.show(validateData(username.editableText,password))
+            override fun afterTextChanged(password: Editable?) = loginButton.show(validateData(username.editableText, password))
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -113,7 +122,7 @@ class LoginFragment : HipeBaseFragment(){
 
         username.addTextChangedListener(object : TextWatcher {
 
-            override fun afterTextChanged(login: Editable?) = loginButton.show(validateData(login,password.editableText))
+            override fun afterTextChanged(login: Editable?) = loginButton.show(validateData(login, password.editableText))
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -123,10 +132,10 @@ class LoginFragment : HipeBaseFragment(){
         })
     }
 
-    private fun validateData(login: Editable?, password: Editable?) : Boolean {
+    private fun validateData(login: Editable?, password: Editable?): Boolean {
 
-        login?:return false
-        password?:return false
+        login ?: return false
+        password ?: return false
 
         var result = true
 
@@ -138,8 +147,7 @@ class LoginFragment : HipeBaseFragment(){
             } else {
                 usernameInputLayout.error = ""
             }
-        }
-        else
+        } else
             result = false
 
         if (password.length > Const.MIN_USERNAME_SIZE) {
@@ -149,8 +157,7 @@ class LoginFragment : HipeBaseFragment(){
             } else {
                 passwordInputLayout.error = ""
             }
-        }
-        else
+        } else
             result = false
 
         return result
@@ -172,25 +179,29 @@ class LoginFragment : HipeBaseFragment(){
                     editor.putLong(Const.USER_ID, response as Long).apply()
                     startActivity(Intent(context, MainActivity::class.java))
 
-                } else -> {}
+                }
+                else -> {
+                }
             }
         }
 
         override fun onOk(requestID: Long) {
             loginButton.stopLoading()
+            loginButton.circleColor = resources.getColor(R.color.colorAccent)
             Log.d(TAG, "onOk() called")
         }
 
         override fun onFailure(requestID: Long, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")
+            loginButton.circleColor = resources.getColor(R.color.allowed)
             loginButton.stopLoading()
             snackbar.setText(getString(R.string.cannot_obtain_connection_message)).show()
         }
 
     }
 
-    private val myOnClickListener = {
-        v: View -> Unit
+    private val myOnClickListener = { v: View ->
+        Unit
 
         Log.d(TAG, "onClick() called with: v = [$v]")
 
@@ -207,9 +218,6 @@ class LoginFragment : HipeBaseFragment(){
 
             }
 
-            R.id.create_account_text ->
-                createAccountText.visibility = View.GONE
-
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
         }
 
@@ -217,8 +225,13 @@ class LoginFragment : HipeBaseFragment(){
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if(circularRevavalView.direction == CircularRevavalView.Direction.OUT)
-            circularRevavalView.showOut()
+
+        loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.colorAccent))
+        loginButton.changeText(getString(R.string.sign_in))
+        createAccountText.alpha = 0f
+        createAccountText.visibility = View.VISIBLE
+        createAccountText.animate().alpha(1f).setDuration(300).start()
+        mainRevealFrameLayout.hide()
 
     }
 

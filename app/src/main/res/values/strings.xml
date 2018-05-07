@@ -97,6 +97,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="max_length_msg">Max length is </string>
     <string name="cannot_obtain_connection_message">Cannot connect to the server. Try again later</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
 
 
 </resources>

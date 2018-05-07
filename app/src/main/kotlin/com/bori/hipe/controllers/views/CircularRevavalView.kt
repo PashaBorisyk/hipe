@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.bori.hipe.HipeApplication
@@ -125,6 +124,7 @@ class CircularRevavalView @JvmOverloads constructor(
 
         mPath.reset()
 
+
         val _x = fromX + (width/2f - fromX)*animatedValue
         val _y = fromY + (height/2f - fromY)*animatedValue
 
@@ -145,7 +145,6 @@ class CircularRevavalView @JvmOverloads constructor(
 
     fun showIn(fromX:Float = 0f, fromY:Float = 0f, event:MotionEvent? = null) {
 
-        Log.d(TAG,"${y}")
         if(event == null) {
             this.fromX = fromX
             this.fromY = fromY
