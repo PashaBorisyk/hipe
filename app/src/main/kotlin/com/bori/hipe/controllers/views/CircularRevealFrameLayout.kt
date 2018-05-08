@@ -8,8 +8,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import com.bori.hipe.HipeApplication
 
 
 class CircularRevealFrameLayout @JvmOverloads constructor(
@@ -18,27 +21,38 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
 
     companion object {
         private const val DURATION = 300L
+        private const val TAG = "RevealFrameLayout.kt"
     }
 
     enum class State{
         SHOWN,HIDDEN,IS_SHOWING
     }
 
+    var child: View? = null
+        set(value) {
+            if(state == State.HIDDEN)
+                value?.visibility = View.GONE
+            field = value
+        }
+    var state = State.HIDDEN
+        private set
 
-    private var state = State.SHOWN
+    private var isForward = true
 
     private var animatedValue = 0f
 
-    val drawingPath = Path()
-    val animator = ValueAnimator.ofFloat(0f,1f)
-    val paint = Paint()
+    private var fromY = 0f
+    private var fromX = 0f
+
+    private val drawingPath = Path()
+    private val animator = ValueAnimator.ofFloat(0f,1f)
+    private val paint = Paint()
 
     init {
         animator.duration = DURATION
         animator.interpolator = null
         animator.addUpdateListener {
             animatedValue = it.animatedValue as Float
-            requestLayout()
             invalidate()
         }
 
@@ -47,13 +61,25 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
             }
 
             override fun onAnimationEnd(animation: Animator?) {
+                state = if(isForward) {
+                    State.SHOWN
+                }
+                else {
+                    child?.visibility = GONE
+                    State.HIDDEN
+                }
 
+
+                isForward = !isForward
             }
 
             override fun onAnimationCancel(animation: Animator?) {
             }
 
             override fun onAnimationStart(animation: Animator?) {
+                state = State.IS_SHOWING
+                if(isForward)
+                    child?.visibility = VISIBLE
             }
 
         })
@@ -66,14 +92,17 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
         canvas?:return super.drawChild(canvas, child, drawingTime)
         child?:return super.drawChild(canvas, child, drawingTime)
 
+        val _x = fromX + (width/2f - fromX)*animatedValue
+        val _y = fromY + (height/2f - fromY)*animatedValue
+
         val state = canvas.save()
         val radius = Math.sqrt((child.width*child.width).toDouble()+(child.height*child.height).toDouble())
         drawingPath.reset()
-        drawingPath.addCircle(0f,0f, radius.toFloat()*animatedValue, Path.Direction.CW)
+        drawingPath.addCircle(_x,_y, radius.toFloat()*animatedValue, Path.Direction.CW)
 
         canvas.clipPath(drawingPath)
-        paint.alpha = ((1f - animatedValue)*255f).toInt()
-        canvas.drawCircle(0f,0f,radius.toFloat()*animatedValue,paint)
+        paint.alpha = ((1f - animatedValue)*55f).toInt()
+        canvas.drawCircle(_x,_y,radius.toFloat()*animatedValue,paint)
         val isInvalidated = super.drawChild(canvas, child, drawingTime)
 
         canvas.restoreToCount(state)
@@ -82,13 +111,23 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
 
     }
 
+    fun showIn(fromX:Float = 0f, fromY:Float = 0f, event: MotionEvent? = null) {
 
-    fun show(){
-        state = State.IS_SHOWING
+        if(event == null) {
+            Log.d(TAG,"showIn(MotionEvent == null)")
+            this.fromX = fromX
+            this.fromY = fromY
+        } else {
+            this.fromX = event.rawX - (HipeApplication.screenWidth - width)
+            this.fromY = event.rawY - (HipeApplication.screenHeight - height)
+        }
         animator.start()
+
     }
 
-    fun hide(){
+    fun showOut(fromX: Float = this.fromX,fromY: Float = this.fromY){
+        this.fromX = fromX
+        this.fromY = fromY
         animator.reverse()
     }
 

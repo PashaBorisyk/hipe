@@ -13,13 +13,13 @@ import android.widget.Button
 import com.bori.hipe.util.extensions.zeroIfNegative
 
 
-private const val TAG = "FlippingEdgesView."
 
 class FlippingEdgesView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Button(context, attrs, defStyleAttr) {
 
     companion object {
+        private const val TAG = "FlippingEdgesView.kt"
         private const val BUTTON_LINES_ANIMATOR_DURATION = 300L
         private const val BALANCER =  0.95f
     }
@@ -68,6 +68,9 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     private var lineLength: Float = 0f
     private var linePathLength:Float = 0f
+
+    private var _afterStop :( (FlippingEdgesView) -> Unit )? = null
+    private var _beforeStart :( (FlippingEdgesView) -> Unit )? = null
 
     var strokeWidth: Float = 10f
         get() = paint.strokeWidth
@@ -190,12 +193,15 @@ class FlippingEdgesView @JvmOverloads constructor(
                 if(mode == Mode.FLIPPING_MODE){
                     if(!isEndingAnimation) {
                         animator.start()
+                        return
                     } else if(!hasToShowCircle && isEndingAnimation) {
                         hasToShowCircle = true
                         animator.start()
+                        return
                     } else{
                         mode = Mode.LOADING_MODE
                         animator.reverse()
+                        return
                     }
                 } else if (mode == Mode.LOADING_MODE){
                     if(isEndingAnimation){
@@ -206,18 +212,23 @@ class FlippingEdgesView @JvmOverloads constructor(
                     }else{
                         mode = Mode.FLIPPING_MODE
                         animator.start()
+                        return
                     }
                 } else if(mode == Mode.CHANGING_TEXT_MODE){
                     mode = Mode.BUTTON_MODE
                     mainText = secondaryText
                 }
 
+                _afterStop?.invoke(this@FlippingEdgesView)
+                _afterStop = null
             }
 
             override fun onAnimationCancel(animation: Animator?) {
             }
 
             override fun onAnimationStart(animation: Animator?) {
+                _beforeStart?.invoke(this@FlippingEdgesView)
+                _beforeStart = null
             }
             
         })
@@ -358,16 +369,17 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
         }
 
-
         canvas.restore()
 
     }
 
-    fun show(hasToShow: Boolean) {
+    fun show(hasToShow: Boolean,ifWillNotAnimate: ((FlippingEdgesView) -> Unit)? = null) :FlippingEdgesView {
 
         if (hasToShow) {
-            if (hasShown)
-                return
+            if (hasShown) {
+                ifWillNotAnimate?.invoke(this)
+                return this
+            }
             isClickable = true
             mode = Mode.BUTTON_MODE
             colorAnimator.start()
@@ -375,33 +387,56 @@ class FlippingEdgesView @JvmOverloads constructor(
             hasShown = true
 
         } else {
-            if (!hasShown)
-                return
+            if (!hasShown) {
+                ifWillNotAnimate?.invoke(this)
+                return this
+            }
             isClickable = false
             mode = Mode.BUTTON_MODE
             animator.reverse()
             hasShown = false
 
         }
+
+        return this
     }
 
-    fun changeText(text:String){
-        secondaryText = text
-        mode = Mode.CHANGING_TEXT_MODE
-        animator.start()
+    fun changeText(text:String) : FlippingEdgesView {
+        if(mode == Mode.BUTTON_MODE && hasShown ) {
+            secondaryText = text
+            mode = Mode.CHANGING_TEXT_MODE
+            animator.start()
+        }
+        else{
+            mainText = text
+        }
+
+        return this
     }
 
-    fun startLoading() {
+    fun startLoading() : FlippingEdgesView {
 
         isEndingAnimation = false
         mode = Mode.LOADING_MODE
         animator.repeatCount = 0
         animator.start()
+        return this
 
     }
 
-    fun stopLoading() {
+    fun stopLoading():FlippingEdgesView {
         isEndingAnimation = true
+        return this
+    }
+
+    fun beforeStart(lambda : (FlippingEdgesView) -> Unit) : FlippingEdgesView{
+        _beforeStart = lambda
+        return this
+    }
+
+    fun afterStop(lambda : (FlippingEdgesView) -> Unit) : FlippingEdgesView{
+        _afterStop = lambda
+        return this
     }
 
 }

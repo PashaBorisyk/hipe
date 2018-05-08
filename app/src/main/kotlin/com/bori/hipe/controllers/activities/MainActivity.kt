@@ -2,18 +2,19 @@ package com.bori.hipe.controllers.activities
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.fragments.root.LoginFragment
 
-private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(){
 
     //used to calculate angle to rotate big fab
     companion object {
         private const val CONTENT_VIEW_ID = 10101010
+        private const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,16 +31,17 @@ class MainActivity : AppCompatActivity(){
         if(supportFragmentManager.fragments.isEmpty())
             super.onBackPressed()
         else {
-            var found = false
-            supportFragmentManager.fragments.forEach{
+            val found = supportFragmentManager.fragments.count{
                 if(it is HipeBaseFragment){
                     if(it.shouldCallOnFragment) {
                         it.onBackPressed()
-                        found = true
+                        return@count true
                     }
                 }
+                return@count false
             }
-            if (!found)
+            Log.d(TAG,"Fragments for back pressed in queue : $found")
+            if (found == 0)
                 super.onBackPressed()
         }
     }

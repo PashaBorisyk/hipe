@@ -117,13 +117,15 @@ class CircularRevavalView @JvmOverloads constructor(
         setMeasuredDimension(width, height)
         radius = Math.sqrt((width*width+height*height).toDouble()).toFloat() / 2f
 
+        requestLayout()
+        invalidate()
+
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
         mPath.reset()
-
 
         val _x = fromX + (width/2f - fromX)*animatedValue
         val _y = fromY + (height/2f - fromY)*animatedValue

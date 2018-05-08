@@ -46,11 +46,14 @@ class LoginFragment : HipeBaseFragment() {
 
     private lateinit var circularRevavalView: CircularRevavalView
 
+    private lateinit var usernameInputLayout: TextInputLayout
+    private lateinit var username: TextInputEditText
+
     private lateinit var passwordInputLayout: TextInputLayout
     private lateinit var password: TextInputEditText
 
-    private lateinit var usernameInputLayout: TextInputLayout
-    private lateinit var username: TextInputEditText
+    private lateinit var confirmPasswordInputLayout: TextInputLayout
+    private lateinit var confirmPassword: TextInputEditText
 
     private lateinit var mainRevealFrameLayout: CircularRevealFrameLayout
 
@@ -58,7 +61,7 @@ class LoginFragment : HipeBaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        setContentView(R.layout.activity_login, inflater, container)
+        setContentView(R.layout.fragment_login, inflater, container)
         init()
         setInputsValidator()
         RestService.registerCallback(restCallback)
@@ -81,20 +84,24 @@ class LoginFragment : HipeBaseFragment() {
         passwordInputLayout = findViewById(R.id.password_input_layout)
         password = findViewById(R.id.password)
 
+        confirmPasswordInputLayout = findViewById(R.id.confirm_password_input_layout)
+        confirmPassword = findViewById(R.id.confirm_password)
+
         createAccountText = findViewById(R.id.create_account_text)
         mainRevealFrameLayout = findViewById(R.id.main_reveal)
-        mainRevealFrameLayout.visibility = View.GONE
+        mainRevealFrameLayout.child = confirmPasswordInputLayout
 
         loginButton.mainText = getString(R.string.sign_in)
 
         createAccountText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 createAccountText.visibility = View.GONE
-                mainRevealFrameLayout.visibility = View.VISIBLE
-                mainRevealFrameLayout.show()
+                mainRevealFrameLayout.showIn(event = event)
+                loginButton.show(false)
                 loginButton.changeText(getString(R.string.sign_up))
                 loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.allowed))
                 shouldCallOnFragment = true
+
             }
             return@setOnTouchListener true
         }
@@ -110,39 +117,32 @@ class LoginFragment : HipeBaseFragment() {
     }
 
     private fun setInputsValidator() {
-        password.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(password: Editable?) = loginButton.show(validateData(username.editableText, password))
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+        val textUpdateListener = TextUpdateListener()
+        username.addTextChangedListener(textUpdateListener)
+        password.addTextChangedListener(textUpdateListener)
+        confirmPassword.addTextChangedListener(textUpdateListener)
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-        })
-
-        username.addTextChangedListener(object : TextWatcher {
-
-            override fun afterTextChanged(login: Editable?) = loginButton.show(validateData(login, password.editableText))
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-        })
     }
 
-    private fun validateData(login: Editable?, password: Editable?): Boolean {
+    private fun validateData(
+            username: Editable? = this.username.editableText,
+            password: Editable? = this.password.editableText,
+            confirmPassword: Editable? = this.confirmPassword.editableText,
+            ignoreConfirmation:Boolean = false
 
-        login ?: return false
+    ): Boolean {
+
+        username ?: return false
         password ?: return false
+        confirmPassword ?: return false
 
         var result = true
 
-        if (login.length > Const.MIN_USERNAME_SIZE) {
+        if (username.length > Const.MIN_USERNAME_SIZE) {
 
-            if (login.length > usernameInputLayout.counterMaxLength) {
-                usernameInputLayout.error = resources.getString(R.string.max_length_msg) + usernameInputLayout.counterMaxLength
+            if (username.length > usernameInputLayout.counterMaxLength) {
+                usernameInputLayout.error = resources.getString(R.string.max_length_msg) + " ${usernameInputLayout.counterMaxLength}"
                 result = false
             } else {
                 usernameInputLayout.error = ""
@@ -156,6 +156,20 @@ class LoginFragment : HipeBaseFragment() {
                 result = false
             } else {
                 passwordInputLayout.error = ""
+            }
+        } else
+            result = false
+
+        if (confirmPasswordInputLayout.visibility != View.VISIBLE || ignoreConfirmation)
+            return result
+
+        if (confirmPassword.length > Const.MIN_PASSWORD_SIZE) {
+
+            if (confirmPassword.length > usernameInputLayout.counterMaxLength) {
+                confirmPasswordInputLayout.error = resources.getString(R.string.max_length_msg) + " ${usernameInputLayout.counterMaxLength}"
+                result = false
+            } else {
+                usernameInputLayout.error = ""
             }
         } else
             result = false
@@ -186,14 +200,14 @@ class LoginFragment : HipeBaseFragment() {
         }
 
         override fun onOk(requestID: Long) {
+            loginButton.circleColor = resources.getColor(R.color.allowed)
             loginButton.stopLoading()
-            loginButton.circleColor = resources.getColor(R.color.colorAccent)
             Log.d(TAG, "onOk() called")
         }
 
         override fun onFailure(requestID: Long, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")
-            loginButton.circleColor = resources.getColor(R.color.allowed)
+            loginButton.circleColor = resources.getColor(R.color.colorAccent)
             loginButton.stopLoading()
             snackbar.setText(getString(R.string.cannot_obtain_connection_message)).show()
         }
@@ -226,12 +240,32 @@ class LoginFragment : HipeBaseFragment() {
     override fun onBackPressed() {
         super.onBackPressed()
 
+        val hasToShow = validateData(ignoreConfirmation = true)
+        loginButton.show(hasToShow){
+            it.changeText(getString(R.string.sign_in))
+        }
         loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.colorAccent))
-        loginButton.changeText(getString(R.string.sign_in))
         createAccountText.alpha = 0f
         createAccountText.visibility = View.VISIBLE
         createAccountText.animate().alpha(1f).setDuration(300).start()
-        mainRevealFrameLayout.hide()
+        mainRevealFrameLayout.showOut()
+        confirmPassword.text.clear()
+
+    }
+
+    inner class TextUpdateListener : TextWatcher {
+        override fun afterTextChanged(text: Editable?) {
+            loginButton.show(
+                    validateData(
+                            ignoreConfirmation =
+                            mainRevealFrameLayout.state == CircularRevealFrameLayout.State.IS_SHOWING
+                    )
+            )
+        }
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
     }
 
