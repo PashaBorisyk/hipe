@@ -18,9 +18,10 @@ class FlippingEdgesView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Button(context, attrs, defStyleAttr) {
 
-    companion object {
+    private companion object {
         private const val TAG = "FlippingEdgesView.kt"
-        private const val BUTTON_LINES_ANIMATOR_DURATION = 300L
+        private const val BUTTON_LINES_ANIMATOR_DURATION = 500L
+        private const val FLIPPING_DURATION = 1000L
         private const val BALANCER =  0.95f
     }
 
@@ -55,7 +56,7 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     private var animatedValue = 0f
     private lateinit var animator: ValueAnimator
-    private lateinit var colorAnimator: ObjectAnimator
+    private var colorAnimator: ObjectAnimator? = null
 
     private val evaluator = ArgbEvaluator()
 
@@ -103,11 +104,18 @@ class FlippingEdgesView @JvmOverloads constructor(
             field = value
         }
 
-    var colors = intArrayOf(Color.GRAY, 0xffee5350.toInt())
+    var colors = 0xffee5350.toInt()
         set(value) {
-            colorAnimator.setIntValues(*value)
-            colorAnimator.setupStartValues()
-            colorAnimator.start()
+            colorAnimator?.end()
+            colorAnimator = ObjectAnimator.ofObject(paint, "color", evaluator,Color.GRAY,value)
+            colorAnimator?.duration = 2000
+            colorAnimator?.repeatMode = ObjectAnimator.REVERSE
+            colorAnimator?.repeatCount = ObjectAnimator.INFINITE
+            colorAnimator?.addUpdateListener {
+                textPaint.color = it.animatedValue as Int
+                invalidate()
+            }
+            colorAnimator?.start()
             field = value
         }
 
@@ -192,6 +200,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             override fun onAnimationEnd(animation: Animator?) {
                 if(mode == Mode.FLIPPING_MODE){
                     if(!isEndingAnimation) {
+                        animator.duration = FLIPPING_DURATION
                         animator.start()
                         return
                     } else if(!hasToShowCircle && isEndingAnimation) {
@@ -200,6 +209,7 @@ class FlippingEdgesView @JvmOverloads constructor(
                         return
                     } else{
                         mode = Mode.LOADING_MODE
+                        animator.duration = BUTTON_LINES_ANIMATOR_DURATION
                         animator.reverse()
                         return
                     }
@@ -210,6 +220,7 @@ class FlippingEdgesView @JvmOverloads constructor(
                         mode = Mode.BUTTON_MODE
                         animatedValue = 1f
                     }else{
+                        animator.duration = FLIPPING_DURATION
                         mode = Mode.FLIPPING_MODE
                         animator.start()
                         return
@@ -232,16 +243,6 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
             
         })
-
-        colorAnimator = ObjectAnimator.ofObject(paint, "color", evaluator, Color.GRAY, 0xffee5350.toInt())
-        colorAnimator.duration = 1000
-        colorAnimator.repeatMode = ObjectAnimator.REVERSE
-        colorAnimator.repeatCount = ObjectAnimator.INFINITE
-        colorAnimator.addUpdateListener {
-            textPaint.color = it.animatedValue as Int
-            invalidate()
-            requestLayout()
-        }
 
     }
 
@@ -382,7 +383,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
             isClickable = true
             mode = Mode.BUTTON_MODE
-            colorAnimator.start()
+            colorAnimator?.start()
             animator.start()
             hasShown = true
 

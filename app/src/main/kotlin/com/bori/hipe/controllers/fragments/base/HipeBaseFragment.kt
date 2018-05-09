@@ -6,6 +6,7 @@ import android.view.View
 open class HipeBaseFragment : Fragment() {
 
     lateinit var rootView: View
+    lateinit var stageView: View
 
     var shouldCallOnFragment:Boolean = false
         protected set

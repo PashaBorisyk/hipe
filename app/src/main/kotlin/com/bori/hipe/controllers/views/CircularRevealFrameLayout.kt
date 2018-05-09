@@ -35,7 +35,6 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
             field = value
         }
     var state = State.HIDDEN
-        private set
 
     private var isForward = true
 
@@ -91,6 +90,8 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
     override fun drawChild(canvas: Canvas?, child: View?, drawingTime: Long): Boolean {
         canvas?:return super.drawChild(canvas, child, drawingTime)
         child?:return super.drawChild(canvas, child, drawingTime)
+        if(state == State.SHOWN)
+            return super.drawChild(canvas, child, drawingTime)
 
         val _x = fromX + (width/2f - fromX)*animatedValue
         val _y = fromY + (height/2f - fromY)*animatedValue

@@ -2,7 +2,6 @@ package com.bori.hipe.controllers.fragments.root
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputEditText
@@ -99,7 +98,7 @@ class LoginFragment : HipeBaseFragment() {
                 mainRevealFrameLayout.showIn(event = event)
                 loginButton.show(false)
                 loginButton.changeText(getString(R.string.sign_up))
-                loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.allowed))
+                loginButton.colors = resources.getColor(R.color.allowed)
                 shouldCallOnFragment = true
 
             }
@@ -169,12 +168,17 @@ class LoginFragment : HipeBaseFragment() {
                 confirmPasswordInputLayout.error = resources.getString(R.string.max_length_msg) + " ${usernameInputLayout.counterMaxLength}"
                 result = false
             } else {
-                usernameInputLayout.error = ""
+                confirmPasswordInputLayout.error = ""
             }
         } else
             result = false
 
         return result
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG,"LoginFragment onResume()")
     }
 
     override fun onStop() {
@@ -210,6 +214,9 @@ class LoginFragment : HipeBaseFragment() {
             loginButton.circleColor = resources.getColor(R.color.colorAccent)
             loginButton.stopLoading()
             snackbar.setText(getString(R.string.cannot_obtain_connection_message)).show()
+            if(activity is MainActivity){
+                (activity as MainActivity).showNextFragment(HipeBaseFragment())
+            }
         }
 
     }
@@ -244,7 +251,7 @@ class LoginFragment : HipeBaseFragment() {
         loginButton.show(hasToShow){
             it.changeText(getString(R.string.sign_in))
         }
-        loginButton.colors = intArrayOf(Color.GRAY, resources.getColor(R.color.colorAccent))
+        loginButton.colors = resources.getColor(R.color.colorAccent)
         createAccountText.alpha = 0f
         createAccountText.visibility = View.VISIBLE
         createAccountText.animate().alpha(1f).setDuration(300).start()
