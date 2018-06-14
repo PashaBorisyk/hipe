@@ -82,7 +82,7 @@ class HipeApplication : SugarApp() {
 
         private const val TAG = "HipeApplication"
 
-        const val SERVER_PATH = "http://192.168.0.31:9000/"
+        const val SERVER_PATH = "http://192.168.113.53:9000/"
 
         lateinit var sharedPreferencies:SharedPreferences
 

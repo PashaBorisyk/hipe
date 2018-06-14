@@ -28,7 +28,6 @@ import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
-import java.util.*
 
 class LoginFragment : HipeBaseFragment() {
 
@@ -234,7 +233,7 @@ class LoginFragment : HipeBaseFragment() {
                 UserService.loginUser(
                         requestID = LOGIN_USER_ID,
                         nickName = username.text.toString(),
-                        password = Arrays.toString(encode(password.text.toString()))
+                        password = encode(password.text.toString())
                 )
 
             }

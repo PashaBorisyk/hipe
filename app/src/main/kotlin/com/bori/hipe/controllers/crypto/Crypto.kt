@@ -5,7 +5,7 @@ import kotlin.experimental.xor
 
 private const val KEY = "asdf"
 
-fun encode(secret: String): ByteArray {
+fun encode(secret: String): String {
 
     val btxt: ByteArray = secret.toByteArray()
     val bkey: ByteArray = KEY.toByteArray()
@@ -15,7 +15,9 @@ fun encode(secret: String): ByteArray {
     for (i in btxt.indices) {
         result[i] = (btxt[i] xor bkey[i % bkey.size])
     }
-    return result
+
+
+    return "helloworld"
 }
 
 fun decode(secret: String): String {

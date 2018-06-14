@@ -39,7 +39,7 @@ internal class VoidCallback(val requestID: Long) : Callback<Void> {
     }
 
     override fun onResponse(call: Call<Void>, response: retrofit2.Response<Void>) {
-        Log.d(TAG, "onResponse: " + response.code())
+        Log.d(TAG, "onResponse; url: ${call.request().url()}; code: ${response.code()}")
         restCallbacks.forEach { it.onOk(requestID) }
         restCallbacks.forEach { it.onSimpleResponse(requestID, response.body(), response.code()) }
     }
@@ -106,6 +106,7 @@ internal class BooleanCallback(val requestID: Long) : Callback<Boolean> {
     }
 
     override fun onResponse(call: Call<Boolean>, response: retrofit2.Response<Boolean>) {
+        Log.d(TAG,call.request().url().toString())
         Log.d(TAG, "onResponse: " + response.code())
         restCallbacks.forEach { it.onOk(requestID) }
         restCallbacks.forEach { it.onSimpleResponse(requestID, response.body(), response.code()) }

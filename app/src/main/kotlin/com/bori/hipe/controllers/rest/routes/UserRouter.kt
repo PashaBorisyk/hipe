@@ -9,7 +9,7 @@ import retrofit2.http.*
 
 interface UserRouter {
 
-    @GET("/user/check/existence/{${Const.NICKNAME}}")
+    @GET("/user/check_existence/{${Const.NICKNAME}}")
     fun checkUserExistence(@Path(Const.NICKNAME) nickname: String): Call<Boolean>
 
     @GET("/user/register")
