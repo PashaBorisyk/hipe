@@ -34,7 +34,7 @@ class HipeApplication : SugarApp() {
         Log.e(TAG, "onCreate: ")
 
         pixelsPerDp = resources.displayMetrics.density
-        sharedPreferencies = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         val networkInfo = (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo
         BootReciever.isConnected = networkInfo != null && networkInfo.isConnected
@@ -82,9 +82,9 @@ class HipeApplication : SugarApp() {
 
         private const val TAG = "HipeApplication"
 
-        const val SERVER_PATH = "http://192.168.113.53:9000/"
+        const val SERVER_PATH = "http://192.168.113.153:9000/"
 
-        lateinit var sharedPreferencies:SharedPreferences
+        lateinit var sharedPreferences:SharedPreferences
 
         val IS_LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
         val IS_KIT_KAT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT

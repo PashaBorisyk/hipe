@@ -12,9 +12,9 @@ object UserService {
 
     lateinit var userRouter: UserRouter
 
-    fun registerUser(requestID: Long, user: User) {
-        Log.d(TAG, "registerUser() called with: user = [$user]")
-        userRouter.registerUser(user).enqueue(LongCallback(requestID))
+    fun registerUser(requestID: Long,username: String, password: String) {
+        Log.d(TAG, "registerUser() called with: username = [$username]")
+        userRouter.registerUser(username,password).enqueue(StringCallback(requestID))
     }
 
     fun updateUser(requestID: Long, user: User) {
@@ -22,9 +22,9 @@ object UserService {
         userRouter.updateUser(user).enqueue(LongCallback(requestID))
     }
 
-    fun loginUser(requestID: Long, nickName: String, password: String) {
-        Log.d(TAG, "loginUser() called with: nickName = [$nickName], password = [$password]")
-        userRouter.loginUser(nickName, password).enqueue(VoidCallback(requestID))
+    fun loginUser(requestID: Long, username: String, password: String) {
+        Log.d(TAG, "loginUser() called with: username = [$username], password = [$password]")
+        userRouter.loginUser(username, password).enqueue(StringCallback(requestID))
     }
 
     fun addUserToFriend(requestID: Long, userId: Long, advancedUserId: Long) {
@@ -38,12 +38,12 @@ object UserService {
     }
 
     fun findUser(requestID: Long, userID: Long, query: String) {
-        Log.d(TAG, "findUser() called with: nickName = [$query]")
+        Log.d(TAG, "findUser() called with: username = [$query]")
         userRouter.findUser(userID, query).enqueue(UserListCallback(requestID))
     }
 
     fun checkUserExistence(requestID: Long, nickName: String) {
-        Log.d(TAG, "checkUserExistence() called with: nickName = [$nickName]")
+        Log.d(TAG, "checkUserExistence() called with: username = [$nickName]")
         userRouter.checkUserExistence(nickName).enqueue(BooleanCallback(requestID))
     }
 

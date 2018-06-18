@@ -182,7 +182,7 @@ class UserFragment : HipeBaseFragment(){
 
             val loadedUser = user._1
             imageLoader.displayImage(user._2.urlMedium, user_photo, displayImageOptions)
-            nickname.text = loadedUser.nickName
+            nickname.text = loadedUser.username
             name_surname.text = "${loadedUser.name} ${loadedUser.surname}"
             user_status.text = loadedUser.status
 
@@ -260,7 +260,7 @@ class UserFragment : HipeBaseFragment(){
 
                 DataType.TYPE_USERS -> {
                     val user = users[position]
-                    holder.userNick.text = user._1.nickName
+                    holder.userNick.text = user._1.username
                     holder.userNameSurname.text = user._1.name + " " + user._1.surname
 
                 }

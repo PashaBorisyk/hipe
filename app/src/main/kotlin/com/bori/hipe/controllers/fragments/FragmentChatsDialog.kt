@@ -59,7 +59,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
-        nickname = User.thisUser.nickName
+        nickname = User.thisUser.username
         nickname = "pashaborisyk"
         url = getActivity()!!.getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Activity.MODE_PRIVATE).getString(Const.USER_IMAGE_SMALL, null)
 
@@ -190,9 +190,9 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
             if (v.tag != null && v.tag is String) {
 
-//                val nickName = v.tag as String
+//                val username = v.tag as String
 //                val intent = Intent(activity, UserActivity::class.java)
-//                intent.putExtra(Const.USER_SELF_NICK, nickName)
+//                intent.putExtra(Const.USER_SELF_NICK, username)
 //                startActivity(intent)
                 return
             }

@@ -29,7 +29,7 @@ object EventService {
     }
 
     fun addMemberToEvent(requestID: Long, eventId: Long, advancedUserId: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "addMemberToEvent() called with: eventId = [$eventId], nickName = [$userId], advancedUserId = [$advancedUserId]")
+        Log.d(TAG, "addMemberToEvent() called with: eventId = [$eventId], username = [$userId], advancedUserId = [$advancedUserId]")
         eventEvoke.addMemberToEvent(eventId, userId, advancedUserId).enqueue(LongCallback(requestID))
     }
 

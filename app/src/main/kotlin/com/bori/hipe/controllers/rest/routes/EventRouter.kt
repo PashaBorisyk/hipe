@@ -9,41 +9,41 @@ import retrofit2.http.*
 
 interface EventRouter {
 
-    @POST("/event/create")
+    @POST("/event/create/")
     fun createEvent(@Body event: Event): Call<Long>
 
-    @PUT("event/update")
+    @PUT("event/update/")
     fun updateEvent(@Body event: Event): Call<Long>
 
-    @GET("/event/get_user_events")
+    @GET("/event/get_user_events/")
     fun getEvents(
             @Query(Const.USER_ID) userId: Long,
             @Query(Const.LATITUDE) latitude: Double,
             @Query(Const.LONGTITUDE) longtitude: Double,
             @Query(Const.LAST_READ_EVENT_ID) lastReadEventId: Long): Call<List<Tuple<Event, HipeImage>>>
 
-    @DELETE("/event/cancel")
+    @DELETE("/event/cancel/")
     fun cancelEvent(@Query(Const.USER_ID) userId: Long, @Query(Const.EVENT_ID) eventId: Long): Call<Long>
 
-    @DELETE("/event/remove/member")
+    @DELETE("/event/remove/member/")
     fun removeMember(
             @Query(Const.USER_ID) userId: Long,
             @Query(Const.ADVANCED_USER_ID) advancedUserId: Long,
             @Query(Const.EVENT_ID) eventId: Long): Call<Long>
 
-    @PUT("/event/add/member")
+    @PUT("/event/add/member/")
     fun addMemberToEvent(
             @Query(Const.EVENT_ID) eventId: Long,
             @Query(Const.USER_ID) userId: Long,
             @Query(Const.ADVANCED_USER_ID) advancedUserId: Long): Call<Long>
 
-    @GET("/event/get/by/{${Const.EVENT_ID}}")
+    @GET("/event/get/by/{${Const.EVENT_ID}}/")
     fun getById(@Path(Const.EVENT_ID) eventId: Long): Call<Event>
 
-    @GET("/event/get/by/owner/{${Const.EVENT_ID}}")
+    @GET("/event/get/by/owner/{${Const.EVENT_ID}}/")
     fun getByOwner(@Path(Const.USER_ID) userId: Long): Call<List<Tuple<Event, HipeImage>>>
 
-    @GET("/event/get_by_member_id/{${Const.USER_ID}}")
+    @GET("/event/get_by_member_id/{${Const.USER_ID}}/")
     fun getByMember(@Path(Const.USER_ID) userId: Long): Call<List<Tuple<Event, HipeImage>>>
 
 }

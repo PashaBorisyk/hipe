@@ -85,7 +85,7 @@ class FriendsListDialogFragment : DialogFragment() {
 
             holder.checkableImageButton.isChecked = addedIds.contains(entry._1.id)
 
-            holder.nickame.text = entry._1.nickName
+            holder.nickame.text = entry._1.username
             holder.rootView.tag = position
             holder.rootView.setOnClickListener(this)
 

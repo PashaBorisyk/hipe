@@ -6,7 +6,7 @@ data class User(
         @Expose
         val id: Long = 1L,
         @Expose
-        val nickName: String = "pashaborisyk",
+        val username: String = "pashaborisyk",
         val password: String = "Puschinarij1",
         @Expose
         val name: String = "pasha",

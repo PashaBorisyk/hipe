@@ -75,8 +75,8 @@
     <string name="private_party">Private party</string>
     <string name="if_is_not_private_hint">If the party is not private it will be visible for everybody</string>
     <string name="gender_man">Gender man</string>
-    <string name="gender_woman">Gender wonam</string>
-    <string name="gender_select_hint">Only choosen sex will be able to find your party</string>
+    <string name="gender_woman">Gender woman</string>
+    <string name="gender_select_hint">Only chosen sex will be able to find your party</string>
     <string name="add_friend">Add friend</string>
     <string name="_plus_23">+23</string>
     <string name="invite_notification_hint">Friends that were invited by you will get the notifiation</string>
@@ -99,6 +99,7 @@
     <string name="cannot_obtain_connection_message">Cannot connect to the server. Try again later</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
-
+    <string name="invalid_credentials">Incorrect login or password. Try again</string>
+    <string name="user_already_exists">User with this username already exists</string>
 
 </resources>

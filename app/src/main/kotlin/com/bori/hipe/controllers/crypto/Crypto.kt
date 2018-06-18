@@ -17,12 +17,12 @@ fun encode(secret: String): String {
     }
 
 
-    return "helloworld"
+    return secret
 }
 
 fun decode(secret: String): String {
 
-    val byteValues = secret.substring(1, secret.length - 1).split(",".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+    val byteValues = secret.substring(1, secret.length - 1).split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     val bytes = ByteArray(byteValues.size)
 
     run {

@@ -120,7 +120,7 @@ internal class BooleanCallback(val requestID: Long) : Callback<Boolean> {
 internal class UserCallback(val requestID: Long) : Callback<Tuple<User, HipeImage>> {
 
     companion object {
-        private const val TAG = "BooleanCallback"
+        private const val TAG = "UserCallback"
     }
 
     override fun onResponse(call: Call<Tuple<User, HipeImage>>, response: retrofit2.Response<Tuple<User, HipeImage>>) {
@@ -137,7 +137,7 @@ internal class UserCallback(val requestID: Long) : Callback<Tuple<User, HipeImag
 internal class EventCallback(val requestID: Long) : Callback<Tuple<Event, HipeImage>> {
 
     companion object {
-        private const val TAG = "BooleanCallback"
+        private const val TAG = "EventCallback"
     }
 
     override fun onResponse(call: Call<Tuple<Event, HipeImage>>, response: retrofit2.Response<Tuple<Event, HipeImage>>) {
@@ -154,7 +154,7 @@ internal class EventCallback(val requestID: Long) : Callback<Tuple<Event, HipeIm
 internal class LongCallback(val requestID: Long) : Callback<Long> {
 
     companion object {
-        private const val TAG = "BooleanCallback"
+        private const val TAG = "LongCallback"
     }
 
     override fun onResponse(call: Call<Long>, response: retrofit2.Response<Long>) {
@@ -164,6 +164,23 @@ internal class LongCallback(val requestID: Long) : Callback<Long> {
     }
 
     override fun onFailure(call: Call<Long>, t: Throwable) =
+            restCallbacks.forEach { it.onFailure(requestID, t) }
+
+}
+
+internal class StringCallback(val requestID: Long) : Callback<String> {
+
+    companion object {
+        private const val TAG = "StringCallback"
+    }
+
+    override fun onResponse(call: Call<String>, response: retrofit2.Response<String>) {
+        Log.d(TAG, "onResponse: " + response.code())
+        restCallbacks.forEach { it.onOk(requestID) }
+        restCallbacks.forEach { it.onSimpleResponse(requestID, response.body(), response.code()) }
+    }
+
+    override fun onFailure(call: Call<String>, t: Throwable) =
             restCallbacks.forEach { it.onFailure(requestID, t) }
 
 }

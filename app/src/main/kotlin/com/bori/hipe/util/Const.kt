@@ -3,7 +3,8 @@ package com.bori.hipe.util
 object Const {
 
     const val USER_ID = "user_id"
-    const val NICKNAME = "nickname"
+    const val USER_TOKEN = "user_token"
+    const val USERNAME = "username"
     const val ADVANCED_USER_ID = "advanced_user_id"
     const val PASSWORD = "password"
     const val SURNAME = "surname"

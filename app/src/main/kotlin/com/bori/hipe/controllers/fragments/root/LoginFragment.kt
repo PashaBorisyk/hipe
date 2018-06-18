@@ -1,11 +1,13 @@
 package com.bori.hipe.controllers.fragments.root
 
+import android.animation.Animator
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
+import android.support.v4.content.res.ResourcesCompat.getColor
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.MainActivity
 import com.bori.hipe.controllers.activities.SignInActivity
@@ -33,7 +36,10 @@ class LoginFragment : HipeBaseFragment() {
 
     companion object {
         private const val TAG = "LoginFragment.kt"
-        private const val LOGIN_USER_ID = 8L
+        private const val LOGIN_USER_REQ_ID = 8L
+        private const val REGISTER_REQ_USER_ID = 9L
+        private const val SNACK_BAR_ANIMATION_DURATION = 3000
+        private const val LIFT_ANIMATION_DURATION = 250L
     }
 
     private lateinit var loginButton: FlippingEdgesView
@@ -41,6 +47,8 @@ class LoginFragment : HipeBaseFragment() {
     private lateinit var restCallback: LoginActivityRestCallbackAdapter
 
     private lateinit var createAccountText: View
+    private lateinit var mainLayout: View
+    private lateinit var contentLayout: View
 
     private lateinit var circularRevavalView: CircularRevavalView
 
@@ -56,6 +64,7 @@ class LoginFragment : HipeBaseFragment() {
     private lateinit var mainRevealFrameLayout: CircularRevealFrameLayout
 
     private lateinit var snackbar: Snackbar
+    private lateinit var liftAnimationListener: LiftAnimationListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -73,6 +82,10 @@ class LoginFragment : HipeBaseFragment() {
 
     private fun init() {
         Log.d(TAG, "init() called")
+
+        mainLayout = findViewById(R.id.main_coordinator_layout)
+        contentLayout = findViewById(R.id.content_coordinator_layout)
+
         createAccountText = findViewById(R.id.create_account_text)
         loginButton = findViewById(R.id.login_button)
 
@@ -97,7 +110,7 @@ class LoginFragment : HipeBaseFragment() {
                 mainRevealFrameLayout.showIn(event = event)
                 loginButton.show(false)
                 loginButton.changeText(getString(R.string.sign_up))
-                loginButton.colors = resources.getColor(R.color.allowed)
+                loginButton.colors = getColor(resources,R.color.allowed,null)
                 shouldCallOnFragment = true
 
             }
@@ -107,10 +120,15 @@ class LoginFragment : HipeBaseFragment() {
 
         loginButton.setOnClickListener(myOnClickListener)
         restCallback = LoginActivityRestCallbackAdapter()
-        snackbar = Snackbar.make(findViewById(R.id.main_coordinator_layout), R.string.no_connection_detected, Snackbar.LENGTH_INDEFINITE)
+        snackbar = Snackbar.make(mainLayout, R.string.no_connection_detected, Snackbar.LENGTH_LONG)
+        snackbar.duration = SNACK_BAR_ANIMATION_DURATION
+
+        liftAnimationListener = LiftAnimationListener()
         snackbar.setAction(R.string.dismiss) {
             snackbar.dismiss()
+            contentLayout.animate().translationY(0f).setStartDelay(0).setDuration(LIFT_ANIMATION_DURATION).setListener(null).start()
         }
+
 
     }
 
@@ -127,7 +145,7 @@ class LoginFragment : HipeBaseFragment() {
             username: Editable? = this.username.editableText,
             password: Editable? = this.password.editableText,
             confirmPassword: Editable? = this.confirmPassword.editableText,
-            ignoreConfirmation:Boolean = false
+            ignoreConfirmation: Boolean = false
 
     ): Boolean {
 
@@ -177,7 +195,7 @@ class LoginFragment : HipeBaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG,"LoginFragment onResume()")
+        Log.d(TAG, "LoginFragment onResume()")
     }
 
     override fun onStop() {
@@ -188,15 +206,28 @@ class LoginFragment : HipeBaseFragment() {
     inner class LoginActivityRestCallbackAdapter : RestCallbackAdapter() {
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
-            Log.d(TAG, " onSimple Response with code:  $serverCode")
+            Log.d(TAG, " onSimple Response with code:  $serverCode; Response : $response")
 
             when (requestID) {
-                LOGIN_USER_ID -> if (serverCode == Status.OK) {
-                    val editor = sharedPreferences.edit()
-                    editor.putLong(Const.USER_ID, response as Long).apply()
+                LOGIN_USER_REQ_ID -> if (serverCode == Status.OK) {
+                    HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
                     startActivity(Intent(context, MainActivity::class.java))
+                } else if (serverCode == Status.NOT_FOUND) {
+                    contentLayout.animate()
+                            .translationY(-48f * HipeApplication.pixelsPerDp)
+                            .setListener(liftAnimationListener)
+                            .setDuration(LIFT_ANIMATION_DURATION)
+                            .setStartDelay(0)
+                            .start()
 
+                    snackbar.setText(getString(R.string.invalid_credentials)).show()
                 }
+                REGISTER_REQ_USER_ID -> if (serverCode == Status.CREATED) {
+                    HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
+                } else if (serverCode == Status.CONFLICT) {
+                    usernameInputLayout.error = getString(R.string.user_already_exists)
+                }
+
                 else -> {
                 }
             }
@@ -213,7 +244,7 @@ class LoginFragment : HipeBaseFragment() {
             loginButton.circleColor = resources.getColor(R.color.colorAccent)
             loginButton.stopLoading()
             snackbar.setText(getString(R.string.cannot_obtain_connection_message)).show()
-            if(activity is MainActivity){
+            if (activity is MainActivity) {
                 (activity as MainActivity).showNextFragment(HipeBaseFragment())
             }
         }
@@ -230,11 +261,20 @@ class LoginFragment : HipeBaseFragment() {
             R.id.login_button -> {
                 Log.d(TAG, "onClick: Data Validated!!!")
                 loginButton.startLoading()
-                UserService.loginUser(
-                        requestID = LOGIN_USER_ID,
-                        nickName = username.text.toString(),
-                        password = encode(password.text.toString())
-                )
+                if (createAccountText.visibility != View.VISIBLE) {
+                    UserService.registerUser(
+                            requestID = REGISTER_REQ_USER_ID,
+                            username = username.text.toString(),
+                            password = encode(password.text.toString()
+                            )
+
+                    )
+                } else
+                    UserService.loginUser(
+                            requestID = LOGIN_USER_REQ_ID,
+                            username = username.text.toString(),
+                            password = encode(password.text.toString())
+                    )
 
             }
 
@@ -247,7 +287,7 @@ class LoginFragment : HipeBaseFragment() {
         super.onBackPressed()
 
         val hasToShow = validateData(ignoreConfirmation = true)
-        loginButton.show(hasToShow){
+        loginButton.show(hasToShow) {
             it.changeText(getString(R.string.sign_in))
         }
         loginButton.colors = resources.getColor(R.color.colorAccent)
@@ -268,10 +308,29 @@ class LoginFragment : HipeBaseFragment() {
                     )
             )
         }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+    }
+
+    inner class LiftAnimationListener : Animator.AnimatorListener {
+
+        override fun onAnimationRepeat(animation: Animator?) {
+        }
+
+        override fun onAnimationEnd(animation: Animator?) {
+            if (contentLayout.translationY == -48f * HipeApplication.pixelsPerDp) {
+                contentLayout.animate().translationY(0f).startDelay = SNACK_BAR_ANIMATION_DURATION.toLong()
+            }
+        }
+
+        override fun onAnimationCancel(animation: Animator?) {
+        }
+
+        override fun onAnimationStart(animation: Animator?) {
+        }
 
     }
 

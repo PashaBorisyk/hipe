@@ -220,7 +220,7 @@ class SearchFragment : Fragment() {
 
             val entry = users[position]
 
-            holder.nickName.text = entry._1.nickName
+            holder.nickName.text = entry._1.username
             holder.nameSurname.text = entry._1.name + " " + entry._1.surname
             holder.rootView.tag = entry._1.id
             imageLoader.displayImage(entry._2.urlSmall, holder.userPhoto, displayImageOptions)

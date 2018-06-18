@@ -13,7 +13,6 @@ import android.widget.Button
 import com.bori.hipe.util.extensions.zeroIfNegative
 
 
-
 class FlippingEdgesView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Button(context, attrs, defStyleAttr) {
@@ -22,18 +21,19 @@ class FlippingEdgesView @JvmOverloads constructor(
         private const val TAG = "FlippingEdgesView.kt"
         private const val BUTTON_LINES_ANIMATOR_DURATION = 500L
         private const val FLIPPING_DURATION = 1000L
-        private const val BALANCER =  0.95f
+        private const val BALANCER = 0.95f
     }
 
     private enum class Mode {
-        BUTTON_MODE, LOADING_MODE, FLIPPING_MODE,CHANGING_TEXT_MODE
+        BUTTON_MODE, LOADING_MODE, FLIPPING_MODE, CHANGING_TEXT_MODE
     }
 
     private var hasShown: Boolean = false
-    var mVisibleRectF = RectF(0.2f,0.0f,0.8f,1f)
+    var mVisibleRectF = RectF(0.2f, 0.0f, 0.8f, 1f)
     var circleRatio = 0.45f
 
     private var mode: Mode = Mode.BUTTON_MODE
+    private var prevMode: Mode = Mode.BUTTON_MODE
 
     private var textWidth: Float = 0f
 
@@ -68,10 +68,10 @@ class FlippingEdgesView @JvmOverloads constructor(
     private val leftBorderRect = RectF()
 
     private var lineLength: Float = 0f
-    private var linePathLength:Float = 0f
+    private var linePathLength: Float = 0f
 
-    private var _afterStop :( (FlippingEdgesView) -> Unit )? = null
-    private var _beforeStart :( (FlippingEdgesView) -> Unit )? = null
+    private var _afterStop: ((FlippingEdgesView) -> Unit)? = null
+    private var _beforeStart: ((FlippingEdgesView) -> Unit)? = null
 
     var strokeWidth: Float = 10f
         get() = paint.strokeWidth
@@ -98,8 +98,8 @@ class FlippingEdgesView @JvmOverloads constructor(
             field = value
         }
 
-    var circleColor:Int = 0xff334455.toInt()
-        set(value){
+    var circleColor: Int = 0xff334455.toInt()
+        set(value) {
             circlePaint.color = value
             field = value
         }
@@ -107,7 +107,7 @@ class FlippingEdgesView @JvmOverloads constructor(
     var colors = 0xffee5350.toInt()
         set(value) {
             colorAnimator?.end()
-            colorAnimator = ObjectAnimator.ofObject(paint, "color", evaluator,Color.GRAY,value)
+            colorAnimator = ObjectAnimator.ofObject(paint, "color", evaluator, Color.GRAY, value)
             colorAnimator?.duration = 2000
             colorAnimator?.repeatMode = ObjectAnimator.REVERSE
             colorAnimator?.repeatCount = ObjectAnimator.INFINITE
@@ -157,15 +157,15 @@ class FlippingEdgesView @JvmOverloads constructor(
 
         setMeasuredDimension(width, height)
 
-        topBorderOfShape = if(mVisibleRectF.top > 0f)
+        topBorderOfShape = if (mVisibleRectF.top > 0f)
             height * mVisibleRectF.top
         else
-            paint.strokeWidth/2f
+            paint.strokeWidth / 2f
 
-        bottomBorderOfShape = if(mVisibleRectF.bottom < 1f)
-            height *mVisibleRectF.bottom
+        bottomBorderOfShape = if (mVisibleRectF.bottom < 1f)
+            height * mVisibleRectF.bottom
         else
-            height - paint.strokeWidth/2f
+            height - paint.strokeWidth / 2f
 
         drawDiametr = bottomBorderOfShape - topBorderOfShape
 
@@ -173,13 +173,13 @@ class FlippingEdgesView @JvmOverloads constructor(
         leftBorderOfShape = width * mVisibleRectF.left
 
         circleLength = (Math.PI * drawDiametr * circleRatio).toFloat()
-        lineLength = rightBorderOfShape - leftBorderOfShape - drawDiametr*2f + circleLength
-        halfTopBottomLineLength = (lineLength-circleLength)/2f
+        lineLength = rightBorderOfShape - leftBorderOfShape - drawDiametr * 2f + circleLength
+        halfTopBottomLineLength = (lineLength - circleLength) / 2f
 
         linePathLength = rightBorderOfShape - drawDiametr + circleLength
 
-        rightBorderRect.set(rightBorderOfShape-drawDiametr*1.5f, topBorderOfShape, rightBorderOfShape - drawDiametr*0.5f, bottomBorderOfShape)
-        leftBorderRect.set(leftBorderOfShape+drawDiametr*0.5f, topBorderOfShape, leftBorderOfShape+drawDiametr*1.5f, bottomBorderOfShape)
+        rightBorderRect.set(rightBorderOfShape - drawDiametr * 1.5f, topBorderOfShape, rightBorderOfShape - drawDiametr * 0.5f, bottomBorderOfShape)
+        leftBorderRect.set(leftBorderOfShape + drawDiametr * 0.5f, topBorderOfShape, leftBorderOfShape + drawDiametr * 1.5f, bottomBorderOfShape)
 
         animator = ValueAnimator.ofFloat(0f, 1f)
         animator.duration = BUTTON_LINES_ANIMATOR_DURATION
@@ -191,42 +191,54 @@ class FlippingEdgesView @JvmOverloads constructor(
             invalidate()
             requestLayout()
         }
-        
-        animator.addListener(object : Animator.AnimatorListener{
+
+        animator.addListener(object : Animator.AnimatorListener {
 
             override fun onAnimationRepeat(animation: Animator?) {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                if(mode == Mode.FLIPPING_MODE){
-                    if(!isEndingAnimation) {
+                if (mode == Mode.FLIPPING_MODE) {
+                    if (!isEndingAnimation) {
                         animator.duration = FLIPPING_DURATION
                         animator.start()
                         return
-                    } else if(!hasToShowCircle && isEndingAnimation) {
+                    } else if (!hasToShowCircle && isEndingAnimation) {
                         hasToShowCircle = true
                         animator.start()
                         return
-                    } else{
+                    } else {
                         mode = Mode.LOADING_MODE
+                        prevMode = Mode.FLIPPING_MODE
                         animator.duration = BUTTON_LINES_ANIMATOR_DURATION
                         animator.reverse()
                         return
                     }
-                } else if (mode == Mode.LOADING_MODE){
-                    if(isEndingAnimation){
-                        isEndingAnimation = false
-                        hasToShowCircle = false
-                        mode = Mode.BUTTON_MODE
-                        animatedValue = 1f
-                    }else{
+                } else if (mode == Mode.LOADING_MODE) {
+                    if (isEndingAnimation) {
+                        if (prevMode == Mode.BUTTON_MODE) {
+                            animator.duration = FLIPPING_DURATION
+                            mode = Mode.FLIPPING_MODE
+                            prevMode = Mode.LOADING_MODE
+                            animator.start()
+
+                        } else {
+                            isEndingAnimation = false
+                            hasToShowCircle = false
+                            mode = Mode.BUTTON_MODE
+                            prevMode = Mode.LOADING_MODE
+                            animatedValue = 1f
+                        }
+                    } else {
                         animator.duration = FLIPPING_DURATION
                         mode = Mode.FLIPPING_MODE
+                        prevMode = Mode.LOADING_MODE
                         animator.start()
                         return
                     }
-                } else if(mode == Mode.CHANGING_TEXT_MODE){
+                } else if (mode == Mode.CHANGING_TEXT_MODE) {
                     mode = Mode.BUTTON_MODE
+                    prevMode = Mode.CHANGING_TEXT_MODE
                     mainText = secondaryText
                 }
 
@@ -241,7 +253,7 @@ class FlippingEdgesView @JvmOverloads constructor(
                 _beforeStart?.invoke(this@FlippingEdgesView)
                 _beforeStart = null
             }
-            
+
         })
 
     }
@@ -260,7 +272,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             Mode.BUTTON_MODE -> linePathLength
             Mode.FLIPPING_MODE -> 360f
             Mode.LOADING_MODE -> halfTopBottomLineLength
-            Mode.CHANGING_TEXT_MODE -> ((bottomBorderOfShape-topBorderOfShape) + mTextSize)/2f
+            Mode.CHANGING_TEXT_MODE -> ((bottomBorderOfShape - topBorderOfShape) + mTextSize) / 2f
 
         } * animatedValue
 
@@ -270,7 +282,7 @@ class FlippingEdgesView @JvmOverloads constructor(
 
                 if (value > rightBorderOfShape - drawDiametr) {
 
-                    degree = 360 * circleRatio * (((value - (rightBorderOfShape - drawDiametr)))/circleLength)
+                    degree = 360 * circleRatio * (((value - (rightBorderOfShape - drawDiametr))) / circleLength)
 
                     canvas.drawLine(-lineLength + value, topBorderOfShape, rightBorderOfShape - drawDiametr, topBorderOfShape, paint)
                     canvas.drawLine(width + lineLength - value, bottomBorderOfShape, leftBorderOfShape + drawDiametr, bottomBorderOfShape, paint)
@@ -291,41 +303,41 @@ class FlippingEdgesView @JvmOverloads constructor(
                 canvas.drawText(mainText, (width / 2f) * 1.01f, (height / 2f + mTextSize / 2f + drawDiametr * (1f - animatedValue) / 2f) * BALANCER, textPaint)
 
             }
-            
+
             Mode.LOADING_MODE -> {
-                
+
                 canvas.drawLine(leftBorderOfShape + drawDiametr + value, topBorderOfShape, rightBorderOfShape - drawDiametr - value, topBorderOfShape, paint)
                 canvas.drawLine(rightBorderOfShape - drawDiametr - value, bottomBorderOfShape, leftBorderOfShape + drawDiametr + value, bottomBorderOfShape, paint)
-                
+
                 leftArcPath.reset()
                 rightArcPath.reset()
 
-                leftBorderRect.left = leftBorderOfShape  + drawDiametr*0.5f + value
-                leftBorderRect.right = leftBorderOfShape + drawDiametr*1.5f + value
+                leftBorderRect.left = leftBorderOfShape + drawDiametr * 0.5f + value
+                leftBorderRect.right = leftBorderOfShape + drawDiametr * 1.5f + value
                 leftArcPath.arcTo(leftBorderRect, 90f, degree, false)
 
-                rightBorderRect.left = rightBorderOfShape - drawDiametr*1.5f - value
-                rightBorderRect.right = rightBorderOfShape - drawDiametr*0.5f - value
+                rightBorderRect.left = rightBorderOfShape - drawDiametr * 1.5f - value
+                rightBorderRect.right = rightBorderOfShape - drawDiametr * 0.5f - value
                 rightArcPath.arcTo(rightBorderRect, 270f, degree, false)
 
                 canvas.drawPath(leftArcPath, paint)
                 canvas.drawPath(rightArcPath, paint)
 
-                textPaint.alpha = ( (1f - animatedValue*3f).zeroIfNegative() * 255f).toInt()
+                textPaint.alpha = ((1f - animatedValue * 3f).zeroIfNegative() * 255f).toInt()
                 canvas.drawText(mainText, (width / 2f) * 1.01f, (height / 2f + mTextSize / 2f) * BALANCER, textPaint)
 
             }
-            
+
             Mode.FLIPPING_MODE -> {
 
                 leftArcPath.reset()
                 rightArcPath.reset()
 
-                leftBorderRect.right = leftBorderOfShape + drawDiametr*1.5f + halfTopBottomLineLength
-                leftBorderRect.left = leftBorderOfShape  + drawDiametr*0.5f + halfTopBottomLineLength
+                leftBorderRect.right = leftBorderOfShape + drawDiametr * 1.5f + halfTopBottomLineLength
+                leftBorderRect.left = leftBorderOfShape + drawDiametr * 0.5f + halfTopBottomLineLength
 
-                rightBorderRect.left = rightBorderOfShape - drawDiametr*1.5f - halfTopBottomLineLength
-                rightBorderRect.right = rightBorderOfShape - drawDiametr*0.5f - halfTopBottomLineLength
+                rightBorderRect.left = rightBorderOfShape - drawDiametr * 1.5f - halfTopBottomLineLength
+                rightBorderRect.right = rightBorderOfShape - drawDiametr * 0.5f - halfTopBottomLineLength
 
                 leftArcPath.arcTo(leftBorderRect, 90f + value, degree, false)
                 rightArcPath.arcTo(rightBorderRect, 270f + value, degree, false)
@@ -334,15 +346,15 @@ class FlippingEdgesView @JvmOverloads constructor(
                 canvas.drawPath(rightArcPath, paint)
 
                 if (hasToShowCircle) {
-                    
+
                     circlePaint.alpha = (255f * (1 - animatedValue)).zeroIfNegative().toInt()
-                    canvas.drawCircle(width / 2f, height / 2f, animatedValue*drawDiametr/2, circlePaint)
+                    canvas.drawCircle(width / 2f, height / 2f, animatedValue * drawDiametr / 2, circlePaint)
 
                 }
-            
+
             }
 
-            Mode.CHANGING_TEXT_MODE->{
+            Mode.CHANGING_TEXT_MODE -> {
 
                 canvas.drawLine(-lineLength + linePathLength, topBorderOfShape, rightBorderOfShape - drawDiametr, topBorderOfShape, paint)
                 canvas.drawLine(width + lineLength - linePathLength, bottomBorderOfShape, leftBorderOfShape + drawDiametr, bottomBorderOfShape, paint)
@@ -356,7 +368,7 @@ class FlippingEdgesView @JvmOverloads constructor(
                 canvas.drawText(
                         mainText,
                         (width / 2f) * 1.01f,
-                        (height/2f + mTextSize/2f - value) * BALANCER
+                        (height / 2f + mTextSize / 2f - value) * BALANCER
                         , textPaint
                 )
 
@@ -374,7 +386,7 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     }
 
-    fun show(hasToShow: Boolean,ifWillNotAnimate: ((FlippingEdgesView) -> Unit)? = null) :FlippingEdgesView {
+    fun show(hasToShow: Boolean, ifWillNotAnimate: ((FlippingEdgesView) -> Unit)? = null): FlippingEdgesView {
 
         if (hasToShow) {
             if (hasShown) {
@@ -402,20 +414,19 @@ class FlippingEdgesView @JvmOverloads constructor(
         return this
     }
 
-    fun changeText(text:String) : FlippingEdgesView {
-        if(mode == Mode.BUTTON_MODE && hasShown ) {
+    fun changeText(text: String): FlippingEdgesView {
+        if (mode == Mode.BUTTON_MODE && hasShown) {
             secondaryText = text
             mode = Mode.CHANGING_TEXT_MODE
             animator.start()
-        }
-        else{
+        } else {
             mainText = text
         }
 
         return this
     }
 
-    fun startLoading() : FlippingEdgesView {
+    fun startLoading(): FlippingEdgesView {
 
         isEndingAnimation = false
         mode = Mode.LOADING_MODE
@@ -425,17 +436,17 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     }
 
-    fun stopLoading():FlippingEdgesView {
+    fun stopLoading(): FlippingEdgesView {
         isEndingAnimation = true
         return this
     }
 
-    fun beforeStart(lambda : (FlippingEdgesView) -> Unit) : FlippingEdgesView{
+    fun beforeStart(lambda: (FlippingEdgesView) -> Unit): FlippingEdgesView {
         _beforeStart = lambda
         return this
     }
 
-    fun afterStop(lambda : (FlippingEdgesView) -> Unit) : FlippingEdgesView{
+    fun afterStop(lambda: (FlippingEdgesView) -> Unit): FlippingEdgesView {
         _afterStop = lambda
         return this
     }
