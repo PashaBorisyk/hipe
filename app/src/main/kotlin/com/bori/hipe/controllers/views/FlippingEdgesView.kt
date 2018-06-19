@@ -219,7 +219,7 @@ class FlippingEdgesView @JvmOverloads constructor(
                         if (prevMode == Mode.BUTTON_MODE) {
                             animator.duration = FLIPPING_DURATION
                             mode = Mode.FLIPPING_MODE
-                            prevMode = Mode.LOADING_MODE
+                            prevMode = Mode.FLIPPING_MODE
                             animator.start()
 
                         } else {
@@ -395,6 +395,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
             isClickable = true
             mode = Mode.BUTTON_MODE
+            prevMode = Mode.BUTTON_MODE
             colorAnimator?.start()
             animator.start()
             hasShown = true
@@ -406,6 +407,7 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
             isClickable = false
             mode = Mode.BUTTON_MODE
+            prevMode = Mode.FLIPPING_MODE
             animator.reverse()
             hasShown = false
 
@@ -430,14 +432,18 @@ class FlippingEdgesView @JvmOverloads constructor(
 
         isEndingAnimation = false
         mode = Mode.LOADING_MODE
+        prevMode = Mode.BUTTON_MODE
         animator.repeatCount = 0
         animator.start()
+        isClickable = false
         return this
 
     }
 
     fun stopLoading(): FlippingEdgesView {
+
         isEndingAnimation = true
+        isClickable = true
         return this
     }
 

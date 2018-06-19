@@ -20,7 +20,6 @@
     <string name="base_image">base image</string>
     <string name="hipe_logo">hipe logo</string>
     <string name="hipe_name">H I P E</string>
-    <string name="username">Username</string>
     <string name="auth_error_message">Incorrect username or password</string>
     <string name="lock">lock</string>
     <string name="password_text">PASSWORD</string>
@@ -38,9 +37,10 @@
     <string name="pasha_borisyk">pasha borisyk</string>
     <string name="not_less_than_8_characters">Not less than 8 characters</string>
     <string name="pooch">\@</string>
-    <string name="nickname">nickname</string>
+    <string name="username">Type username</string>
     <string name="pashaborisyk">pashaborisyk</string>
-    <string name="password">Password</string>
+    <string name="password">Type password</string>
+    <string name="email">Type email</string>
     <string name="confirm_password">Confirm password</string>
     <string name="next">Next</string>
     <string name="pashaborisyk_colon">pashaborisyk:</string>
@@ -76,6 +76,7 @@
     <string name="if_is_not_private_hint">If the party is not private it will be visible for everybody</string>
     <string name="gender_man">Gender man</string>
     <string name="gender_woman">Gender woman</string>
+    <string name="gender_select">SEX</string>
     <string name="gender_select_hint">Only chosen sex will be able to find your party</string>
     <string name="add_friend">Add friend</string>
     <string name="_plus_23">+23</string>
@@ -101,5 +102,7 @@
     <string name="sign_up">Sign up</string>
     <string name="invalid_credentials">Incorrect login or password. Try again</string>
     <string name="user_already_exists">User with this username already exists</string>
+    <string name="receive_updates_via_email_agreement">I agree to receive service updates \n at e-mail address typed above</string>
+    <string name="privacy_policy_agreement">I agree with privacy policy \n provided by this service</string>
 
 </resources>

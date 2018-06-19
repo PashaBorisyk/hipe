@@ -2,9 +2,11 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/content_coordinator_layout"
@@ -12,175 +14,370 @@
         android:layout_height="match_parent">
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="3">
-
-        <RelativeLayout
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:scaleType="centerCrop"
-                android:tint="#38000000"
-                app:srcCompat="@drawable/new_yourk"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="3">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:tint="#38000000"
+                        app:srcCompat="@drawable/new_yourk" />
+
+                </RelativeLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/inputs_root"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:background="@color/applicationLight">
+
+                    <com.bori.hipe.controllers.views.CircularRevealFrameLayout
+                        android:id="@+id/main_reveal"
+                        style="@style/LoginScreenFormsInputStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/password_input_layout">
+
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/confirm_password_input_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:counterMaxLength="16"
+                            app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
+                            app:counterTextAppearance="@null"
+                            app:errorEnabled="true"
+                            app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+                            app:hintAnimationEnabled="true"
+                            app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+                            app:passwordToggleEnabled="true">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/confirm_password"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/confirm_password"
+                                android:inputType="textPassword"
+                                android:maxLines="1"
+                                android:singleLine="false" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                    </com.bori.hipe.controllers.views.CircularRevealFrameLayout>
+
+
+                    <!--<com.bori.hipe.controllers.views.CircularRevavalView-->
+                    <!--android:id="@+id/circular_revaval_view"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:visibility="visible"-->
+                    <!--app:layout_constraintBottom_toTopOf="@+id/username_input_layout"-->
+                    <!--app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--app:layout_constraintStart_toStartOf="parent" />-->
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/password_input_layout"
+                        style="@style/LoginScreenFormsInputStyle"
+                        android:layout_margin="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        app:counterMaxLength="16"
+                        app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
+                        app:counterTextAppearance="@null"
+                        app:errorEnabled="true"
+                        app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+                        app:hintAnimationEnabled="true"
+                        app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/username_input_layout"
+                        app:passwordToggleEnabled="true">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/password"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:singleLine="false" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/username_input_layout"
+                        style="@style/LoginScreenFormsInputStyle"
+                        android:layout_margin="16dp"
+                        app:counterMaxLength="16"
+                        app:errorEnabled="true"
+                        app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+                        app:hintAnimationEnabled="true"
+                        app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:title="not">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/username"
+                            android:inputType="textPersonName"
+                            android:maxLines="1"
+                            android:singleLine="false" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+
+                    <com.bori.hipe.controllers.views.FlippingEdgesView
+                        android:id="@+id/login_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:paddingBottom="20dp"
+                        android:paddingLeft="40dp"
+                        android:paddingRight="40dp"
+                        android:paddingTop="20dp"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/password_input_layout"
+                        app:layout_constraintVertical_bias="0.8" />
+
+                    <TextView
+                        android:id="@+id/create_account_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/don_t_have_account_yet"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/password_input_layout" />
+
+
+                </android.support.constraint.ConstraintLayout>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/applicationDark" />
+
+                <RelativeLayout
+                    android:id="@+id/settings_reveal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="20dp"
+                    android:padding="10dp">
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/applicationLight"
+                        app:cardBackgroundColor="@color/applicationLight"
+                        app:cardCornerRadius="3dp"
+                        app:cardElevation="2dp"
+                        app:cardPreventCornerOverlap="true"
+                        app:cardUseCompatPadding="true">
+
+                        <android.support.constraint.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:orientation="horizontal"
+                                android:weightSum="10"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_weight="6"
+                                    android:src="@drawable/me_photo"
+                                    app:layout_constraintBottom_toTopOf="@+id/email_input_layout"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_weight="4"
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="24dp">
+
+
+                                    <com.jaredrummler.materialspinner.MaterialSpinner
+                                        android:id="@+id/spinner"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:gravity="center"
+                                        app:ms_background_color="@color/applicationLight"
+                                        app:ms_hide_arrow="true"
+                                        app:ms_hint="@string/gender_select"
+                                        tools:ignore="TooDeepLayout" />
+
+                                        <View
+                                            android:layout_width="match_parent"
+                                            android:layout_height="1dp"
+                                            android:alpha="0.5"
+                                            android:background="@color/applicationAccentSecondarry"/>
+
+                                    </LinearLayout>
+
+                            </LinearLayout>
+
+                            <android.support.design.widget.TextInputLayout
+                                android:id="@+id/email_input_layout"
+                                style="@style/LoginScreenFormsInputStyle"
+                                android:layout_margin="16dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                app:counterMaxLength="16"
+                                app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
+                                app:counterTextAppearance="@null"
+                                app:errorEnabled="true"
+                                app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+                                app:hintAnimationEnabled="true"
+                                app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:passwordToggleEnabled="true">
+
+                                <android.support.design.widget.TextInputEditText
+                                    android:id="@+id/email"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/email"
+                                    android:inputType="textEmailAddress"
+                                    android:maxLines="1"
+                                    android:singleLine="false" />
+
+                            </android.support.design.widget.TextInputLayout>
+
+                            <android.support.design.widget.FloatingActionButton
+                                android:id="@+id/floatingActionButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:src="@drawable/ic_check_light_24dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.9"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
+                                app:layout_constraintVertical_bias="0.9" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/privacy_policy_agreement"
+                                app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.05"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
+                                app:layout_constraintVertical_bias="0.19" />
+
+
+                            <CheckBox
+                                android:id="@+id/receiveEmailCheckBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/receive_updates_via_email_agreement"
+                                app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/checkBox"
+                                app:layout_constraintVertical_bias="0.100000024" />
+
+                        </android.support.constraint.ConstraintLayout>
+
+
+                    </android.support.v7.widget.CardView>
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/inputs_root"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:background="@color/applicationLight">
-
-            <com.bori.hipe.controllers.views.CircularRevealFrameLayout
-                android:id="@+id/main_reveal"
-                style="@style/LoginScreenFormsInputStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password_input_layout">
-
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/confirm_password_input_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:counterMaxLength="16"
-                    app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
-                    app:counterTextAppearance="@null"
-                    app:errorEnabled="true"
-                    app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
-                    app:hintAnimationEnabled="true"
-                    app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
-                    app:passwordToggleEnabled="true">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/confirm_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/confirm_password"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:singleLine="false" />
-
-                </android.support.design.widget.TextInputLayout>
-
-            </com.bori.hipe.controllers.views.CircularRevealFrameLayout>
-
-
-            <!--<com.bori.hipe.controllers.views.CircularRevavalView-->
-            <!--android:id="@+id/circular_revaval_view"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:visibility="visible"-->
-            <!--app:layout_constraintBottom_toTopOf="@+id/username_input_layout"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent" />-->
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/password_input_layout"
-                style="@style/LoginScreenFormsInputStyle"
-                android:layout_margin="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:counterMaxLength="16"
-                app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
-                app:counterTextAppearance="@null"
-                app:errorEnabled="true"
-                app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
-                app:hintAnimationEnabled="true"
-                app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/username_input_layout"
-                app:passwordToggleEnabled="true">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/password"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="false" />
-
-            </android.support.design.widget.TextInputLayout>
-
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/username_input_layout"
-                style="@style/LoginScreenFormsInputStyle"
-                android:layout_margin="16dp"
-                app:counterMaxLength="16"
-                app:errorEnabled="true"
-                app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
-                app:hintAnimationEnabled="true"
-                app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:title="not">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/username"
-                    android:inputType="textPersonName"
-                    android:maxLines="1"
-                    android:singleLine="false" />
-
-            </android.support.design.widget.TextInputLayout>
-
-
-            <com.bori.hipe.controllers.views.FlippingEdgesView
-                android:id="@+id/login_button"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:paddingBottom="20dp"
-                android:paddingLeft="40dp"
-                android:paddingRight="40dp"
-                android:paddingTop="20dp"
-                android:textAlignment="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password_input_layout"
-                app:layout_constraintVertical_bias="0.8" />
-
-            <TextView
-                android:id="@+id/create_account_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/don_t_have_account_yet"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.05"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password_input_layout" />
-
-
-        </android.support.constraint.ConstraintLayout>
-
-    </LinearLayout>
-
     </android.support.design.widget.CoordinatorLayout>
+
 </android.support.design.widget.CoordinatorLayout>

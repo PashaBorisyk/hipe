@@ -31,6 +31,7 @@ import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
+import com.jaredrummler.materialspinner.MaterialSpinner
 
 class LoginFragment : HipeBaseFragment() {
 
@@ -65,6 +66,8 @@ class LoginFragment : HipeBaseFragment() {
 
     private lateinit var snackbar: Snackbar
     private lateinit var liftAnimationListener: LiftAnimationListener
+
+    private lateinit var materialSpinner: MaterialSpinner
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -101,6 +104,9 @@ class LoginFragment : HipeBaseFragment() {
         createAccountText = findViewById(R.id.create_account_text)
         mainRevealFrameLayout = findViewById(R.id.main_reveal)
         mainRevealFrameLayout.child = confirmPasswordInputLayout
+
+        materialSpinner = findViewById(R.id.spinner)
+        materialSpinner.setItems("M","W")
 
         loginButton.mainText = getString(R.string.sign_in)
 
@@ -213,6 +219,8 @@ class LoginFragment : HipeBaseFragment() {
                     HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
                     startActivity(Intent(context, MainActivity::class.java))
                 } else if (serverCode == Status.NOT_FOUND) {
+                    loginButton.circleColor = resources.getColor(R.color.colorAccent)
+                    loginButton.stopLoading()
                     contentLayout.animate()
                             .translationY(-48f * HipeApplication.pixelsPerDp)
                             .setListener(liftAnimationListener)
@@ -225,10 +233,14 @@ class LoginFragment : HipeBaseFragment() {
                 REGISTER_REQ_USER_ID -> if (serverCode == Status.CREATED) {
                     HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
                 } else if (serverCode == Status.CONFLICT) {
+                    loginButton.circleColor = resources.getColor(R.color.colorAccent)
+                    loginButton.stopLoading()
                     usernameInputLayout.error = getString(R.string.user_already_exists)
                 }
 
                 else -> {
+                    loginButton.circleColor = resources.getColor(R.color.colorAccent)
+                    loginButton.stopLoading()
                 }
             }
         }
