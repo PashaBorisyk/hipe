@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
@@ -15,6 +16,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.ImageView
 import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.MainActivity
@@ -24,7 +27,6 @@ import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserService
-import com.bori.hipe.controllers.views.CircularRevavalView
 import com.bori.hipe.controllers.views.CircularRevealFrameLayout
 import com.bori.hipe.controllers.views.FlippingEdgesView
 import com.bori.hipe.util.Const
@@ -32,6 +34,7 @@ import com.bori.hipe.util.Status
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
 import com.jaredrummler.materialspinner.MaterialSpinner
+import java.util.*
 
 class LoginFragment : HipeBaseFragment() {
 
@@ -41,33 +44,42 @@ class LoginFragment : HipeBaseFragment() {
         private const val REGISTER_REQ_USER_ID = 9L
         private const val SNACK_BAR_ANIMATION_DURATION = 3000
         private const val LIFT_ANIMATION_DURATION = 250L
+        private const val WINDOW_ELEMENT_ANIMATION_DURATION = 200L
+        private const val WINDOW_ELEMENT_ANIMATION_DELAY = 100L
     }
 
+    //Main views
     private lateinit var loginButton: FlippingEdgesView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var restCallback: LoginActivityRestCallbackAdapter
-
     private lateinit var createAccountText: View
     private lateinit var mainLayout: View
     private lateinit var contentLayout: View
-
-    private lateinit var circularRevavalView: CircularRevavalView
-
     private lateinit var usernameInputLayout: TextInputLayout
     private lateinit var username: TextInputEditText
-
     private lateinit var passwordInputLayout: TextInputLayout
     private lateinit var password: TextInputEditText
-
     private lateinit var confirmPasswordInputLayout: TextInputLayout
     private lateinit var confirmPassword: TextInputEditText
-
     private lateinit var mainRevealFrameLayout: CircularRevealFrameLayout
-
     private lateinit var snackbar: Snackbar
     private lateinit var liftAnimationListener: LiftAnimationListener
-
     private lateinit var materialSpinner: MaterialSpinner
+
+    //Window views
+    private lateinit var loadingEmailConfirmationView:FlippingEdgesView
+    private lateinit var windowCard:View
+    private lateinit var tintView: View
+    private lateinit var photoAndGenderLayout:View
+    private lateinit var windowRootView:View
+    private lateinit var windwowRootCircularRevavalView: CircularRevealFrameLayout
+    private lateinit var userPhoto:ImageView
+    private lateinit var userMailLayout:TextInputLayout
+    private lateinit var userMailEditText:TextInputEditText
+    private lateinit var confirmButton:FloatingActionButton
+    private lateinit var privacyCheckBox:CheckBox
+    private lateinit var updatesCheckBox:CheckBox
+    private val windowViews = LinkedList<View>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -85,6 +97,11 @@ class LoginFragment : HipeBaseFragment() {
 
     private fun init() {
         Log.d(TAG, "init() called")
+        initMainLayout()
+        initWindowLayout()
+    }
+
+    private fun initMainLayout(){
 
         mainLayout = findViewById(R.id.main_coordinator_layout)
         contentLayout = findViewById(R.id.content_coordinator_layout)
@@ -105,12 +122,9 @@ class LoginFragment : HipeBaseFragment() {
         mainRevealFrameLayout = findViewById(R.id.main_reveal)
         mainRevealFrameLayout.child = confirmPasswordInputLayout
 
-        materialSpinner = findViewById(R.id.spinner)
-        materialSpinner.setItems("M","W")
-
         loginButton.mainText = getString(R.string.sign_in)
 
-        createAccountText.setOnTouchListener { v, event ->
+        createAccountText.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 createAccountText.visibility = View.GONE
                 mainRevealFrameLayout.showIn(event = event)
@@ -135,6 +149,37 @@ class LoginFragment : HipeBaseFragment() {
             contentLayout.animate().translationY(0f).setStartDelay(0).setDuration(LIFT_ANIMATION_DURATION).setListener(null).start()
         }
 
+    }
+
+    private fun initWindowLayout(){
+
+        tintView = findViewById(R.id.tint_view)
+        materialSpinner = findViewById(R.id.gender_select_spinner)
+        photoAndGenderLayout = findViewById(R.id.photo_and_gender_layout)
+        windowRootView = findViewById(R.id.window_container)
+        windwowRootCircularRevavalView = findViewById(R.id.window_circular_container)
+        userPhoto = findViewById(R.id.user_photo)
+        userMailEditText = findViewById(R.id.email)
+        userMailLayout = findViewById(R.id.email_input_layout)
+        confirmButton = findViewById(R.id.confirm_registration_button)
+        privacyCheckBox = findViewById(R.id.privacy_check_box)
+        updatesCheckBox = findViewById(R.id.receive_email_check_box)
+        windowCard = findViewById(R.id.window_card)
+        loadingEmailConfirmationView = findViewById(R.id.email_confirmation_loading_button)
+        loadingEmailConfirmationView.startLoading()
+
+        windowViews.add(updatesCheckBox)
+        windowViews.add(privacyCheckBox)
+        windowViews.add(userMailLayout)
+        windowViews.add(photoAndGenderLayout)
+
+        materialSpinner.setItems("M","W")
+        tintView.setOnClickListener(myOnClickListener)
+        confirmButton.setOnClickListener(myOnClickListener)
+        windwowRootCircularRevavalView.onUpdate = {
+            tintView.alpha = 0.9f* if (windwowRootCircularRevavalView.showForward)
+                it else 1f - it
+        }
 
     }
 
@@ -232,6 +277,8 @@ class LoginFragment : HipeBaseFragment() {
                 }
                 REGISTER_REQ_USER_ID -> if (serverCode == Status.CREATED) {
                     HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
+                    windowRootView.visibility = View.VISIBLE
+                    windwowRootCircularRevavalView.showIn()
                 } else if (serverCode == Status.CONFLICT) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
                     loginButton.stopLoading()
@@ -291,6 +338,23 @@ class LoginFragment : HipeBaseFragment() {
             }
 
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
+
+            R.id.confirm_registration_button-> hideWindowViews()
+        }
+
+    }
+
+    fun hideWindowViews(){
+
+        windowViews.forEachIndexed{ index,view ->
+            view.animate().setInterpolator { duration ->
+                view.pivotY = view.width/2*( 1 - duration)
+                view.scaleX = 1f - duration/2
+                view.scaleY = 1f -duration/2
+                view.alpha = 1f - duration
+
+                duration
+            }.setDuration(WINDOW_ELEMENT_ANIMATION_DURATION).setStartDelay(index* WINDOW_ELEMENT_ANIMATION_DELAY).start()
         }
 
     }

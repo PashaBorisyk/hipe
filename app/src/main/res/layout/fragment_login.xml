@@ -190,22 +190,28 @@
             </LinearLayout>
 
             <RelativeLayout
+                android:id="@+id/window_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="visible">
 
                 <View
+                    android:id="@+id/tint_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:alpha="0"
                     android:background="@color/applicationDark" />
 
-                <RelativeLayout
-                    android:id="@+id/settings_reveal"
+                <!--<RelativeLayout-->
+                <com.bori.hipe.controllers.views.CircularRevealFrameLayout
+                    android:id="@+id/window_circular_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="20dp"
                     android:padding="10dp">
 
                     <android.support.v7.widget.CardView
+                        android:id="@+id/window_card"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/applicationLight"
@@ -215,39 +221,46 @@
                         app:cardPreventCornerOverlap="true"
                         app:cardUseCompatPadding="true">
 
-                        <android.support.constraint.ConstraintLayout
+                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
 
-                            <LinearLayout
+                            <android.support.constraint.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:orientation="horizontal"
-                                android:weightSum="10"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent">
+                                android:layout_height="match_parent"
+                                android:visibility="gone">
 
-                                <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="0dp"
+                                <LinearLayout
+                                    android:id="@+id/photo_and_gender_layout"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="8dp"
                                     android:layout_marginEnd="8dp"
                                     android:layout_marginLeft="8dp"
                                     android:layout_marginRight="8dp"
                                     android:layout_marginStart="8dp"
                                     android:layout_marginTop="8dp"
-                                    android:layout_weight="6"
-                                    android:src="@drawable/me_photo"
-                                    app:layout_constraintBottom_toTopOf="@+id/email_input_layout"
+                                    android:orientation="horizontal"
+                                    android:weightSum="10"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/user_photo"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginLeft="8dp"
+                                        android:layout_marginRight="8dp"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_weight="6"
+                                        android:src="@drawable/me_photo"
+                                        app:layout_constraintBottom_toTopOf="@+id/email_input_layout"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
 
                                     <LinearLayout
                                         android:layout_width="0dp"
@@ -258,121 +271,145 @@
                                         android:padding="24dp">
 
 
-                                    <com.jaredrummler.materialspinner.MaterialSpinner
-                                        android:id="@+id/spinner"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
-                                        android:gravity="center"
-                                        app:ms_background_color="@color/applicationLight"
-                                        app:ms_hide_arrow="true"
-                                        app:ms_hint="@string/gender_select"
-                                        tools:ignore="TooDeepLayout" />
+                                        <com.jaredrummler.materialspinner.MaterialSpinner
+                                            android:id="@+id/gender_select_spinner"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:gravity="center"
+                                            app:ms_background_color="@color/applicationLight"
+                                            app:ms_hide_arrow="true"
+                                            app:ms_hint="@string/gender_select"
+                                            tools:ignore="TooDeepLayout" />
 
                                         <View
                                             android:layout_width="match_parent"
                                             android:layout_height="1dp"
                                             android:alpha="0.5"
-                                            android:background="@color/applicationAccentSecondarry"/>
+                                            android:background="@color/applicationAccentSecondarry" />
 
                                     </LinearLayout>
 
-                            </LinearLayout>
+                                </LinearLayout>
 
-                            <android.support.design.widget.TextInputLayout
-                                android:id="@+id/email_input_layout"
-                                style="@style/LoginScreenFormsInputStyle"
-                                android:layout_margin="16dp"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                app:counterMaxLength="16"
-                                app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
-                                app:counterTextAppearance="@null"
-                                app:errorEnabled="true"
-                                app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
-                                app:hintAnimationEnabled="true"
-                                app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:passwordToggleEnabled="true">
+                                <android.support.design.widget.TextInputLayout
+                                    android:id="@+id/email_input_layout"
+                                    style="@style/LoginScreenFormsInputStyle"
+                                    android:layout_margin="16dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    app:counterMaxLength="16"
+                                    app:counterOverflowTextAppearance="@style/LoginScreenFormsInputStyle"
+                                    app:counterTextAppearance="@null"
+                                    app:errorEnabled="true"
+                                    app:errorTextAppearance="@style/LoginScreenFormsErrorStyle"
+                                    app:hintAnimationEnabled="true"
+                                    app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:passwordToggleEnabled="true">
 
-                                <android.support.design.widget.TextInputEditText
-                                    android:id="@+id/email"
+                                    <android.support.design.widget.TextInputEditText
+                                        android:id="@+id/email"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="@string/email"
+                                        android:inputType="textEmailAddress"
+                                        android:maxLines="1"
+                                        android:singleLine="false" />
+
+                                </android.support.design.widget.TextInputLayout>
+
+                                <android.support.design.widget.FloatingActionButton
+                                    android:id="@+id/confirm_registration_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:src="@drawable/ic_check_light_24dp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.9"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
+                                    app:layout_constraintVertical_bias="0.9" />
+
+                                <CheckBox
+                                    android:id="@+id/privacy_check_box"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="@string/email"
-                                    android:inputType="textEmailAddress"
-                                    android:maxLines="1"
-                                    android:singleLine="false" />
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginRight="16dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/privacy_policy_agreement"
+                                    app:layout_constraintBottom_toTopOf="@+id/confirm_registration_button"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_bias="0.05"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
+                                    app:layout_constraintVertical_bias="0.19" />
 
-                            </android.support.design.widget.TextInputLayout>
 
-                            <android.support.design.widget.FloatingActionButton
-                                android:id="@+id/floatingActionButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:src="@drawable/ic_check_light_24dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.9"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
-                                app:layout_constraintVertical_bias="0.9" />
+                                <CheckBox
+                                    android:id="@+id/receive_email_check_box"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/receive_updates_via_email_agreement"
+                                    app:layout_constraintBottom_toTopOf="@+id/confirm_registration_button"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/privacy_check_box"
+                                    app:layout_constraintVertical_bias="0.100000024" />
 
-                            <CheckBox
-                                android:id="@+id/checkBox"
+                            </android.support.constraint.ConstraintLayout>
+
+                            <android.support.constraint.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="16dp"
-                                android:layout_marginRight="16dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:text="@string/privacy_policy_agreement"
-                                app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="0.05"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/email_input_layout"
-                                app:layout_constraintVertical_bias="0.19" />
+                                android:layout_height="match_parent"
+                                android:visibility="invisible">
 
+                                <com.bori.hipe.controllers.views.FlippingEdgesView
+                                    android:id="@+id/email_confirmation_loading_button"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
-                            <CheckBox
-                                android:id="@+id/receiveEmailCheckBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:text="@string/receive_updates_via_email_agreement"
-                                app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/checkBox"
-                                app:layout_constraintVertical_bias="0.100000024" />
+                            </android.support.constraint.ConstraintLayout>
 
-                        </android.support.constraint.ConstraintLayout>
+                        </RelativeLayout>
 
 
                     </android.support.v7.widget.CardView>
 
 
-                </RelativeLayout>
+                </com.bori.hipe.controllers.views.CircularRevealFrameLayout>
 
             </RelativeLayout>
 
