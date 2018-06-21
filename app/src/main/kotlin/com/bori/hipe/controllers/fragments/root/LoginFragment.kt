@@ -36,7 +36,7 @@ import com.bori.hipe.util.extensions.setContentView
 import com.jaredrummler.materialspinner.MaterialSpinner
 import java.util.*
 
-class LoginFragment : HipeBaseFragment() {
+class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
     companion object {
         private const val TAG = "LoginFragment.kt"
@@ -79,7 +79,8 @@ class LoginFragment : HipeBaseFragment() {
     private lateinit var confirmButton:FloatingActionButton
     private lateinit var privacyCheckBox:CheckBox
     private lateinit var updatesCheckBox:CheckBox
-    private val windowViews = LinkedList<View>()
+    private val windowInputsViews = LinkedList<View>()
+    private val windowLoadingsViews = LinkedList<View>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -136,9 +137,9 @@ class LoginFragment : HipeBaseFragment() {
             }
             return@setOnTouchListener true
         }
-        createAccountText.setOnClickListener(myOnClickListener)
+        createAccountText.setOnClickListener(this)
 
-        loginButton.setOnClickListener(myOnClickListener)
+        loginButton.setOnClickListener(this)
         restCallback = LoginActivityRestCallbackAdapter()
         snackbar = Snackbar.make(mainLayout, R.string.no_connection_detected, Snackbar.LENGTH_LONG)
         snackbar.duration = SNACK_BAR_ANIMATION_DURATION
@@ -150,6 +151,7 @@ class LoginFragment : HipeBaseFragment() {
         }
 
     }
+
 
     private fun initWindowLayout(){
 
@@ -166,20 +168,23 @@ class LoginFragment : HipeBaseFragment() {
         updatesCheckBox = findViewById(R.id.receive_email_check_box)
         windowCard = findViewById(R.id.window_card)
         loadingEmailConfirmationView = findViewById(R.id.email_confirmation_loading_button)
-        loadingEmailConfirmationView.startLoading()
 
-        windowViews.add(updatesCheckBox)
-        windowViews.add(privacyCheckBox)
-        windowViews.add(userMailLayout)
-        windowViews.add(photoAndGenderLayout)
+        windowInputsViews.add(updatesCheckBox)
+        windowInputsViews.add(privacyCheckBox)
+        windowInputsViews.add(userMailLayout)
+        windowInputsViews.add(photoAndGenderLayout)
+
+        windowLoadingsViews.add(loadingEmailConfirmationView)
+
 
         materialSpinner.setItems("M","W")
-        tintView.setOnClickListener(myOnClickListener)
-        confirmButton.setOnClickListener(myOnClickListener)
+        tintView.setOnClickListener(this)
+        confirmButton.setOnClickListener(this)
         windwowRootCircularRevavalView.onUpdate = {
             tintView.alpha = 0.9f* if (windwowRootCircularRevavalView.showForward)
                 it else 1f - it
         }
+
 
     }
 
@@ -247,6 +252,8 @@ class LoginFragment : HipeBaseFragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "LoginFragment onResume()")
+        loadingEmailConfirmationView.show(true)
+
     }
 
     override fun onStop() {
@@ -277,8 +284,7 @@ class LoginFragment : HipeBaseFragment() {
                 }
                 REGISTER_REQ_USER_ID -> if (serverCode == Status.CREATED) {
                     HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
-                    windowRootView.visibility = View.VISIBLE
-                    windwowRootCircularRevavalView.showIn()
+                    showWindow()
                 } else if (serverCode == Status.CONFLICT) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
                     loginButton.stopLoading()
@@ -310,8 +316,16 @@ class LoginFragment : HipeBaseFragment() {
 
     }
 
-    private val myOnClickListener = { v: View ->
-        Unit
+    private fun showWindow(){
+
+        windowRootView.visibility = View.VISIBLE
+        windwowRootCircularRevavalView.showIn()
+        loadingEmailConfirmationView.colors = resources.getColor(R.color.colorAccent)
+        loadingEmailConfirmationView.show(true)
+
+    }
+
+    override fun onClick(v: View) {
 
         Log.d(TAG, "onClick() called with: v = [$v]")
 
@@ -338,15 +352,17 @@ class LoginFragment : HipeBaseFragment() {
             }
 
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
-
             R.id.confirm_registration_button-> hideWindowViews()
+            R.id.email_confirmation_loading_button -> {
+                loadingEmailConfirmationView.startLoading()}
+            else ->{}
         }
 
     }
 
-    fun hideWindowViews(){
+    private fun hideWindowViews(){
 
-        windowViews.forEachIndexed{ index,view ->
+        windowInputsViews.forEachIndexed{ index, view ->
             view.animate().setInterpolator { duration ->
                 view.pivotY = view.width/2*( 1 - duration)
                 view.scaleX = 1f - duration/2

@@ -199,7 +199,7 @@
                     android:id="@+id/tint_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:alpha="0"
+                    android:alpha="0.3"
                     android:background="@color/applicationDark" />
 
                 <!--<RelativeLayout-->
@@ -383,12 +383,27 @@
 
                             <android.support.constraint.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:visibility="invisible">
+                                android:layout_height="match_parent">
 
                                 <com.bori.hipe.controllers.views.FlippingEdgesView
                                     android:id="@+id/email_confirmation_loading_button"
                                     android:layout_width="match_parent"
+                                    android:layout_height="200dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:paddingBottom="10dp"
+                                    android:paddingLeft="10dp"
+                                    android:paddingRight="10dp"
+                                    android:paddingTop="10dp"
+                                    android:textAlignment="center"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/confirm_email_request"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="8dp"
                                     android:layout_marginEnd="8dp"
@@ -396,10 +411,31 @@
                                     android:layout_marginRight="8dp"
                                     android:layout_marginStart="8dp"
                                     android:layout_marginTop="8dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    android:padding="16dp"
+                                    android:text="@string/confirm_email_request"
+                                    android:textAlignment="center"
+                                    android:textSize="16dp"
+                                    app:layout_constraintBottom_toTopOf="@+id/email_confirmation_loading_button"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/count_down"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_marginLeft="8dp"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="06:21:22"
+                                    android:textSize="24dp"
+                                    app:layout_constraintBottom_toBottomOf="@+id/email_confirmation_loading_button"
+                                    app:layout_constraintEnd_toEndOf="@+id/email_confirmation_loading_button"
+                                    app:layout_constraintStart_toStartOf="@+id/email_confirmation_loading_button"
+                                    app:layout_constraintTop_toTopOf="@+id/email_confirmation_loading_button" />
 
                             </android.support.constraint.ConstraintLayout>
 

@@ -104,5 +104,7 @@
     <string name="user_already_exists">User with this username already exists</string>
     <string name="receive_updates_via_email_agreement">I agree to receive service updates \n at e-mail address typed above</string>
     <string name="privacy_policy_agreement">I agree with privacy policy \n provided by this service</string>
+    <string name="confirm_email_request">We\'ve send a confirmation mail to the address provided before. Please confirm your registration until tomorrow</string>
+    <string name="time_remaining">Time remaining:</string>
 
 </resources>

@@ -213,8 +213,8 @@ class FlippingEdgesView @JvmOverloads constructor(
                         animator?.start()
                         return
                     } else {
+                        prevMode = mode
                         mode = Mode.LOADING_MODE
-                        prevMode = Mode.FLIPPING_MODE
                         animator?.duration = BUTTON_LINES_ANIMATOR_DURATION
                         animator?.reverse()
                         return
@@ -223,27 +223,27 @@ class FlippingEdgesView @JvmOverloads constructor(
                     if (isEndingAnimation) {
                         if (prevMode == Mode.BUTTON_MODE) {
                             animator?.duration = FLIPPING_DURATION
+                            prevMode = mode
                             mode = Mode.FLIPPING_MODE
-                            prevMode = Mode.FLIPPING_MODE
                             animator?.start()
 
                         } else {
                             isEndingAnimation = false
                             hasToShowCircle = false
+                            prevMode = mode
                             mode = Mode.BUTTON_MODE
-                            prevMode = Mode.LOADING_MODE
                             animatedValue = 1f
                         }
                     } else {
                         animator?.duration = FLIPPING_DURATION
+                        prevMode = mode
                         mode = Mode.FLIPPING_MODE
-                        prevMode = Mode.LOADING_MODE
                         animator?.start()
                         return
                     }
                 } else if (mode == Mode.CHANGING_TEXT_MODE) {
+                    prevMode = mode
                     mode = Mode.BUTTON_MODE
-                    prevMode = Mode.CHANGING_TEXT_MODE
                     mainText = secondaryText
                 }
 
@@ -394,13 +394,9 @@ class FlippingEdgesView @JvmOverloads constructor(
     fun show(hasToShow: Boolean, ifWillNotAnimate: ((FlippingEdgesView) -> Unit)? = null): FlippingEdgesView {
 
         if (hasToShow) {
-            if (hasShown) {
-                ifWillNotAnimate?.invoke(this)
-                return this
-            }
             isClickable = true
+            prevMode = mode
             mode = Mode.BUTTON_MODE
-            prevMode = Mode.BUTTON_MODE
             colorAnimator?.start()
             animator?.start()
             hasShown = true
@@ -411,8 +407,8 @@ class FlippingEdgesView @JvmOverloads constructor(
                 return this
             }
             isClickable = false
+            prevMode = mode
             mode = Mode.BUTTON_MODE
-            prevMode = Mode.FLIPPING_MODE
             animator?.reverse()
             hasShown = false
 
@@ -422,8 +418,9 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     fun changeText(text: String): FlippingEdgesView {
-        if (mode == Mode.BUTTON_MODE && hasShown) {
+        if (hasShown) {
             secondaryText = text
+            prevMode = mode
             mode = Mode.CHANGING_TEXT_MODE
             animator?.start()
         } else {
@@ -437,9 +434,8 @@ class FlippingEdgesView @JvmOverloads constructor(
     fun startLoading(): FlippingEdgesView {
 
         isEndingAnimation = false
+        prevMode = mode
         mode = Mode.LOADING_MODE
-        prevMode = Mode.BUTTON_MODE
-        animator?:initAnimator()
         animator?.repeatCount = 0
         animator?.start()
         isClickable = false
