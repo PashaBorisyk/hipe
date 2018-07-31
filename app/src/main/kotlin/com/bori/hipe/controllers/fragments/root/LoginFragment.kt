@@ -176,7 +176,6 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
         windowLoadingsViews.add(loadingEmailConfirmationView)
 
-
         materialSpinner.setItems("M","W")
         tintView.setOnClickListener(this)
         confirmButton.setOnClickListener(this)
