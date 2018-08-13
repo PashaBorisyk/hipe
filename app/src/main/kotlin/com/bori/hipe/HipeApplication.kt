@@ -10,14 +10,8 @@ import android.util.Log
 import com.bori.hipe.controllers.location.LocationAccessor
 import com.bori.hipe.controllers.messenger.WebSocketConnector
 import com.bori.hipe.controllers.receiver.BootReciever
-import com.bori.hipe.controllers.rest.routes.EventNewsRouter
-import com.bori.hipe.controllers.rest.routes.EventRouter
-import com.bori.hipe.controllers.rest.routes.HipeImageRouter
-import com.bori.hipe.controllers.rest.routes.UserRouter
-import com.bori.hipe.controllers.rest.service.EventNewsService
-import com.bori.hipe.controllers.rest.service.EventService
-import com.bori.hipe.controllers.rest.service.HipeImageService
-import com.bori.hipe.controllers.rest.service.UserService
+import com.bori.hipe.controllers.rest.routes.*
+import com.bori.hipe.controllers.rest.service.*
 import com.bori.hipe.controllers.services.HipeService
 import com.bori.hipe.util.Const
 import com.nostra13.universalimageloader.core.ImageLoader
@@ -65,6 +59,8 @@ class HipeApplication : SugarApp() {
         EventService.eventEvoke = restRequests.create(EventRouter::class.java)
         HipeImageService.hipeImageRouter = restRequests.create(HipeImageRouter::class.java)
         UserService.userRouter = restRequests.create(UserRouter::class.java)
+        UserRegistrationService.userRegistrationRouter = restRequests
+                .create(UserRegistrationRouter::class.java)
 
         val metrics: DisplayMetrics = resources.displayMetrics
         pixelsPerDp = metrics.density
@@ -82,7 +78,7 @@ class HipeApplication : SugarApp() {
 
         private const val TAG = "HipeApplication"
 
-        const val SERVER_PATH = "http://192.168.117.26:9000/"
+        const val SERVER_PATH = "http://192.168.100.41:9000/"
 
         lateinit var sharedPreferences:SharedPreferences
 

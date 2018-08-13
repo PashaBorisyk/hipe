@@ -26,6 +26,7 @@ import com.bori.hipe.controllers.crypto.encode
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.service.UserRegistrationService
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.controllers.views.CircularRevealFrameLayout
 import com.bori.hipe.controllers.views.FlippingEdgesView
@@ -334,7 +335,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
                 Log.d(TAG, "onClick: Data Validated!!!")
                 loginButton.startLoading()
                 if (createAccountText.visibility != View.VISIBLE) {
-                    UserService.registerUser(
+                    UserRegistrationService.registerUserStepOne(
                             requestID = REGISTER_REQ_USER_ID,
                             username = username.text.toString(),
                             password = encode(password.text.toString()

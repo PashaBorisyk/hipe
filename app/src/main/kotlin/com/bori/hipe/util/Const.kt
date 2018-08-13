@@ -4,7 +4,9 @@ object Const {
 
     const val USER_ID = "user_id"
     const val USER_TOKEN = "user_token"
+    const val PUBLIC_TOKEN = "publicToken"
     const val USERNAME = "username"
+    const val EMAIL = "email"
     const val ADVANCED_USER_ID = "advanced_user_id"
     const val PASSWORD = "password"
     const val SURNAME = "surname"
