@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.TextView
 import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.MainActivity
@@ -29,6 +30,7 @@ import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserRegistrationService
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.controllers.views.CircularRevealFrameLayout
+import com.bori.hipe.controllers.views.CounterView
 import com.bori.hipe.controllers.views.FlippingEdgesView
 import com.bori.hipe.util.Const
 import com.bori.hipe.util.Status
@@ -68,7 +70,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     private lateinit var materialSpinner: MaterialSpinner
 
     //Window views
-    private lateinit var loadingEmailConfirmationView:FlippingEdgesView
+    private lateinit var counterView:CounterView
     private lateinit var windowCard:View
     private lateinit var tintView: View
     private lateinit var photoAndGenderLayout:View
@@ -80,6 +82,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     private lateinit var confirmButton:FloatingActionButton
     private lateinit var privacyCheckBox:CheckBox
     private lateinit var updatesCheckBox:CheckBox
+    private lateinit var countDown:TextView
     private val windowInputsViews = LinkedList<View>()
     private val windowLoadingsViews = LinkedList<View>()
 
@@ -122,6 +125,9 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
         createAccountText = findViewById(R.id.create_account_text)
         mainRevealFrameLayout = findViewById(R.id.main_reveal)
+
+        countDown = findViewById(R.id.count_down)
+
         mainRevealFrameLayout.child = confirmPasswordInputLayout
 
         loginButton.mainText = getString(R.string.sign_in)
@@ -168,14 +174,15 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
         privacyCheckBox = findViewById(R.id.privacy_check_box)
         updatesCheckBox = findViewById(R.id.receive_email_check_box)
         windowCard = findViewById(R.id.window_card)
-        loadingEmailConfirmationView = findViewById(R.id.email_confirmation_loading_button)
+        counterView = findViewById(R.id.email_confirmation_counter_view)
+
 
         windowInputsViews.add(updatesCheckBox)
         windowInputsViews.add(privacyCheckBox)
         windowInputsViews.add(userMailLayout)
         windowInputsViews.add(photoAndGenderLayout)
 
-        windowLoadingsViews.add(loadingEmailConfirmationView)
+        windowLoadingsViews.add(counterView)
 
         materialSpinner.setItems("M","W")
         tintView.setOnClickListener(this)
@@ -184,6 +191,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
             tintView.alpha = 0.9f* if (windwowRootCircularRevavalView.showForward)
                 it else 1f - it
         }
+
+        counterView.start(100000,countDown)
 
 
     }
@@ -252,7 +261,6 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "LoginFragment onResume()")
-        loadingEmailConfirmationView.show(true)
 
     }
 
@@ -320,8 +328,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
         windowRootView.visibility = View.VISIBLE
         windwowRootCircularRevavalView.showIn()
-        loadingEmailConfirmationView.colors = resources.getColor(R.color.colorAccent)
-        loadingEmailConfirmationView.show(true)
+        counterView.start(10000,countDown)
 
     }
 
@@ -353,8 +360,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
             R.id.confirm_registration_button-> hideWindowViews()
-            R.id.email_confirmation_loading_button -> {
-                loadingEmailConfirmationView.startLoading()}
+            R.id.email_confirmation_counter_view -> {
+                counterView.start(10000,countDown)}
             else ->{}
         }
 

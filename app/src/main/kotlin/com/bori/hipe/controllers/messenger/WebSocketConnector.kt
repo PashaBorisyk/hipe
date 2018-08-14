@@ -1,5 +1,6 @@
 package com.bori.hipe.controllers.messenger
 
+import android.util.Log
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
 import com.bori.hipe.controllers.receiver.BootReciever
 import com.bori.hipe.models.ChatMessageNOSQL
@@ -10,12 +11,15 @@ import de.tavendo.autobahn.WebSocketHandler
 
 object WebSocketConnector : WebSocketConnection() {
 
-    const val URL = "ws://192.168.0.31:9000/sock/?userId=1"
+    private const val TAG = "WebSocketConnector.kt"
+    const val URL = "ws://192.168.100.41:8081/"
     private val gson = Gson()
 
     private val messageCallBacks = linkedSetOf<MessageCallbackAdapter>()
 
     fun createConncetion() {
+
+        Log.d(TAG,"Creating connection with : $URL")
 
         if (isConnected)
             return
@@ -58,10 +62,6 @@ object WebSocketConnector : WebSocketConnection() {
             }
 
         })
-    }
-
-    fun disposeConnection() {
-        disconnect()
     }
 
     fun sendMessage(chatMessageNOSQL: ChatMessageNOSQL): Boolean {
