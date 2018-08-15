@@ -192,6 +192,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
                 it else 1f - it
         }
 
+        counterView.setOnClickListener(this)
+
         counterView.start(100000,countDown)
 
 
@@ -361,7 +363,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
             R.id.confirm_registration_button-> hideWindowViews()
             R.id.email_confirmation_counter_view -> {
-                counterView.start(10000,countDown)}
+                counterView.done(isSuccessful = false)}
             else ->{}
         }
 
@@ -377,7 +379,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
                 view.alpha = 1f - duration
 
                 duration
-            }.setDuration(WINDOW_ELEMENT_ANIMATION_DURATION).setStartDelay(index* WINDOW_ELEMENT_ANIMATION_DELAY).start()
+            }.setDuration(WINDOW_ELEMENT_ANIMATION_DURATION)
+                    .setStartDelay(index* WINDOW_ELEMENT_ANIMATION_DELAY).start()
         }
 
     }
