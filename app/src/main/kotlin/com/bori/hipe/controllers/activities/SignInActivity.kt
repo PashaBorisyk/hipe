@@ -15,7 +15,7 @@ import com.bori.hipe.R
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
 import com.bori.hipe.controllers.rest.service.UserService
-import com.bori.hipe.util.Status
+import com.bori.hipe.util.web.Status
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
 //https://developers.facebook.com/docs/facebook-login/android/
@@ -182,7 +182,7 @@ class SignInActivity : AppCompatActivity() {
 
     private val restCallback = object : RestCallbackAdapter() {
 
-        internal var photoCreationsCount = 0
+        var photoCreationsCount = 0
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
             Log.d(TAG, "onSimpleResponse: $serverCode")

@@ -33,9 +33,9 @@ import com.bori.hipe.controllers.views.CircularRevealFrameLayout
 import com.bori.hipe.controllers.views.CounterView
 import com.bori.hipe.controllers.views.FlippingEdgesView
 import com.bori.hipe.util.Const
-import com.bori.hipe.util.Status
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
+import com.bori.hipe.util.web.Status
 import com.jaredrummler.materialspinner.MaterialSpinner
 import java.util.*
 
@@ -44,7 +44,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     companion object {
         private const val TAG = "LoginFragment.kt"
         private const val LOGIN_USER_REQ_ID = 8L
-        private const val REGISTER_REQ_USER_ID = 9L
+        private const val REGISTER_STEP_ONE_REQ_USER_ID = 9L
+        private const val REGISTER_STEP_TWO_REQ_USER_ID = 10L
         private const val SNACK_BAR_ANIMATION_DURATION = 3000
         private const val LIFT_ANIMATION_DURATION = 250L
         private const val WINDOW_ELEMENT_ANIMATION_DURATION = 200L
@@ -278,7 +279,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
             when (requestID) {
                 LOGIN_USER_REQ_ID -> if (serverCode == Status.OK) {
-                    HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
+                    HipeApplication.sharedPreferences.edit().putString(Const.USER_PUBLIC_TOKEN, response as String).apply()
                     startActivity(Intent(context, MainActivity::class.java))
                 } else if (serverCode == Status.NOT_FOUND) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
@@ -292,8 +293,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
                     snackbar.setText(getString(R.string.invalid_credentials)).show()
                 }
-                REGISTER_REQ_USER_ID -> if (serverCode == Status.CREATED) {
-                    HipeApplication.sharedPreferences.edit().putString(Const.USER_TOKEN, response as String).apply()
+                REGISTER_STEP_ONE_REQ_USER_ID -> if (serverCode == Status.CREATED) {
+                    HipeApplication.sharedPreferences.edit().putString(Const.USER_PUBLIC_TOKEN, response as String).apply()
                     showWindow()
                 } else if (serverCode == Status.CONFLICT) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
@@ -330,7 +331,6 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
         windowRootView.visibility = View.VISIBLE
         windwowRootCircularRevavalView.showIn()
-        counterView.start(10000,countDown)
 
     }
 
@@ -345,7 +345,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
                 loginButton.startLoading()
                 if (createAccountText.visibility != View.VISIBLE) {
                     UserRegistrationService.registerUserStepOne(
-                            requestID = REGISTER_REQ_USER_ID,
+                            requestID = REGISTER_STEP_ONE_REQ_USER_ID,
                             username = username.text.toString(),
                             password = encode(password.text.toString()
                             )
@@ -363,7 +363,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
             R.id.confirm_registration_button-> hideWindowViews()
             R.id.email_confirmation_counter_view -> {
-                counterView.done(isSuccessful = false)}
+                counterView.done(isSuccessful = true)}
             else ->{}
         }
 

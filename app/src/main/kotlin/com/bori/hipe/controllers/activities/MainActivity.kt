@@ -1,5 +1,7 @@
 package com.bori.hipe.controllers.activities
 
+import android.annotation.TargetApi
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -8,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.fragments.root.LoginFragment
+import com.bori.hipe.controllers.fragments.ext.CameraFragment
 
 
 class MainActivity : AppCompatActivity(){
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity(){
     private lateinit var rootView:RelativeLayout
     private lateinit var visibleStageView: View
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         rootView = RelativeLayout(this)
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity(){
         rootView.addView(fragmentStage)
         supportFragmentManager
                 .beginTransaction()
-                .add(CONTENT_VIEW_ID,LoginFragment())
+                .add(CONTENT_VIEW_ID,CameraFragment())
                 .commit()
 
     }

@@ -9,13 +9,17 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
+import com.bori.hipe.R
 
 class CounterView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
 
     private companion object {
         private const val ENDING_DURATION = 700L
@@ -34,8 +38,15 @@ class CounterView @JvmOverloads constructor(
     private lateinit var colorAnimator: ObjectAnimator
     private val evaluator = ArgbEvaluator()
     private var counterDuration = 0L
-    private var userCenter = false
 
+    private var userCenter = false
+    private var drawBitmap = false
+
+    private val cross:Drawable = context.resources.getDrawable(R.drawable.ic_icons8_delete)
+    private val check:Drawable = context.resources.getDrawable(R.drawable.ic_1483821583_checkmark_24_light)
+    private lateinit var resultDrawable: Drawable
+
+    val image: ImageView = ImageView(context)
 
     init {
 
@@ -84,7 +95,25 @@ class CounterView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         canvas.save()
-        canvas.drawArc(ovalRect, -90f, -360f * animatedValue, userCenter, paint)
+        if(drawBitmap) {
+
+            val realAngle = -360f * animatedValue * 1.6f
+            val angle = if(realAngle > -360f) realAngle else -360f
+
+            canvas.drawArc(ovalRect, -90f, angle, userCenter, paint)
+
+            val realD = animatedValue.toDouble()*2.3f
+            val d = if(realD - 1.3 < 0) 0 else (Math.sin((realD-1.3)*2.4)*Math.min(width,height)*0.9).toInt()
+            val dx = ((width - d)/2)
+            val dy = ((height - d)/2)
+
+            resultDrawable.setBounds(dx, dy, dx+d, dy+d)
+            resultDrawable.alpha = (255*animatedValue).toInt()
+            resultDrawable.draw(canvas)
+        }
+        else{
+            canvas.drawArc(ovalRect, -90f, -360f * animatedValue, userCenter, paint)
+        }
         canvas.restore()
 
     }
@@ -157,6 +186,8 @@ class CounterView @JvmOverloads constructor(
     }
 
     fun done(isSuccessful: Boolean) {
+
+        resultDrawable = if(isSuccessful) check else cross
 
         updatedText.animate().alpha(0f).duration = (ENDING_DURATION * animatedValue).toLong()
         colorAnimator.removeAllUpdateListeners()
@@ -240,7 +271,6 @@ class CounterView @JvmOverloads constructor(
             this
         }
 
-        System.gc()
 
     }
 
@@ -292,6 +322,9 @@ class CounterView @JvmOverloads constructor(
             this
         }
 
+        drawBitmap = true
+
+        System.gc()
 
     }
 

@@ -31,7 +31,7 @@ import com.bori.hipe.controllers.rest.service.HipeImageService
 import com.bori.hipe.models.Event
 import com.bori.hipe.models.HipeImage
 import com.bori.hipe.models.User
-import com.bori.hipe.util.Status
+import com.bori.hipe.util.web.Status
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.ui.PlacePicker

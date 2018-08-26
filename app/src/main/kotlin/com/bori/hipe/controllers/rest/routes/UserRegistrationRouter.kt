@@ -17,7 +17,7 @@ interface UserRegistrationRouter {
     fun registerUserStepTwo(
             @Query(Const.USERNAME) username: String,
             @Query(Const.EMAIL) email: String,
-            @Query(Const.USER_TOKEN) publicToken:String
+            @Query(Const.USER_PUBLIC_TOKEN) publicToken:String
     ): Call<String>
 
 

@@ -20,7 +20,7 @@ import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.models.HipeImage
 import com.bori.hipe.models.Tuple
 import com.bori.hipe.models.User
-import com.bori.hipe.util.Status
+import com.bori.hipe.util.web.Status
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
