@@ -41,6 +41,7 @@ class CameraFragment : HipeBaseFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             cameraController.startPreview()
         }
+
     }
 
     private fun init() {

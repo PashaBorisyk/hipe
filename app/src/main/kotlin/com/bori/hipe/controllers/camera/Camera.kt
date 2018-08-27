@@ -271,4 +271,6 @@ internal object CameraStrategy {
         }
 
     }
+
+    external fun getJNI()
 }

@@ -200,4 +200,8 @@ class CameraLollipopController(
         }
     }
 
+    override fun stopPreview() {
+        imageReader.close()
+    }
+
 }
