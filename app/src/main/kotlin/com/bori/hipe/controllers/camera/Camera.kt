@@ -5,18 +5,17 @@ import android.annotation.TargetApi
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
-import android.hardware.camera2.params.StreamConfigurationMap
 import android.media.Image
 import android.media.ImageReader
 import android.os.Build
 import android.support.annotation.RequiresApi
+import android.util.Log
 import android.util.Size
 import android.view.Surface
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.Single
-import java.io.File
-import java.io.FileOutputStream
+import java.nio.ByteBuffer
 import java.util.*
 
 
@@ -51,6 +50,11 @@ internal data class CaptureSessionData(
 
 @TargetApi(21)
 internal object CameraStrategy {
+
+    init {
+        System.loadLibrary("native-lib")
+    }
+
     internal val TAG = CameraStrategy::class.java.simpleName
     private val MAX_PREVIEW_WIDTH = 1920
     private val MAX_PREVIEW_HEIGHT = 1920
@@ -58,11 +62,10 @@ internal object CameraStrategy {
     private val MAX_STILL_IMAGE_HEIGHT = 1920
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    fun createCameraWithFacing(cameraManager: CameraManager, lensFacing: Int): Pair<String,CameraCharacteristics>? {
+    fun createCameraWithFacing(cameraManager: CameraManager, lensFacing: Int): Pair<String, CameraCharacteristics>? {
 
         var possibleCandidate: String? = null
-        var cameraCharactersitics:CameraCharacteristics? = null
-        var streamConfigurationMap:StreamConfigurationMap? = null
+        var cameraCharactersitics: CameraCharacteristics? = null
         val cameraIds = cameraManager.cameraIdList
 
         if (cameraIds.isEmpty())
@@ -72,8 +75,6 @@ internal object CameraStrategy {
 
             cameraCharactersitics = cameraManager.getCameraCharacteristics(cameraId)
 
-            streamConfigurationMap = cameraCharactersitics[CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP]
-                    ?: continue
             val facing = cameraCharactersitics[CameraCharacteristics.LENS_FACING]
             if (facing != null && facing == lensFacing)
                 return cameraId to cameraCharactersitics
@@ -210,17 +211,27 @@ internal object CameraStrategy {
                 subscriber.setCancellable { imageReader.setOnImageAvailableListener(null, null) }
             }
 
+    var firstTime = true
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    internal fun save(image: Image, file: File): Single<File> =
+    internal fun processWithNDK(image: Image, imageReader: ImageReader, targetSurface: Surface): Single<String> =
             Single.fromCallable {
+                val format = imageReader.imageFormat
+                Log.d(TAG, "bob image format: $format")
 
-                val output = FileOutputStream(file).channel
-                image.use { image ->
-                    output.write(image.planes[0].buffer)
-                    output.close()
-                    file
-                }
+                if (format != ImageFormat.YUV_420_888)
+                    throw IllegalArgumentException("Image format must be YUV_420_888.")
 
+                val planes = image.planes
+
+                if(planes[1].pixelStride != 1 && planes[1].pixelStride != 2)
+                    throw IllegalArgumentException("image chroma plane must have a pixel stride of 1 or 2 :got ${planes[1].pixelStride}")
+
+
+                val result = processJNI(image.width,image.height,planes[0].buffer,targetSurface)
+                image.close()
+                Log.d(TAG,result)
+                result
             }
 
     internal fun getPreviewSize(characteristics: CameraCharacteristics): Size {
@@ -242,9 +253,9 @@ internal object CameraStrategy {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            /**
-             * Please note that aspect ratios should be the same for [.getPreviewSize] and [.getStillImageSize]
-             */
+    /**
+     * Please note that aspect ratios should be the same for [.getPreviewSize] and [.getStillImageSize]
+     */
     internal fun getStillImageSize(characteristics: CameraCharacteristics, previewSize: Size): Size {
         val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val outputSizes = map!!.getOutputSizes(ImageFormat.JPEG)
@@ -272,5 +283,5 @@ internal object CameraStrategy {
 
     }
 
-    external fun getJNI()
+    private external fun processJNI(width:Int, height:Int, buffer:ByteBuffer, destinationSurface: Surface):String
 }

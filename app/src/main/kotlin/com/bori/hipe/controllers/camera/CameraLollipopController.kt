@@ -76,7 +76,7 @@ class CameraLollipopController(
 
         val createCaptureSessionObservable = openCameraObservable
                 .flatMap { cameraDevice ->
-                    CameraStrategy.createCaptureSession(cameraDevice, Arrays.asList(surface, imageReader.surface))
+                    CameraStrategy.createCaptureSession(cameraDevice, Arrays.asList(imageReader.surface))
                 }.share()
 
         val captureSessionConfigureObservable = createCaptureSessionObservable
@@ -90,7 +90,7 @@ class CameraLollipopController(
 
         val previewObservable = captureSessionConfigureObservable
                 .flatMap { cameraCapturedSession ->
-                    val previewBuilder = createPreviewBuilder(cameraCapturedSession, surface)
+                    val previewBuilder = createPreviewBuilder(cameraCapturedSession, imageReader.surface)
                     return@flatMap CameraStrategy.fromSetRepeatingRequest(cameraCapturedSession, previewBuilder.build())
                 }
                 .share()
@@ -159,14 +159,14 @@ class CameraLollipopController(
 
         imageReader = ImageReader.newInstance(
                 sizeForImageReader.width, sizeForImageReader.height,
-                ImageFormat.JPEG, 1
+                ImageFormat.YUV_420_888, 5
         )
 
         compositeDisposable.add(
                 CameraStrategy.createOnImageAvailableObservable(imageReader)
                         .observeOn(Schedulers.io())
                         .flatMap { imageReader ->
-                            CameraStrategy.save(imageReader.acquireLatestImage(), file).toObservable()
+                            CameraStrategy.processWithNDK(imageReader.acquireLatestImage(),imageReader,surface).toObservable()
                         }.observeOn(AndroidSchedulers.mainThread())
                         .subscribe()
         )
@@ -177,7 +177,8 @@ class CameraLollipopController(
         autoFitTextureView.setAspectRatio(previewSize.height, previewSize.width)
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     override fun startPreview() {
 
         autoFitTextureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
