@@ -159,7 +159,7 @@ class CameraLollipopController(
 
         imageReader = ImageReader.newInstance(
                 sizeForImageReader.width, sizeForImageReader.height,
-                ImageFormat.YUV_420_888, 5
+                ImageFormat.YUV_420_888, 2
         )
 
         compositeDisposable.add(

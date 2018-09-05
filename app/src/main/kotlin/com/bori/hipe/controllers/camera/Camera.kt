@@ -213,9 +213,18 @@ internal object CameraStrategy {
 
     var firstTime = true
 
+    var t1 = 0L
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    internal fun processWithNDK(image: Image, imageReader: ImageReader, targetSurface: Surface): Single<String> =
+    internal fun processWithNDK(image: Image?, imageReader: ImageReader, targetSurface: Surface): Single<Any> =
             Single.fromCallable {
+
+                if(firstTime){
+                     t1 = System.currentTimeMillis()
+                    firstTime = false
+                }
+                image?:return@fromCallable "Image was null"
+
                 val format = imageReader.imageFormat
                 Log.d(TAG, "bob image format: $format")
 
@@ -230,7 +239,9 @@ internal object CameraStrategy {
 
                 val result = processJNI(image.width,image.height,planes[0].buffer,targetSurface)
                 image.close()
-                Log.d(TAG,result)
+                val mills = System.currentTimeMillis() - t1
+                Log.d(TAG,"Frames per second : ${1000/mills} " )
+                t1 = System.currentTimeMillis()
                 result
             }
 
@@ -283,5 +294,5 @@ internal object CameraStrategy {
 
     }
 
-    private external fun processJNI(width:Int, height:Int, buffer:ByteBuffer, destinationSurface: Surface):String
+    private external fun processJNI(width:Int, height:Int, buffer:ByteBuffer, destinationSurface: Surface)
 }
