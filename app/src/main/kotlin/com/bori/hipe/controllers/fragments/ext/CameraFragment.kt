@@ -16,16 +16,11 @@ import android.view.ViewGroup
 import com.bori.hipe.R
 import com.bori.hipe.controllers.camera.CameraLollipopController
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.views.AutoFitSurfaceView
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
-import net.majorkernelpanic.streaming.Session
 
-
-class CameraFragment : HipeBaseFragment(), Session.Callback, SurfaceHolder.Callback {
-
-
+class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
 
     companion object {
         const val TAG = "CameraFragment.kt"
@@ -33,9 +28,7 @@ class CameraFragment : HipeBaseFragment(), Session.Callback, SurfaceHolder.Callb
     }
 
     private lateinit var autoFitTextureView: AutoFitTextureView
-    private lateinit var autoFitSurfaceView: AutoFitSurfaceView
     private lateinit var cameraController: CameraLollipopController
-    private lateinit var session: Session
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setContentView(R.layout.camera_fragment, inflater, container)
@@ -54,19 +47,6 @@ class CameraFragment : HipeBaseFragment(), Session.Callback, SurfaceHolder.Callb
 
     private fun init() {
         autoFitTextureView = findViewById(R.id.camera_preview_texture)
-//        session = SessionBuilder.getInstance()
-//                .setCallback(this)
-//                .setSurfaceView(autoFitSurfaceView)
-//                .setContext(context!!)
-//                .setPreviewOrientation(90)
-//                .setAudioEncoder(SessionBuilder.VIDEO_NONE)
-//                .setAudioQuality(AudioQuality(16000, 32000))
-//                .setVideoEncoder(SessionBuilder.VIDEO_H264)
-//                .setVideoQuality(VideoQuality(1920,1080,20,500000))
-//                .build()
-
-//        autoFitSurfaceView.holder.addCallback(this)
-
 
     }
 
@@ -119,31 +99,6 @@ class CameraFragment : HipeBaseFragment(), Session.Callback, SurfaceHolder.Callb
         }
     }
 
-    override fun onBitrateUpdate(bitrate: Long) {
-        Log.d(TAG,"onBitrateUpdate")
-    }
-
-    override fun onSessionError(reason: Int, streamType: Int, e: java.lang.Exception?) {
-        Log.e(TAG,e?.message)
-    }
-
-    override fun onPreviewStarted() {
-        Log.d(TAG,"onPreviewStarted")
-    }
-
-    override fun onSessionConfigured() {
-        Log.d(TAG,"onSessionConfigured")
-        session.start()
-    }
-
-    override fun onSessionStarted() {
-        Log.d(TAG,"onSessionStarted")
-    }
-
-    override fun onSessionStopped() {
-        Log.d(TAG,"onSessionStopped")
-    }
-
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
     }
 
@@ -153,7 +108,6 @@ class CameraFragment : HipeBaseFragment(), Session.Callback, SurfaceHolder.Callb
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun surfaceCreated(holder: SurfaceHolder?) {
         cameraController.startPreview()
-//        session.startPreview()
     }
 
 }

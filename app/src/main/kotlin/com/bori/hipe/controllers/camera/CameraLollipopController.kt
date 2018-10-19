@@ -20,7 +20,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import java.io.File
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -44,12 +43,12 @@ class CameraLollipopController(
     init {
         Log.d(TAG, "init()")
         context = activity
-        preapareCamera()
+        prepareCamera()
 
     }
 
 
-    private fun preapareCamera() {
+    private fun prepareCamera() {
         Log.d(CameraFragment.TAG, "prepareCamera()")
 
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -74,9 +73,9 @@ class CameraLollipopController(
                 .map { it.second }
                 .share()
 
-        val createCaptureSessionObservable = openCameraObservable
+        val createCaptureSessionObservable = closeCameraObservable
                 .flatMap { cameraDevice ->
-                    CameraStrategy.createCaptureSession(cameraDevice, Arrays.asList(imageReader.surface))
+                    CameraStrategy.createCaptureSession(cameraDevice, Arrays.asList(surface, imageReader.surface))
                 }.share()
 
         val captureSessionConfigureObservable = createCaptureSessionObservable
@@ -90,7 +89,7 @@ class CameraLollipopController(
 
         val previewObservable = captureSessionConfigureObservable
                 .flatMap { cameraCapturedSession ->
-                    val previewBuilder = createPreviewBuilder(cameraCapturedSession, imageReader.surface)
+                    val previewBuilder = createPreviewBuilder(cameraCapturedSession, surface)
                     return@flatMap CameraStrategy.fromSetRepeatingRequest(cameraCapturedSession, previewBuilder.build())
                 }
                 .share()
@@ -153,23 +152,27 @@ class CameraLollipopController(
     private fun initImageReader() {
         Log.d(CameraFragment.TAG, "initImageReader()")
 
-        val file = File(context.filesDir.toString() + "/photo.jpg")
-
         val sizeForImageReader = CameraStrategy.getStillImageSize(cameraWithCharacteristics!!.second, previewSize)
 
         imageReader = ImageReader.newInstance(
                 sizeForImageReader.width, sizeForImageReader.height,
-                ImageFormat.YUV_420_888, 2
+                ImageFormat.JPEG, 1
         )
 
         compositeDisposable.add(
                 CameraStrategy.createOnImageAvailableObservable(imageReader)
                         .observeOn(Schedulers.io())
                         .flatMap { imageReader ->
-                            CameraStrategy.processWithNDK(imageReader.acquireLatestImage(),imageReader,surface).toObservable()
+                            CameraStrategy.processWithNDK(imageReader.acquireLatestImage(), imageReader).toObservable()
                         }.observeOn(AndroidSchedulers.mainThread())
                         .subscribe()
         )
+
+    }
+
+    private fun prepareRecorder(){
+
+
 
     }
 
@@ -177,8 +180,7 @@ class CameraLollipopController(
         autoFitTextureView.setAspectRatio(previewSize.height, previewSize.width)
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+
     override fun startPreview() {
 
         autoFitTextureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
