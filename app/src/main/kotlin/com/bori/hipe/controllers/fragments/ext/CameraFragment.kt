@@ -47,7 +47,6 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
 
     private fun init() {
         autoFitTextureView = findViewById(R.id.camera_preview_texture)
-
     }
 
     private fun createCameraSession() {
