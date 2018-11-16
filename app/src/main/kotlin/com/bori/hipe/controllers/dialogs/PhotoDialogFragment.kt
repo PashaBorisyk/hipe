@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 
@@ -17,6 +18,11 @@ import java.io.Serializable
  */
 class PhotoDialogFragment : DialogFragment(), View.OnClickListener {
 
+    companion object {
+        private const val KEY_SOURCE_CHOOSER = "KEY_SOURCE_CHOOSER"
+        private const val TAG = "PhotoDialogFragment"
+    }
+
     private var sourceChooser: SourceChooser? = null
 
     fun setSourceChooser(sourceChooser: SourceChooser) {
@@ -25,6 +31,8 @@ class PhotoDialogFragment : DialogFragment(), View.OnClickListener {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        Log.d(TAG, "PhotoDialogFragment.onCreateDialog")
+
         // Use the Builder class for convenient dialog construction
         val builder = AlertDialog.Builder(activity!!)
         val rootView = LayoutInflater.from(activity).inflate(R.layout.dialog_event_image_chooser, null)
@@ -39,6 +47,7 @@ class PhotoDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
+        Log.d(TAG, "PhotoDialogFragment.onClick")
 
         when (view.id) {
 
@@ -64,11 +73,6 @@ class PhotoDialogFragment : DialogFragment(), View.OnClickListener {
 
         fun captureFromCamera()
 
-    }
-
-    companion object {
-
-        val KEY_SOURCE_CHOOSER = "KEY_SOURCE_CHOOSER"
     }
 
 }

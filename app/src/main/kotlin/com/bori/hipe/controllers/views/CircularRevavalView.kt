@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.bori.hipe.HipeApplication
@@ -57,9 +58,13 @@ class CircularRevavalView @JvmOverloads constructor(
         }
 
         animator.addListener(object : Animator.AnimatorListener{
-            override fun onAnimationRepeat(animation: Animator?) {}
+            override fun onAnimationRepeat(animation: Animator?) {
+                Log.d(TAG, "CircularRevavalView.onAnimationRepeat")
+            }
 
             override fun onAnimationEnd(animation: Animator?) {
+                Log.d(TAG, "CircularRevavalView.onAnimationEnd")
+
                 if(direction == Direction.OUT) {
                     direction = Direction.IN
 
@@ -68,9 +73,13 @@ class CircularRevavalView @JvmOverloads constructor(
                 }
             }
 
-            override fun onAnimationCancel(animation: Animator?) {}
+            override fun onAnimationCancel(animation: Animator?) {
+                Log.d(TAG, "CircularRevavalView.onAnimationCancel")
+            }
 
             override fun onAnimationStart(animation: Animator?) {
+                Log.d(TAG, "CircularRevavalView.onAnimationStart")
+
 
                 if(direction == Direction.IN){
                     additionalView?.visibility = GONE
@@ -95,6 +104,8 @@ class CircularRevavalView @JvmOverloads constructor(
     @SuppressLint("DrawAllocation")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
+        Log.d(TAG, "CircularRevavalView.onMeasure")
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -146,6 +157,8 @@ class CircularRevavalView @JvmOverloads constructor(
     }
 
     fun showIn(fromX:Float = 0f, fromY:Float = 0f, event:MotionEvent? = null) {
+        Log.d(TAG, "CircularRevavalView.showIn")
+
 
         if(event == null) {
             this.fromX = fromX
@@ -159,6 +172,8 @@ class CircularRevavalView @JvmOverloads constructor(
     }
 
     fun showOut(fromX: Float = this.fromX,fromY: Float = this.fromY){
+        Log.d(TAG, "CircularRevavalView.showOut")
+
         this.fromX = fromX
         this.fromY = fromY
         animator.reverse()

@@ -2,6 +2,7 @@ package com.bori.hipe.controllers.activities
 
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import android.util.Log
 
 import com.bori.hipe.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -19,6 +20,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "MapsActivity.onCreate")
+
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -36,6 +39,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
+        Log.d(TAG, "MapsActivity.onMapReady")
+
         mMap = googleMap
 
         // Add a marker in Sydney and move the camera

@@ -10,11 +10,15 @@ import android.os.Build
 import android.support.annotation.DrawableRes
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v7.content.res.AppCompatResources
+import android.util.Log
 import android.view.View
 
+private const val TAG = "ViewsExtensions"
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 fun View.getBitmapFromDrawable(context: Context, @DrawableRes drawableId: Int): Bitmap {
+    Log.d(TAG, "<top>.getBitmapFromDrawable")
+
     val drawable = AppCompatResources.getDrawable(context, drawableId)
 
     return if (drawable is BitmapDrawable) {

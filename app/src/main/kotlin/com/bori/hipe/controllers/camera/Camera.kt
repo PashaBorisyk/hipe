@@ -56,13 +56,14 @@ internal object CameraStrategy {
     }
 
     internal val TAG = CameraStrategy::class.java.simpleName
-    private val MAX_PREVIEW_WIDTH = 1920
-    private val MAX_PREVIEW_HEIGHT = 1920
-    private val MAX_STILL_IMAGE_WIDTH = 1920
-    private val MAX_STILL_IMAGE_HEIGHT = 1920
+    private const val MAX_PREVIEW_WIDTH = 1920
+    private const val MAX_PREVIEW_HEIGHT = 1920
+    private const val MAX_STILL_IMAGE_WIDTH = 1920
+    private const val MAX_STILL_IMAGE_HEIGHT = 1920
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     fun createCameraWithFacing(cameraManager: CameraManager, lensFacing: Int): Pair<String, CameraCharacteristics>? {
+        Log.d(TAG, "CameraStrategy.createCameraWithFacing")
 
         var possibleCandidate: String? = null
         var cameraCharactersitics: CameraCharacteristics? = null
@@ -92,138 +93,167 @@ internal object CameraStrategy {
     @SuppressLint("MissingPermission")
     fun openCamera(
             cameraId: String, cameraManager: CameraManager
-    ): Observable<Pair<DeviceStateEvents, CameraDevice>> =
-            Observable.create {
-                cameraManager.openCamera(cameraId,
-                        object : CameraDevice.StateCallback() {
-                            override fun onOpened(camera: CameraDevice) {
-                                it.onNext(DeviceStateEvents.ON_OPEND to camera)
-                            }
+    ): Observable<Pair<DeviceStateEvents, CameraDevice>> {
+        android.util.Log.d(TAG, "CameraStrategy.openCamera")
 
-                            override fun onDisconnected(camera: CameraDevice) {
-                                it.onNext(DeviceStateEvents.ON_CLOSED to camera)
-                                it.onComplete()
-                            }
+        return Observable.create {
+            cameraManager.openCamera(cameraId,
+                    object : CameraDevice.StateCallback() {
+                        override fun onOpened(camera: CameraDevice) {
+                            Log.d(TAG, "CameraStrategy.onOpened")
+                            it.onNext(DeviceStateEvents.ON_OPEND to camera)
+                        }
 
-                            override fun onError(camera: CameraDevice?, error: Int) {
-                                it.onError(CameraAccessException(error, "Some error accured"))
-                            }
+                        override fun onDisconnected(camera: CameraDevice) {
+                            Log.d(TAG, "CameraStrategy.onDisconnected")
+                            it.onNext(DeviceStateEvents.ON_CLOSED to camera)
+                            it.onComplete()
+                        }
 
-                            override fun onClosed(camera: CameraDevice) {
-                                it.onNext(DeviceStateEvents.ON_CLOSED to camera)
-                                it.onComplete()
-                            }
-                        }, null)
-            }
+                        override fun onError(camera: CameraDevice?, error: Int) {
+                            Log.d(TAG, "CameraStrategy.onError")
+                            it.onError(CameraAccessException(error, "Some error accured"))
+                        }
+
+                        override fun onClosed(camera: CameraDevice) {
+                            Log.d(TAG, "CameraStrategy.onClosed")
+                            it.onNext(DeviceStateEvents.ON_CLOSED to camera)
+                            it.onComplete()
+                        }
+                    }, null)
+        }
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     internal fun createCaptureSession(
             cameraDevice: CameraDevice, surfaceList: List<Surface>
-    ): Observable<Pair<CaptureSessionStateEvents, CameraCaptureSession>> =
-            Observable.create {
-                cameraDevice.createCaptureSession(surfaceList, @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-                object : CameraCaptureSession.StateCallback() {
+    ): Observable<Pair<CaptureSessionStateEvents, CameraCaptureSession>> {
+        Log.d(TAG, "CameraStrategy.createCaptureSession")
 
-                    override fun onConfigured(session: CameraCaptureSession) {
-                        it.onNext(CaptureSessionStateEvents.ON_CONFIGURED to session)
-                    }
+        return Observable.create {
+            cameraDevice.createCaptureSession(surfaceList,
+                    object : CameraCaptureSession.StateCallback() {
 
-                    override fun onConfigureFailed(session: CameraCaptureSession) {
-                        it.onError(ExceptionInInitializerError("Some error during configuration $session"))
-                    }
+                        override fun onConfigured(session: CameraCaptureSession) {
+                            Log.d(TAG, "CameraStrategy.onConfigured")
+                            it.onNext(CaptureSessionStateEvents.ON_CONFIGURED to session)
+                        }
 
-                    override fun onReady(session: CameraCaptureSession) {
-                        it.onNext(CaptureSessionStateEvents.ON_READY to session)
-                    }
+                        override fun onConfigureFailed(session: CameraCaptureSession) {
+                            Log.d(TAG, "CameraStrategy.onConfigureFailed")
+                            it.onError(ExceptionInInitializerError("Some error during configuration $session"))
+                        }
 
-                    override fun onActive(session: CameraCaptureSession) {
-                        it.onNext(CaptureSessionStateEvents.ON_ACTIVE to session)
-                    }
+                        override fun onReady(session: CameraCaptureSession) {
+                            Log.d(TAG, "CameraStrategy.onReady")
+                            it.onNext(CaptureSessionStateEvents.ON_READY to session)
+                        }
 
-                    override fun onClosed(session: CameraCaptureSession) {
-                        it.onNext(CaptureSessionStateEvents.ON_CLOSED to session)
-                        it.onComplete()
-                    }
+                        override fun onActive(session: CameraCaptureSession) {
+                            Log.d(TAG, "CameraStrategy.onActive")
+                            it.onNext(CaptureSessionStateEvents.ON_ACTIVE to session)
+                        }
 
-                    override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface?) {
-                        it.onNext(CaptureSessionStateEvents.ON_SURFACE_PREPARED to session)
-                    }
+                        override fun onClosed(session: CameraCaptureSession) {
+                            Log.d(TAG, "CameraStrategy.onClosed")
+                            it.onNext(CaptureSessionStateEvents.ON_CLOSED to session)
+                            it.onComplete()
+                        }
 
-                }, null)
-            }
+                        override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface?) {
+                            Log.d(TAG, "CameraStrategy.onSurfacePrepared")
+                            it.onNext(CaptureSessionStateEvents.ON_SURFACE_PREPARED to session)
+                        }
 
+                    }, null)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     internal fun createCaptureCallback(
             observableEmitter: ObservableEmitter<CaptureSessionData>
-    ) = @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    object : CameraCaptureSession.CaptureCallback() {
+    ): CameraCaptureSession.CaptureCallback {
+        android.util.Log.d(TAG, "CameraStrategy.createCaptureCallback")
+        return object : CameraCaptureSession.CaptureCallback() {
 
-        override fun onCaptureCompleted(
-                session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult
-        ) {
+            override fun onCaptureCompleted(
+                    session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult
+            ) {
 
-            if (!observableEmitter.isDisposed) {
+                if (!observableEmitter.isDisposed) {
 
-                observableEmitter.onNext(CaptureSessionData(
-                        CaptureSessionEvents.ON_COMPLETED,
-                        session, request, result
-                ))
+                    observableEmitter.onNext(CaptureSessionData(
+                            CaptureSessionEvents.ON_COMPLETED,
+                            session, request, result
+                    ))
 
-            }
-        }
-
-        override fun onCaptureFailed(
-                session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure
-        ) {
-
-            if (!observableEmitter.isDisposed) {
-
-                observableEmitter.onError(Exception("Failed to capture camera content"))
-
+                }
             }
 
-        }
+            override fun onCaptureFailed(
+                    session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure
+            ) {
+                android.util.Log.d(TAG, "CameraStrategy.onCaptureFailed")
 
+                if (!observableEmitter.isDisposed) {
+
+                    observableEmitter.onError(Exception("Failed to capture camera content"))
+
+                }
+
+            }
+
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     internal fun fromSetRepeatingRequest(
             captureSession: CameraCaptureSession, captureRequest: CaptureRequest
-    ): Observable<CaptureSessionData> =
-            Observable.create { captureSession.setRepeatingRequest(captureRequest, createCaptureCallback(it), null) }
+    ): Observable<CaptureSessionData> {
+        android.util.Log.d(TAG, "CameraStrategy.fromSetRepeatingRequest")
+        return Observable.create { captureSession.setRepeatingRequest(captureRequest, createCaptureCallback(it), null) }
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     internal fun fromCapture(
             cameraCaptureSession: CameraCaptureSession, captureRequest: CaptureRequest
-    ): Observable<CaptureSessionData> = Observable.create {
-        cameraCaptureSession.capture(captureRequest, createCaptureCallback(it), null)
+    ): Observable<CaptureSessionData> {
+        android.util.Log.d(TAG, "CameraStrategy.fromCapture")
+
+        return Observable.create {
+            cameraCaptureSession.capture(captureRequest, createCaptureCallback(it), null)
+        }
+
     }
 
-
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    internal fun createOnImageAvailableObservable(imageReader: ImageReader): Observable<ImageReader> =
-            Observable.create { subscriber ->
-                imageReader.setOnImageAvailableListener({ reader ->
-                    if (!subscriber.isDisposed) {
-                        subscriber.onNext(reader)
-                    }
-                }, null)
-                subscriber.setCancellable { imageReader.setOnImageAvailableListener(null, null) }
-            }
+    internal fun createOnImageAvailableObservable(imageReader: ImageReader): Observable<ImageReader> {
+        Log.d(TAG, "CameraStrategy.createOnImageAvailableObservable")
+
+        return Observable.create { subscriber ->
+            imageReader.setOnImageAvailableListener({ reader ->
+                if (!subscriber.isDisposed) {
+                    subscriber.onNext(reader)
+                }
+            }, null)
+            subscriber.setCancellable { imageReader.setOnImageAvailableListener(null, null) }
+        }
+
+    }
 
     var firstTime = true
-
     var t1 = 0L
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     internal fun processWithNDK(image: Image?, imageReader: ImageReader, targetSurface: Surface): Single<Any> =
             Single.fromCallable {
 
-                if(firstTime){
-                     t1 = System.currentTimeMillis()
-                    firstTime = false
-                }
-                image?:return@fromCallable "Image was null"
+            if (firstTime) {
+                t1 = System.currentTimeMillis()
+                firstTime = false
+            }
+            image ?: return@fromCallable "Image was null"
 
                 val format = imageReader.imageFormat
                 Log.d(TAG, "bob image format: $format")
@@ -231,21 +261,23 @@ internal object CameraStrategy {
                 if (format != ImageFormat.YUV_420_888)
                     throw IllegalArgumentException("Image format must be YUV_420_888.")
 
-                val planes = image.planes
+            val planes = image.planes
 
-                if(planes[1].pixelStride != 1 && planes[1].pixelStride != 2)
-                    throw IllegalArgumentException("image chroma plane must have a pixel stride of 1 or 2 :got ${planes[1].pixelStride}")
+            if (planes[1].pixelStride != 1 && planes[1].pixelStride != 2)
+                throw IllegalArgumentException("image chroma plane must have a pixel stride of 1 or 2 :got ${planes[1].pixelStride}")
 
 
-                val result = processJNI(image.width,image.height,planes[0].buffer,targetSurface)
-                image.close()
-                val mills = System.currentTimeMillis() - t1
-                Log.d(TAG,"Frames per second : ${1000/mills} " )
-                t1 = System.currentTimeMillis()
-                result
-            }
+            val result = processJNI(image.width, image.height, planes[0].buffer)
+            image.close()
+            val mills = System.currentTimeMillis() - t1
+            Log.d(TAG, "Frames per second : ${1000 / mills} ")
+            t1 = System.currentTimeMillis()
+            result
+        }
+    }
 
     internal fun getPreviewSize(characteristics: CameraCharacteristics): Size {
+        Log.d(TAG, "CameraStrategy.getPreviewSize")
         val map = characteristics[CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP]
         val outputSizes = map!!.getOutputSizes(SurfaceTexture::class.java)
 
@@ -268,6 +300,7 @@ internal object CameraStrategy {
      * Please note that aspect ratios should be the same for [.getPreviewSize] and [.getStillImageSize]
      */
     internal fun getStillImageSize(characteristics: CameraCharacteristics, previewSize: Size): Size {
+        Log.d(TAG, "CameraStrategy.getStillImageSize")
         val map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val outputSizes = map!!.getOutputSizes(ImageFormat.JPEG)
         if (outputSizes.isEmpty()) {
@@ -289,10 +322,13 @@ internal object CameraStrategy {
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         override fun compare(lhs: Size, rhs: Size): Int {
+            Log.d(TAG, "CompareSizesByArea.compare")
+
             return java.lang.Long.signum(lhs.width.toLong() * lhs.height - rhs.width.toLong() * rhs.height)
         }
 
     }
 
-    private external fun processJNI(width:Int, height:Int, buffer:ByteBuffer, destinationSurface: Surface)
+    private external fun processJNI(width: Int, height: Int, buffer: ByteBuffer)
+
 }

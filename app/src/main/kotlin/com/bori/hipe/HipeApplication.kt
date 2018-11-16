@@ -25,7 +25,7 @@ class HipeApplication : SugarApp() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.e(TAG, "onCreate: ")
+        Log.d(TAG, "HipeApplication.onCreate")
 
         pixelsPerDp = resources.displayMetrics.density
         sharedPreferences = getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
@@ -49,6 +49,7 @@ class HipeApplication : SugarApp() {
     }
 
     private fun initRetrofit() {
+        Log.d(TAG, "HipeApplication.initRetrofit")
 
         val restRequests = Retrofit.Builder()
                 .baseUrl(SERVER_PATH)
@@ -71,7 +72,7 @@ class HipeApplication : SugarApp() {
 
     override fun onTerminate() {
         super.onTerminate()
-        Log.e(TAG, "onTerminate: ")
+        Log.d(TAG, "HipeApplication.onTerminate")
     }
 
     companion object {

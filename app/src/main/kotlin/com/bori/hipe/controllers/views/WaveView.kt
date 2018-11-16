@@ -44,7 +44,7 @@ class WaveView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d(TAG, "onDraw: ")
+        Log.d(TAG, "WaveView.onDraw")
 
         if (centerX == 0) {
             centerX = width / 2
@@ -56,12 +56,15 @@ class WaveView : View {
     }
 
     fun startAnim() {
+        Log.d(TAG, "WaveView.startAnim")
+
         visibility = View.VISIBLE
         myAnimation!!.reset()
         startAnimation(myAnimation)
     }
 
     fun onUpdate(deltaSecs: Float) {
+        Log.d(TAG, "WaveView.onUpdate")
 
         val d = min * deltaSecs
         rectF.left = centerX - d
@@ -85,25 +88,30 @@ class WaveView : View {
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
             super.applyTransformation(interpolatedTime, t)
+            Log.d(TAG, "MyAnimation.applyTransformation")
+
             onUpdate(interpolatedTime)
         }
 
         override fun onAnimationStart(animation: Animation) {
-
+            Log.d(TAG, "MyAnimation.onAnimationStart")
         }
 
         override fun onAnimationEnd(animation: Animation) {
+            Log.d(TAG, "MyAnimation.onAnimationEnd")
+
             visibility = View.GONE
         }
 
         override fun onAnimationRepeat(animation: Animation) {
+            Log.d(TAG, "MyAnimation.onAnimationRepeat")
+
             visibility = View.GONE
         }
     }
 
     companion object {
-
-        private val TAG = "WaveView"
+        private const val TAG = "WaveView"
     }
 
 }

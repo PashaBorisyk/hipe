@@ -13,7 +13,7 @@ import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.fragments.ext.CameraFragment
 
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     //used to calculate angle to rotate big fab
     companion object {
@@ -21,56 +21,61 @@ class MainActivity : AppCompatActivity(){
         private const val TAG = "MainActivity.kt"
     }
 
-    private lateinit var rootView:RelativeLayout
+    private lateinit var rootView: RelativeLayout
     private lateinit var visibleStageView: View
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "MainActivity.onCreate")
         rootView = RelativeLayout(this)
-        setContentView(rootView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT))
+        setContentView(rootView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         val fragmentStage = FrameLayout(this)
-        fragmentStage.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+        fragmentStage.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         fragmentStage.id = CONTENT_VIEW_ID
         visibleStageView = fragmentStage
         rootView.addView(fragmentStage)
         supportFragmentManager
                 .beginTransaction()
-                .add(CONTENT_VIEW_ID,CameraFragment())
+                .add(CONTENT_VIEW_ID, CameraFragment())
                 .commit()
 
     }
 
-    fun showNextFragment(hipeBaseFragment: HipeBaseFragment,destroyCurrent:Boolean = true){
-        Log.d(TAG,"showNextFragment()")
+    fun showNextFragment(hipeBaseFragment: HipeBaseFragment, destroyCurrent: Boolean = true) {
+        Log.d(TAG, "MainActivity.showNextFragment")
+
         val stageView = FrameLayout(this)
-        stageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+        stageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         stageView.id = CONTENT_VIEW_ID++
         hipeBaseFragment.stageView = stageView
-        rootView.addView(stageView,1,ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT))
+        rootView.addView(stageView, 1, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         rootView.requestLayout()
         stageView.requestLayout()
         supportFragmentManager
                 .beginTransaction()
-                .add(stageView.id,hipeBaseFragment)
+                .add(stageView.id, hipeBaseFragment)
                 .commit()
 
     }
 
     override fun onBackPressed() {
-        if(supportFragmentManager.fragments.isEmpty())
+        Log.d(TAG, "MainActivity.onBackPressed")
+
+        if (supportFragmentManager.fragments.isEmpty())
             super.onBackPressed()
         else {
-            val found = supportFragmentManager.fragments.count{
-                if(it is HipeBaseFragment){
-                    if(it.shouldCallOnFragment) {
+            val found = supportFragmentManager.fragments.count {
+                if (it is HipeBaseFragment) {
+                    if (it.shouldCallOnFragment) {
                         it.onBackPressed()
                         return@count true
                     }
                 }
                 return@count false
             }
-            Log.d(TAG,"Fragments for back pressed in queue : $found")
+            Log.d(TAG, "Fragments for back pressed in queue : $found")
             if (found == 0)
                 super.onBackPressed()
         }

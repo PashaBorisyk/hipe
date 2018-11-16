@@ -66,6 +66,8 @@ object WebSocketConnector : WebSocketConnection() {
 
     fun sendMessage(chatMessageNOSQL: ChatMessageNOSQL): Boolean {
 
+        Log.d(TAG, "WebSocketConnector.sendMessage")
+
         if (!(isConnected && BootReciever.isConnected)) {
             SugarRecord.save(chatMessageNOSQL)
             return false
@@ -79,7 +81,15 @@ object WebSocketConnector : WebSocketConnection() {
         return true
     }
 
-    fun registerCallback(messageCallbackAdapter: MessageCallbackAdapter) = messageCallBacks.add(messageCallbackAdapter)
-    fun unregisterCallback(messageCallbackAdapter: MessageCallbackAdapter) = messageCallBacks.remove(messageCallbackAdapter)
+    fun registerCallback(messageCallbackAdapter: MessageCallbackAdapter) {
+        Log.d(TAG, "WebSocketConnector.registerCallback")
+
+        messageCallBacks.add(messageCallbackAdapter)
+    }
+
+    fun unregisterCallback(messageCallbackAdapter: MessageCallbackAdapter) {
+        Log.d(TAG, "WebSocketConnector.unregisterCallback")
+        messageCallBacks.remove(messageCallbackAdapter)
+    }
 
 }

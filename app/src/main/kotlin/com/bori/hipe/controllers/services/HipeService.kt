@@ -21,7 +21,11 @@ class HipeService : Service() {
     }
 
 
-    override fun onBind(intent: Intent): Binder? = myBinder
+    override fun onBind(intent: Intent): Binder? {
+        Log.d(TAG, "HipeService.onBind")
+
+        return myBinder
+    }
 
     inner class MyBinder constructor(val hipeService: HipeService) : Binder()
 

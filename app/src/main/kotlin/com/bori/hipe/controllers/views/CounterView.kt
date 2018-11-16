@@ -11,6 +11,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -60,6 +61,8 @@ class CounterView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        Log.d(TAG, "CounterView.onMeasure")
+
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
@@ -119,6 +122,7 @@ class CounterView @JvmOverloads constructor(
     }
 
     fun start(duration: Long, textView: TextView) {
+        Log.d(TAG, "CounterView.start")
 
         updatedText = textView
         counterDuration = duration
@@ -186,6 +190,7 @@ class CounterView @JvmOverloads constructor(
     }
 
     fun done(isSuccessful: Boolean) {
+        Log.d(TAG, "CounterView.done")
 
         resultDrawable = if(isSuccessful) check else cross
 
@@ -241,19 +246,20 @@ class CounterView @JvmOverloads constructor(
 
         valueAnimator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
-
+                Log.d(TAG, "CounterView.onAnimationRepeat")
             }
 
             override fun onAnimationEnd(animation: Animator?) {
+                Log.d(TAG, "CounterView.onAnimationEnd")
                 showResult(isSuccessful)
             }
 
             override fun onAnimationCancel(animation: Animator?) {
-
+                Log.d(TAG, "CounterView.onAnimationCancel")
             }
 
             override fun onAnimationStart(animation: Animator?) {
-
+                Log.d(TAG, "CounterView.onAnimationStart")
             }
 
         })
@@ -275,6 +281,7 @@ class CounterView @JvmOverloads constructor(
     }
 
     private fun showResult(isSuccessful: Boolean) {
+        Log.d(TAG, "CounterView.showResult")
 
         userCenter = true
         paint.style = Paint.Style.FILL

@@ -39,7 +39,7 @@ import com.bori.hipe.util.web.Status
 import com.jaredrummler.materialspinner.MaterialSpinner
 import java.util.*
 
-class LoginFragment : HipeBaseFragment() , View.OnClickListener{
+class LoginFragment : HipeBaseFragment(), View.OnClickListener {
 
     companion object {
         private const val TAG = "LoginFragment.kt"
@@ -71,23 +71,24 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     private lateinit var materialSpinner: MaterialSpinner
 
     //Window views
-    private lateinit var counterView:CounterView
-    private lateinit var windowCard:View
+    private lateinit var counterView: CounterView
+    private lateinit var windowCard: View
     private lateinit var tintView: View
-    private lateinit var photoAndGenderLayout:View
-    private lateinit var windowRootView:View
+    private lateinit var photoAndGenderLayout: View
+    private lateinit var windowRootView: View
     private lateinit var windwowRootCircularRevavalView: CircularRevealFrameLayout
-    private lateinit var userPhoto:ImageView
-    private lateinit var userMailLayout:TextInputLayout
-    private lateinit var userMailEditText:TextInputEditText
-    private lateinit var confirmButton:FloatingActionButton
-    private lateinit var privacyCheckBox:CheckBox
-    private lateinit var updatesCheckBox:CheckBox
-    private lateinit var countDown:TextView
+    private lateinit var userPhoto: ImageView
+    private lateinit var userMailLayout: TextInputLayout
+    private lateinit var userMailEditText: TextInputEditText
+    private lateinit var confirmButton: FloatingActionButton
+    private lateinit var privacyCheckBox: CheckBox
+    private lateinit var updatesCheckBox: CheckBox
+    private lateinit var countDown: TextView
     private val windowInputsViews = LinkedList<View>()
     private val windowLoadingsViews = LinkedList<View>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d(TAG, "LoginFragment.onCreateView")
         super.onCreateView(inflater, container, savedInstanceState)
         setContentView(R.layout.fragment_login, inflater, container)
         init()
@@ -97,17 +98,20 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "LoginFragment.onDestroy")
         super.onDestroy()
         RestService.unregisterCallback(restCallback)
     }
 
     private fun init() {
+        Log.d(TAG, "LoginFragment.init")
         Log.d(TAG, "init() called")
         initMainLayout()
         initWindowLayout()
     }
 
-    private fun initMainLayout(){
+    private fun initMainLayout() {
+        Log.d(TAG, "LoginFragment.initMainLayout")
 
         mainLayout = findViewById(R.id.main_coordinator_layout)
         contentLayout = findViewById(R.id.content_coordinator_layout)
@@ -139,7 +143,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
                 mainRevealFrameLayout.showIn(event = event)
                 loginButton.show(false)
                 loginButton.changeText(getString(R.string.sign_up))
-                loginButton.colors = getColor(resources,R.color.allowed,null)
+                loginButton.colors = getColor(resources, R.color.allowed, null)
                 shouldCallOnFragment = true
 
             }
@@ -161,7 +165,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     }
 
 
-    private fun initWindowLayout(){
+    private fun initWindowLayout() {
+        Log.d(TAG, "LoginFragment.initWindowLayout")
 
         tintView = findViewById(R.id.tint_view)
         materialSpinner = findViewById(R.id.gender_select_spinner)
@@ -185,22 +190,23 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
         windowLoadingsViews.add(counterView)
 
-        materialSpinner.setItems("M","W")
+        materialSpinner.setItems("M", "W")
         tintView.setOnClickListener(this)
         confirmButton.setOnClickListener(this)
         windwowRootCircularRevavalView.onUpdate = {
-            tintView.alpha = 0.9f* if (windwowRootCircularRevavalView.showForward)
+            tintView.alpha = 0.9f * if (windwowRootCircularRevavalView.showForward)
                 it else 1f - it
         }
 
         counterView.setOnClickListener(this)
 
-        counterView.start(100000,countDown)
+        counterView.start(100000, countDown)
 
 
     }
 
     private fun setInputsValidator() {
+        Log.d(TAG, "LoginFragment.setInputsValidator")
 
         val textUpdateListener = TextUpdateListener()
         username.addTextChangedListener(textUpdateListener)
@@ -217,6 +223,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
     ): Boolean {
 
+        Log.d(TAG, "LoginFragment.validateData")
         username ?: return false
         password ?: return false
         confirmPassword ?: return false
@@ -262,12 +269,14 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     }
 
     override fun onResume() {
+        Log.d(TAG, "LoginFragment.onResume")
         super.onResume()
         Log.d(TAG, "LoginFragment onResume()")
 
     }
 
     override fun onStop() {
+        Log.d(TAG, "LoginFragment.onStop")
         super.onStop()
         activity?.finish()
     }
@@ -275,6 +284,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     inner class LoginActivityRestCallbackAdapter : RestCallbackAdapter() {
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+            Log.d(TAG, "LoginActivityRestCallbackAdapter.onSimpleResponse")
             Log.d(TAG, " onSimple Response with code:  $serverCode; Response : $response")
 
             when (requestID) {
@@ -310,12 +320,14 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
         }
 
         override fun onOk(requestID: Long) {
+            Log.d(TAG, "LoginActivityRestCallbackAdapter.onOk")
             loginButton.circleColor = resources.getColor(R.color.allowed)
             loginButton.stopLoading()
             Log.d(TAG, "onOk() called")
         }
 
         override fun onFailure(requestID: Long, t: Throwable) {
+            Log.d(TAG, "LoginActivityRestCallbackAdapter.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
             loginButton.circleColor = resources.getColor(R.color.colorAccent)
             loginButton.stopLoading()
@@ -327,7 +339,8 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
     }
 
-    private fun showWindow(){
+    private fun showWindow() {
+        Log.d(TAG, "LoginFragment.showWindow")
 
         windowRootView.visibility = View.VISIBLE
         windwowRootCircularRevavalView.showIn()
@@ -335,6 +348,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
     }
 
     override fun onClick(v: View) {
+        Log.d(TAG, "LoginFragment.onClick")
 
         Log.d(TAG, "onClick() called with: v = [$v]")
 
@@ -361,31 +375,35 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
             }
 
             R.id.sign_in_user_button -> startActivity(Intent(context, SignInActivity::class.java))
-            R.id.confirm_registration_button-> hideWindowViews()
+            R.id.confirm_registration_button -> hideWindowViews()
             R.id.email_confirmation_counter_view -> {
-                counterView.done(isSuccessful = true)}
-            else ->{}
+                counterView.done(isSuccessful = true)
+            }
+            else -> {
+            }
         }
 
     }
 
-    private fun hideWindowViews(){
+    private fun hideWindowViews() {
+        Log.d(TAG, "LoginFragment.hideWindowViews")
 
-        windowInputsViews.forEachIndexed{ index, view ->
+        windowInputsViews.forEachIndexed { index, view ->
             view.animate().setInterpolator { duration ->
-                view.pivotY = view.width/2*( 1 - duration)
-                view.scaleX = 1f - duration/2
-                view.scaleY = 1f -duration/2
+                view.pivotY = view.width / 2 * (1 - duration)
+                view.scaleX = 1f - duration / 2
+                view.scaleY = 1f - duration / 2
                 view.alpha = 1f - duration
 
                 duration
             }.setDuration(WINDOW_ELEMENT_ANIMATION_DURATION)
-                    .setStartDelay(index* WINDOW_ELEMENT_ANIMATION_DELAY).start()
+                    .setStartDelay(index * WINDOW_ELEMENT_ANIMATION_DELAY).start()
         }
 
     }
 
     override fun onBackPressed() {
+        Log.d(TAG, "LoginFragment.onBackPressed")
         super.onBackPressed()
 
         val hasToShow = validateData(ignoreConfirmation = true)
@@ -403,6 +421,7 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
 
     inner class TextUpdateListener : TextWatcher {
         override fun afterTextChanged(text: Editable?) {
+            Log.d(TAG, "TextUpdateListener.afterTextChanged")
             loginButton.show(
                     validateData(
                             ignoreConfirmation =
@@ -411,28 +430,41 @@ class LoginFragment : HipeBaseFragment() , View.OnClickListener{
             )
         }
 
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            Log.d(TAG, "TextUpdateListener.beforeTextChanged")
+        }
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            Log.d(TAG, "TextUpdateListener.onTextChanged")
+        }
+
 
     }
 
     inner class LiftAnimationListener : Animator.AnimatorListener {
 
         override fun onAnimationRepeat(animation: Animator?) {
+            Log.d(TAG, "LiftAnimationListener.")
         }
 
+
         override fun onAnimationEnd(animation: Animator?) {
+            Log.d(TAG, "LiftAnimationListener.onAnimationEnd")
             if (contentLayout.translationY == -48f * HipeApplication.pixelsPerDp) {
                 contentLayout.animate().translationY(0f).startDelay = SNACK_BAR_ANIMATION_DURATION.toLong()
             }
         }
 
         override fun onAnimationCancel(animation: Animator?) {
+            Log.d(TAG, "LiftAnimationListener.onAnimationCancel")
         }
 
+
         override fun onAnimationStart(animation: Animator?) {
+            Log.d(TAG, "LiftAnimationListener.onAnimationStart")
         }
+
 
     }
 

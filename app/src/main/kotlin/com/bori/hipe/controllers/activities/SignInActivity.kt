@@ -36,6 +36,7 @@ class SignInActivity : AppCompatActivity() {
     private var selectedPage = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "SignInActivity.onCreate")
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_sign_in)
@@ -45,17 +46,19 @@ class SignInActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "SignInActivity.onDestroy")
         super.onDestroy()
         RestService.unregisterCallback(restCallback)
     }
 
     private fun init() {
-        Log.d(TAG, "init() called")
+        Log.d(TAG, "SignInActivity.init")
         ok_button.setOnClickListener(this::onClick)
     }
 
     @SuppressLint("NewApi")
     private fun validate(): Boolean {
+        Log.d(TAG, "SignInActivity.validate")
         Log.d(TAG, "validate() called")
 
         var validated = true
@@ -142,7 +145,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun choosePhotoFromGallery() {
-        Log.d(TAG, "choosePhotoFromGallery() called")
+        Log.d(TAG, "SignInActivity.choosePhotoFromGallery")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -167,17 +170,22 @@ class SignInActivity : AppCompatActivity() {
         startActivityForResult(i, RC_CHOOSE_FROM_GALLERY)
     }
 
-    private fun mainTintViewAnimateOn() =
-            spining_scale_view_progress_main.catchContext().start(SPINING_AND_SCALING_DURATION, main_tint_view)
+    private fun mainTintViewAnimateOn() {
+        Log.d(TAG, "SignInActivity.mainTintViewAnimateOn")
+        spining_scale_view_progress_main.catchContext().start(SPINING_AND_SCALING_DURATION, main_tint_view)
+    }
 
-    private fun mainTintViewAnimateOff() =
-            spining_scale_view_progress_main.catchContext().stopAndRelease()
+    private fun mainTintViewAnimateOff() {
+        Log.d(TAG, "SignInActivity.mainTintViewAnimateOff")
+        spining_scale_view_progress_main.catchContext().stopAndRelease()
+    }
 
     private fun stopImageLoadingAnimation() {
-        Log.d(TAG, "stopImageLoadingAnimation() called")
+        Log.d(TAG, "SignInActivity.stopImageLoadingAnimation")
     }
 
     private fun buildAndRegisterUser() {
+        Log.d(TAG, "SignInActivity.buildAndRegisterUser")
     }
 
     private val restCallback = object : RestCallbackAdapter() {
@@ -185,6 +193,7 @@ class SignInActivity : AppCompatActivity() {
         var photoCreationsCount = 0
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+            Log.d(TAG, "SignInActivity.onSimpleResponse")
             Log.d(TAG, "onSimpleResponse: $serverCode")
 
             when (serverCode) {
@@ -212,6 +221,7 @@ class SignInActivity : AppCompatActivity() {
         }
 
         override fun onFailure(requestID: Long, t: Throwable) {
+            Log.d(TAG, "SignInActivity.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
             Toast.makeText(this@SignInActivity, "Error!", Toast.LENGTH_SHORT).show()
             mainTintViewAnimateOff()
@@ -219,7 +229,7 @@ class SignInActivity : AppCompatActivity() {
         }
 
         override fun onOk(requestID: Long) {
-            Log.d(TAG, "onOk() called")
+            Log.d(TAG, "SignInActivity.onOk")
             mainTintViewAnimateOff()
             stopImageLoadingAnimation()
         }
@@ -227,6 +237,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     fun onClick(v: View) {
+        Log.d(TAG, "SignInActivity.onClick")
 
         when (v.id) {
 
@@ -249,6 +260,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        Log.d(TAG, "SignInActivity.onBackPressed")
 
         if (selectedPage != 0) {
             selectedPage--

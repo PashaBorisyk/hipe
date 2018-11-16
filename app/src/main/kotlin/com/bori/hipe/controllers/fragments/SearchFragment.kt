@@ -50,7 +50,7 @@ class SearchFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        Log.d(TAG, "onCreateViewIn Search Fragment: ")
+        Log.d(TAG, "SearchFragment.onCreateView")
 
         val vb = View(context)
         vb.animate().alpha(0f).translationX(10f).rotation(10f).start()
@@ -80,6 +80,8 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "SearchFragment.onDestroyView")
+
         RestService.unregisterCallback(restCallbackAdapter)
         searchTask.cancel()
         timer.cancel()
@@ -89,6 +91,8 @@ class SearchFragment : Fragment() {
     private inner class SearchTask : TimerTask() {
 
         override fun run() {
+            Log.d(TAG, "SearchTask.run")
+
             try {
                 activity!!.runOnUiThread {
 
@@ -161,7 +165,7 @@ class SearchFragment : Fragment() {
         }
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
-            Log.e(TAG, "onSimpleResponse: " + response)
+            Log.e(TAG, "onSimpleResponse: $response")
 
             response ?: return
             val id = response as Long
@@ -181,7 +185,7 @@ class SearchFragment : Fragment() {
         }
 
         override fun onLongListResponse(requestID: Long, ids: List<Long>?, serverStatus: Int) {
-            Log.d(TAG, "onLongListResponse requestID = [${requestID}], ids = [${ids}], serverStatus = [${serverStatus}]")
+            Log.d(TAG, "onLongListResponse requestID = [$requestID], ids = [$ids], serverStatus = [$serverStatus]")
 
             ids ?: return
 
@@ -217,6 +221,7 @@ class SearchFragment : Fragment() {
 
         @SuppressLint("RestrictedApi")
         override fun onBindViewHolder(holder: VH, position: Int) {
+            Log.d(TAG, "ResultsAdapter.onBindViewHolder")
 
             val entry = users[position]
 
@@ -241,6 +246,7 @@ class SearchFragment : Fragment() {
         override fun getItemCount(): Int = users.size
 
         fun setUsers(users: List<Tuple<User, HipeImage>>) {
+            Log.d(TAG, "ResultsAdapter.setUsers")
 
             val mutableUsersIn = users.toMutableList()
 
@@ -263,6 +269,7 @@ class SearchFragment : Fragment() {
         }
 
         override fun onClick(view: View) {
+            Log.d(TAG, "ResultsAdapter.onClick")
 
             if (view.tag != null && view.tag is Int) {
 

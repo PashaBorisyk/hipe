@@ -62,9 +62,12 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
 
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
+                Log.d(TAG, "CircularRevealFrameLayout.onAnimationRepeat")
             }
 
             override fun onAnimationEnd(animation: Animator?) {
+                Log.d(TAG, "CircularRevealFrameLayout.onAnimationEnd")
+
                 state = if (isForward) {
                     State.SHOWN
                 } else {
@@ -75,9 +78,12 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
             }
 
             override fun onAnimationCancel(animation: Animator?) {
+                Log.d(TAG, "CircularRevealFrameLayout.onAnimationCancel")
             }
 
             override fun onAnimationStart(animation: Animator?) {
+                Log.d(TAG, "CircularRevealFrameLayout.onAnimationStart")
+
                 state = State.IS_SHOWING
                 if (isForward)
                     child?.visibility = VISIBLE
@@ -115,6 +121,8 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
     }
 
     fun showIn(fromX: Float = 0f, fromY: Float = 0f, event: MotionEvent? = null) {
+        Log.d(TAG, "CircularRevealFrameLayout.showIn")
+
         showForward = true
         if (event == null) {
             Log.d(TAG, "showIn(MotionEvent == null)")
@@ -129,6 +137,8 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
     }
 
     fun showOut(fromX: Float = this.fromX, fromY: Float = this.fromY) {
+        Log.d(TAG, "CircularRevealFrameLayout.showOut")
+
         showForward = false
         this.fromX = fromX
         this.fromY = fromY

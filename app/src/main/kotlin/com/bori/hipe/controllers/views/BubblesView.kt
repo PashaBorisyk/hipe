@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -54,18 +55,26 @@ class BubblesView : View {
     }
 
     fun setSetBigRadiusWithViewSizes(setBigRadiusWithViewSizes: Boolean) {
+        Log.d(TAG, "BubblesView.setSetBigRadiusWithViewSizes")
+
         this.setBigRadiusWithViewSizes = setBigRadiusWithViewSizes
     }
 
     fun setBigRadius(newRadius: Float) {
+        Log.d(TAG, "BubblesView.setBigRadius")
+
         this.bigRadius = newRadius
     }
 
     fun setSmallRadius(smallRadius: Float) {
+        Log.d(TAG, "BubblesView.setSmallRadius")
+
         this.smallRadius = smallRadius
     }
 
     fun setPaintsColor(color: Int) {
+        Log.d(TAG, "BubblesView.setPaintsColor")
+
         paint.color = color
     }
 
@@ -79,10 +88,13 @@ class BubblesView : View {
         }
 
     fun setBubblesCount(count: Int) {
+        Log.d(TAG, "BubblesView.setBubblesCount")
+
         OVALS_COUNT = count
     }
 
     fun startEffects() {
+        Log.d(TAG, "BubblesView.startEffects")
 
         bubblesViewAnimation.reset()
         startAnimation(bubblesViewAnimation)
@@ -93,10 +105,13 @@ class BubblesView : View {
         get() = bubblesViewAnimation.isRun
 
     fun stopEffects() {
+        Log.d(TAG, "BubblesView.stopEffects")
+
         bubblesViewAnimation.cancel()
     }
 
     private fun randomize(i: Int) {
+        Log.d(TAG, "BubblesView.randomize")
 
         gonePixels[i] = 0
         currentSmallRAdiuses[i] = smallRadius * random.nextFloat()

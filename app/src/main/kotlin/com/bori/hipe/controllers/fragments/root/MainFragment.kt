@@ -44,7 +44,7 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     var hipeService: HipeService? = null
-    private set
+        private set
 
     private var oldPosition: Int = 0
 
@@ -61,21 +61,27 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     private var pressCount: Long = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater,container,savedInstanceState)
+        Log.d(TAG, "MainFragment.onCreateView")
+
+        super.onCreateView(inflater, container, savedInstanceState)
 
         Log.d(TAG, "onCreate: data: user - " + HipeApplication.username)
-        setContentView(R.layout.activity_main,inflater,container)
+        setContentView(R.layout.activity_main, inflater, container)
         init()
         return rootView
     }
 
     override fun onPause() {
+        Log.d(TAG, "MainFragment.onPause")
+
         super.onPause()
         fab_normal_new.animate().rotation(0f)
         pressCount = 0
     }
 
     override fun onResume() {
+        Log.d(TAG, "MainFragment.onResume")
+
         super.onResume()
         if (fab_normal_new.visibility == View.INVISIBLE)
             fab_normal_new.visibility = View.VISIBLE
@@ -83,12 +89,16 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     private fun init() {
+        Log.d(TAG, "MainFragment.init")
+
         initTabs()
         initFabs()
         fab_normal_new.visibility = View.INVISIBLE
     }
 
     private fun initTabs() {
+        Log.d(TAG, "MainFragment.initTabs")
+
 
         val fragmentNewsFeed = FragmentNewsFeed()
         val searchFragment = SearchFragment()
@@ -149,6 +159,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     private fun initFabs() {
+        Log.d(TAG, "MainFragment.initFabs")
+
 
         fab_mini_new_event.setOnClickListener(this)
         fab_mini_new_message.setOnClickListener(this)
@@ -173,19 +185,29 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
 
     }
 
-    private fun showNewQuickEventDialog() {}
+    private fun showNewQuickEventDialog() {
+        android.util.Log.d(TAG, "MainFragment.")
 
-    private fun initHostView(i: Int) = when (i) {
+    }
 
-        0 -> layoutInflater.inflate(R.layout.item_main_activity_events, main_tab_layout, false)
-        1 -> layoutInflater.inflate(R.layout.item_main_activity_chats, main_tab_layout, false)
-        2 -> layoutInflater.inflate(R.layout.item_main_activity_camera, main_tab_layout, false)
-        3 -> layoutInflater.inflate(R.layout.item_main_activity_search, main_tab_layout, false)
-        4 -> layoutInflater.inflate(R.layout.item_main_activity_map, main_tab_layout, false)
-        else -> throw IndexOutOfBoundsException("Such number of tabs is illegal")
+
+    private fun initHostView(i: Int): View {
+        Log.d(TAG, "MainFragment.initHostView")
+        return when (i) {
+
+
+            0 -> layoutInflater.inflate(R.layout.item_main_activity_events, main_tab_layout, false)
+            1 -> layoutInflater.inflate(R.layout.item_main_activity_chats, main_tab_layout, false)
+            2 -> layoutInflater.inflate(R.layout.item_main_activity_camera, main_tab_layout, false)
+            3 -> layoutInflater.inflate(R.layout.item_main_activity_search, main_tab_layout, false)
+            4 -> layoutInflater.inflate(R.layout.item_main_activity_map, main_tab_layout, false)
+            else -> throw IndexOutOfBoundsException("Such number of tabs is illegal")
+        }
     }
 
     private fun animateFabsOn() {
+        Log.d(TAG, "MainFragment.animateFabsOn")
+
 
         Log.d(TAG, "")
 
@@ -218,6 +240,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     private fun animateFabsOff() {
+        Log.d(TAG, "MainFragment.animateFabsOff")
+
 
         fab_normal_new.isActivated = false
 
@@ -248,6 +272,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
 
     var fabAnimatorListener: Animator.AnimatorListener = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
+            Log.d(TAG, "MainFragment.onAnimationEnd")
+
             super.onAnimationEnd(animation)
 
             if (!fab_normal_new.isActivated) {
@@ -261,21 +287,29 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     var tabSelectedListener: TabLayout.OnTabSelectedListener = object : TabLayout.OnTabSelectedListener {
 
         override fun onTabSelected(tab: TabLayout.Tab) {
+            Log.d(TAG, "MainFragment.onTabSelected")
+
             Log.d(TAG, "onTabSelected: ")
             animateButtons(tab.position)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {
+            Log.d(TAG, "MainFragment.onTabUnselected")
+
             Log.d(TAG, "onTabUnselected: ")
         }
 
         override fun onTabReselected(tab: TabLayout.Tab) {
+            Log.d(TAG, "MainFragment.onTabReselected")
+
             Log.d(TAG, "onTabReselected: ")
         }
 
     }
 
     private fun animateButtons(newPosition: Int) {
+        Log.d(TAG, "MainFragment.animateButtons")
+
         Log.d(TAG, "animateButtons: ")
 
         if (newPosition != oldPosition) {
@@ -301,6 +335,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     override fun onClick(view: View) {
+        Log.d(TAG, "MainFragment.onClick")
+
         Log.d(TAG, "onClick: ")
 
         if (view.tag != null && view.tag is Int)
@@ -325,6 +361,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
+        Log.d(TAG, "MainFragment.onServiceConnected")
+
         Log.d(TAG, "onServiceConnected: ")
 
         Log.d(TAG, "onServiceConnected: service inited")
@@ -333,6 +371,8 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     override fun onServiceDisconnected(componentName: ComponentName) {
+        Log.d(TAG, "MainFragment.onServiceDisconnected")
+
 
     }
 
@@ -345,16 +385,20 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
         }
 
         override fun getItem(position: Int): Fragment {
-            Log.d(TAG, "getItem: ")
+            Log.d(TAG, "ViewPagerAdapter.getItem")
+
             return fragments[position]
         }
 
         override fun getCount() = fragments.size
     }
 
+
     class QuickEventDialog : DialogFragment() {
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            Log.d(TAG, "QuickEventDialog.onCreateDialog")
+
             return Dialog(activity)
         }
     }

@@ -35,7 +35,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_user.*
 
-class UserFragment : HipeBaseFragment(){
+class UserFragment : HipeBaseFragment() {
 
     companion object {
         private const val TAG = "UserFragment"
@@ -63,7 +63,9 @@ class UserFragment : HipeBaseFragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        setContentView(R.layout.activity_user,inflater,container)
+        android.util.Log.d(TAG, "UserFragment.onCreateView")
+
+        setContentView(R.layout.activity_user, inflater, container)
         init()
 
         userID = arguments!![Const.ADVANCED_USER_ID] as Long
@@ -78,11 +80,14 @@ class UserFragment : HipeBaseFragment(){
 
     override fun onDestroy() {
         super.onDestroy()
+
+        Log.d(TAG, "UserFragment.onDestroy")
         RestService.unregisterCallback(restCallbackAdapter)
     }
 
     private fun init() {
 
+        Log.d(TAG, "UserFragment.init")
         displayImageOptions = DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
@@ -114,6 +119,8 @@ class UserFragment : HipeBaseFragment(){
 
         val id = v.id
 
+
+        Log.d(TAG, "UserFragment.onClick")
         if (id == R.id.user_activity_button_invite || id == R.id.invite_indicator) {
             if (id == R.id.user_activity_button_invite)
                 invite_indicator.callOnClick()
@@ -141,6 +148,7 @@ class UserFragment : HipeBaseFragment(){
     }
 
     private fun animateDataView() {
+        Log.d(TAG, "UserFragment.animateDataView")
 
         user_activity_data_view.animate()
                 .alpha(0f)
@@ -152,6 +160,8 @@ class UserFragment : HipeBaseFragment(){
     private var recyclerViewAnimationListener: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
 
         override fun onAnimationEnd(animation: Animator) {
+
+            Log.d(TAG, "UserFragment.onAnimationEnd")
             super.onAnimationEnd(animation)
 
             dataAdapter.notifyDataSetChanged()
@@ -166,15 +176,19 @@ class UserFragment : HipeBaseFragment(){
     private var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
 
         override fun onFailure(requestID: Long, t: Throwable) {
+
+            Log.d(TAG, "UserFragment.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
 
         }
 
         override fun onOk(requestID: Long) {
-            Log.d(TAG, "onOk() called")
+            Log.d(TAG, "UserFragment.onOk")
         }
 
         override fun onUserResponse(requestID: Long, user: Tuple<User, HipeImage>?, serverStatus: Int) {
+
+            android.util.Log.d(TAG, "UserFragment.onUserResponse")
 
             Log.d(TAG, "onUserListResponse() called with: status = [$serverStatus]")
 
@@ -189,7 +203,9 @@ class UserFragment : HipeBaseFragment(){
         }
 
         override fun onEventListResponse(requestID: Long, events: List<Tuple<Event, HipeImage>>?, serverStatus: Int) {
-            Log.d(TAG, "onEventListResponse requestID = [${requestID}], events = [${events}], serverStatus = [${serverStatus}]")
+
+            android.util.Log.d(TAG, "UserFragment.onEventListResponse")
+
 
             if (requestID == GET_EVENTS_BY_MEMBER_ID) {
 
@@ -205,7 +221,8 @@ class UserFragment : HipeBaseFragment(){
         }
 
         override fun onUserListResponse(requestID: Long, users: List<Tuple<User, HipeImage>>?, serverStatus: Int) {
-            Log.d(TAG, "onUserListResponse requestID = [${requestID}], events = [${users}], serverStatus = [${serverStatus}]")
+
+            Log.d(TAG, "UserFragment.onUserListResponse")
 
             if (requestID == GET_FRIENDS_LIST_ID) {
 
@@ -220,8 +237,7 @@ class UserFragment : HipeBaseFragment(){
         }
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
-            Log.d(TAG, "onLongListResponse() called with: strings = ")
-
+            Log.d(TAG, "UserFragment.onSimpleResponse")
             if (serverCode == Status.OK) {
                 //user added
                 follow_indicator.isSelected = true
@@ -244,6 +260,9 @@ class UserFragment : HipeBaseFragment(){
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
 
+            android.util.Log.d(TAG, "DataAdapter.onCreateViewHolder")
+
+
             if (dataType == DataType.TYPE_USERS) {
                 return VH(layoutInflater.inflate(R.layout.item_row_user_small, parent, false), dataType)
             }
@@ -251,10 +270,11 @@ class UserFragment : HipeBaseFragment(){
                 return VH(layoutInflater.inflate(R.layout.item_row_event_small, parent, false), dataType)
             }
 
-            return VH(View(context),dataType)
+            return VH(View(context), dataType)
         }
 
         override fun onBindViewHolder(holder: VH, position: Int) {
+            android.util.Log.d(TAG, "DataAdapter.onBindViewHolder")
 
             when (dataType) {
 
@@ -283,10 +303,15 @@ class UserFragment : HipeBaseFragment(){
 
         }
 
-        override fun getItemCount() = when (dataType) {
-            DataType.TYPE_EVENTS -> events.size
-            DataType.TYPE_USERS -> users.size
-            else -> 10
+        override fun getItemCount(): Int {
+            Log.d(TAG, "DataAdapter.getItemCount")
+            return when (dataType) {
+
+                DataType.TYPE_EVENTS -> events.size
+                DataType.TYPE_USERS -> users.size
+                else -> 10
+            }
+
         }
 
         override fun getItemViewType(position: Int) = dataType.ordinal
@@ -321,14 +346,17 @@ class UserFragment : HipeBaseFragment(){
                     imageLoadingListener = object : ImageLoadingListener {
 
                         override fun onLoadingStarted(s: String, view: View) {
+
+                            Log.d(TAG, "VH.onLoadingStarted")
                             Log.d(TAG, "Loading started")
                         }
 
                         override fun onLoadingFailed(s: String, view: View, failReason: FailReason) {
-                            Log.d(TAG, "Loading finished")
+                            android.util.Log.d(TAG, "VH.onLoadingFailed")
                         }
 
                         override fun onLoadingComplete(s: String, view: View, bitmap: Bitmap) {
+                            android.util.Log.d(TAG, "VH.onLoadingComplete")
 
                             if (view.tag != null) {
                                 myAnimatorListener.imageView = eventImage2
@@ -345,7 +373,10 @@ class UserFragment : HipeBaseFragment(){
 
                         }
 
-                        override fun onLoadingCancelled(s: String, view: View) {}
+                        override fun onLoadingCancelled(s: String, view: View) {
+                            Log.d(TAG, "VH.onLoadingCancelled")
+
+                        }
 
                     }
 
@@ -364,6 +395,8 @@ class UserFragment : HipeBaseFragment(){
                 var imageView: ImageView? = null
 
                 override fun onAnimationEnd(animation: Animator) {
+
+                    Log.d(TAG, "MyAnimatorListener.onAnimationEnd")
                     super.onAnimationEnd(animation)
 
                     if (imageView != null)

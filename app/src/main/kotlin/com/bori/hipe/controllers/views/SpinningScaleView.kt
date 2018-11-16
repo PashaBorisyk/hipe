@@ -39,6 +39,7 @@ class SpinningScaleView : ImageView {
     fun catchContext() = spinningAndScaleContext
 
     private fun startSpinningAndScaling(cycleDuration: Long) {
+        Log.d(TAG, "SpinningScaleView.startSpinningAndScaling")
 
         run = true
 
@@ -59,6 +60,7 @@ class SpinningScaleView : ImageView {
     }
 
     private fun doRotation(cycleDuration: Long) {
+        Log.d(TAG, "SpinningScaleView.doRotation")
 
         if (run) {
             animate()
@@ -72,7 +74,7 @@ class SpinningScaleView : ImageView {
     private var rotationListener: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            Log.d(TAG, "onAnimationEnd: ")
+            Log.d(TAG, "SpinningScaleView.onAnimationEnd")
 
             if (run) {
                 animate()
@@ -86,8 +88,7 @@ class SpinningScaleView : ImageView {
     private var scaleInListener: AnimatorListenerAdapter = object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            Log.d(TAG, "onAnimationEnd: ")
-
+            Log.d(TAG, "SpinningScaleView.onAnimationEnd")
             if (run) {
                 animate()
                         .scaleX(1f)
@@ -102,6 +103,8 @@ class SpinningScaleView : ImageView {
         private var backingView: View? = null
 
         fun start(duration: Long, withView: View?): SpinningAndScaleSingletonContext {
+            Log.d(TAG, "SpinningAndScaleSingletonContext.start")
+
 
             if (!catched) {
                 backingView = withView
@@ -128,6 +131,8 @@ class SpinningScaleView : ImageView {
         }
 
         fun stopAndRelease() {
+            Log.d(TAG, "SpinningAndScaleSingletonContext.stopAndRelease")
+
             catched = false
 
             animate()
@@ -147,6 +152,7 @@ class SpinningScaleView : ImageView {
 
             override fun onAnimationEnd(animation: Animator?) {
                 super.onAnimationEnd(animation)
+                Log.d(TAG, "SpinningAndScaleSingletonContext.onAnimationEnd")
 
                 run = false
                 visibility = View.GONE

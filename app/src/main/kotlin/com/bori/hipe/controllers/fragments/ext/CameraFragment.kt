@@ -31,6 +31,7 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     private lateinit var cameraController: CameraLollipopController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d(TAG, "CameraFragment.onCreateView")
         setContentView(R.layout.camera_fragment, inflater, container)
         init()
         requestPermissions()
@@ -38,6 +39,9 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     }
 
     override fun onResume() {
+        Log.d(TAG, "CameraFragment.onResume")
+        Log.d(TAG, "CameraFragment.onResume")
+
         super.onResume()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             cameraController.startPreview()
@@ -46,10 +50,12 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     }
 
     private fun init() {
+        Log.d(TAG, "CameraFragment.init")
         autoFitTextureView = findViewById(R.id.camera_preview_texture)
     }
 
     private fun createCameraSession() {
+        Log.d(TAG, "CameraFragment.createCameraSession")
         if (activity is AppCompatActivity) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 cameraController = CameraLollipopController(activity as AppCompatActivity, autoFitTextureView)
@@ -59,6 +65,7 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     }
 
     private fun requestPermissions() {
+        Log.d(TAG, "CameraFragment.requestPermissions")
         if (ContextCompat.checkSelfPermission(activity!!,
                         Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -80,6 +87,7 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     override fun onRequestPermissionsResult(
             requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
+        android.util.Log.d(TAG, "CameraFragment.onRequestPermissionsResult")
         when (requestCode) {
             CameraFragment.CAMERA_PERMISSIONS_REQUEST -> {
                 // If request is cancelled, the result arrays are empty.
@@ -99,13 +107,16 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     }
 
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+        Log.d(TAG, "CameraFragment.surfaceChanged")
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        Log.d(TAG, "CameraFragment.surfaceDestroyed")
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun surfaceCreated(holder: SurfaceHolder?) {
+        Log.d(TAG, "CameraFragment.surfaceCreated")
         cameraController.startPreview()
     }
 

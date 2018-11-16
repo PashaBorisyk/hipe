@@ -34,7 +34,7 @@ class FriendsListDialogFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        Log.d(TAG, "onCreateDialog() called with: savedInstanceState = [$savedInstanceState]")
+        Log.d(TAG, "FriendsListDialogFragment.onCreateDialog")
 
         val builder = AlertDialog.Builder(activity!!)
         val rootView = activity!!.layoutInflater.inflate(R.layout.dialog_friends_list, null, false)
@@ -55,6 +55,8 @@ class FriendsListDialogFragment : DialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "FriendsListDialogFragment.onDestroyView")
+
         RestService.unregisterCallback(adapter.restCallback)
     }
 

@@ -85,6 +85,8 @@ class FragmentNewsFeed : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "FragmentNewsFeed.onDestroyView")
+
         RestService.unregisterCallback(recyclerViewAdapter.restCallbackAdapter)
     }
 
@@ -107,6 +109,8 @@ class FragmentNewsFeed : Fragment() {
         private val displayImageOptions: DisplayImageOptions
 
         init {
+
+            Log.d(TAG, "RecyclerViewAdapter.")
 
             layoutInflater = activity!!.layoutInflater
 
@@ -204,6 +208,7 @@ class FragmentNewsFeed : Fragment() {
         internal var tag = -1
 
         override fun onClick(view: View) {
+            Log.d(TAG, "RecyclerViewAdapter.onClick")
 
             if (view.tag != null && view.tag is Int)
                 tag = view.tag as Int

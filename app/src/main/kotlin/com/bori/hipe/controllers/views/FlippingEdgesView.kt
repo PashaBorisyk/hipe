@@ -8,6 +8,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.bori.hipe.util.extensions.zeroIfNegative
@@ -136,6 +137,7 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        Log.d(TAG, "FlippingEdgesView.onMeasure")
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
@@ -184,6 +186,7 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     private fun initAnimator(){
+        Log.d(TAG, "FlippingEdgesView.initAnimator")
 
         animator = ValueAnimator.ofFloat(0f, 1f)
         animator?.duration = BUTTON_LINES_ANIMATOR_DURATION
@@ -200,6 +203,7 @@ class FlippingEdgesView @JvmOverloads constructor(
         animator?.addListener(object : Animator.AnimatorListener {
 
             override fun onAnimationRepeat(animation: Animator?) {
+                Log.d(TAG, "FlippingEdgesView.onAnimationRepeat")
             }
 
             override fun onAnimationEnd(animation: Animator?) {
@@ -252,9 +256,11 @@ class FlippingEdgesView @JvmOverloads constructor(
             }
 
             override fun onAnimationCancel(animation: Animator?) {
+                Log.d(TAG, "FlippingEdgesView.onAnimationCancel")
             }
 
             override fun onAnimationStart(animation: Animator?) {
+                Log.d(TAG, "FlippingEdgesView.onAnimationStart")
                 _beforeStart?.invoke(this@FlippingEdgesView)
                 _beforeStart = null
             }
@@ -392,6 +398,7 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     fun show(hasToShow: Boolean, ifWillNotAnimate: ((FlippingEdgesView) -> Unit)? = null): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.show")
 
         if (hasToShow) {
             isClickable = true
@@ -418,6 +425,8 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     fun changeText(text: String): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.changeText")
+
         if (hasShown) {
             secondaryText = text
             prevMode = mode
@@ -432,6 +441,7 @@ class FlippingEdgesView @JvmOverloads constructor(
 
     //TODO fix view not showing
     fun startLoading(): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.startLoading")
 
         isEndingAnimation = false
         prevMode = mode
@@ -444,6 +454,7 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     fun stopLoading(): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.stopLoading")
 
         isEndingAnimation = true
         isClickable = true
@@ -451,11 +462,15 @@ class FlippingEdgesView @JvmOverloads constructor(
     }
 
     fun beforeStart(lambda: (FlippingEdgesView) -> Unit): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.beforeStart")
+
         _beforeStart = lambda
         return this
     }
 
     fun afterStop(lambda: (FlippingEdgesView) -> Unit): FlippingEdgesView {
+        Log.d(TAG, "FlippingEdgesView.afterStop")
+
         _afterStop = lambda
         return this
     }

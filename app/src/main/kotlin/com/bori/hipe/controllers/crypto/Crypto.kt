@@ -1,11 +1,14 @@
 package com.bori.hipe.controllers.crypto
 
+import android.util.Log
 import kotlin.experimental.xor
 
 
 private const val KEY = "asdf"
+private const val TAG = "Crypto"
 
 fun encode(secret: String): String {
+    Log.d(TAG, "<top>.encode")
 
     val btxt: ByteArray = secret.toByteArray()
     val bkey: ByteArray = KEY.toByteArray()
@@ -21,6 +24,7 @@ fun encode(secret: String): String {
 }
 
 fun decode(secret: String): String {
+    Log.d(TAG, "<top>.decode")
 
     val byteValues = secret.substring(1, secret.length - 1).split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     val bytes = ByteArray(byteValues.size)

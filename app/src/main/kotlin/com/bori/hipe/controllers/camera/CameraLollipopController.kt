@@ -47,54 +47,41 @@ class CameraLollipopController(
 
     }
 
-
     private fun prepareCamera() {
-        Log.d(CameraFragment.TAG, "prepareCamera()")
+        Log.d(TAG, "CameraLollipopController.prepareCamera")
 
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         cameraWithCharacteristics = CameraStrategy.createCameraWithFacing(cameraManager, 1)
         cameraWithCharacteristics ?: throw Exception("Fucking camera doesnt want to initialize")
         previewSize = CameraStrategy.getPreviewSize(cameraWithCharacteristics!!.second)
         setTextureAspectRatio(previewSize)
-        val cameraDeviceObservable = onSurfaceTextureAvailable
+        onSurfaceTextureAvailable
                 .firstElement()
                 .doAfterSuccess(this::setupSurface)
                 .doAfterSuccess { initImageReader() }
                 .toObservable()
-                .flatMap { CameraStrategy.openCamera(cameraWithCharacteristics!!.first, cameraManager) }
-                .share()
-
-        val openCameraObservable = cameraDeviceObservable.filter { pair ->
-            pair.first == DeviceStateEvents.ON_OPEND
-        }.map { it.second }.share()
-
-        val closeCameraObservable = cameraDeviceObservable
-                .filter { pair -> pair.first == DeviceStateEvents.ON_CLOSED }
-                .map { it.second }
-                .share()
-
-        val createCaptureSessionObservable = closeCameraObservable
-                .flatMap { cameraDevice ->
-                    CameraStrategy.createCaptureSession(cameraDevice, Arrays.asList(surface, imageReader.surface))
-                }.share()
-
-        val captureSessionConfigureObservable = createCaptureSessionObservable
-                .filter { pair -> pair.first == CaptureSessionStateEvents.ON_CONFIGURED }
-                .map { it.second }
-                .share()
-
-        val captureSessionClosedObservable = createCaptureSessionObservable
-                .filter { pair -> pair.first == CaptureSessionStateEvents.ON_CLOSED }
-                .map { it.second }
-
-        val previewObservable = captureSessionConfigureObservable
+                .flatMap {
+                    CameraStrategy.openCamera(cameraWithCharacteristics!!.first, cameraManager)
+                }
+                .filter { pair ->
+                    pair.first == DeviceStateEvents.ON_OPEND
+                }
+                .map {
+                    it.second
+                }
+                .flatMap {
+                    CameraStrategy.createCaptureSession(it, Arrays.asList(surface, imageReader.surface))
+                }
+                .filter {
+                    it.first == CaptureSessionStateEvents.ON_CONFIGURED
+                }
+                .map {
+                    it.second
+                }
                 .flatMap { cameraCapturedSession ->
                     val previewBuilder = createPreviewBuilder(cameraCapturedSession, surface)
                     return@flatMap CameraStrategy.fromSetRepeatingRequest(cameraCapturedSession, previewBuilder.build())
-                }
-                .share()
-
-        previewObservable.subscribe()
+                }.subscribe()
 
     }
 
@@ -109,14 +96,17 @@ class CameraLollipopController(
         surface = Surface(surfaceTexture)
     }
 
-    fun createPreviewBuilder(captureSession: CameraCaptureSession, surface: Surface): CaptureRequest.Builder {
+    private fun createPreviewBuilder(captureSession: CameraCaptureSession, surface: Surface): CaptureRequest.Builder {
+        Log.d(TAG, "CameraLollipopController.createPreviewBuilder")
+
         val buidler = captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         buidler.addTarget(surface)
         step3Auto(buidler)
         return buidler
     }
 
-    fun step3Auto(builder: CaptureRequest.Builder) {
+    private fun step3Auto(builder: CaptureRequest.Builder) {
+        Log.d(TAG, "CameraLollipopController.step3Auto")
 
         builder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO)
 
@@ -150,7 +140,7 @@ class CameraLollipopController(
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private fun initImageReader() {
-        Log.d(CameraFragment.TAG, "initImageReader()")
+        Log.d(TAG, "CameraLollipopController.initImageReader")
 
         val sizeForImageReader = CameraStrategy.getStillImageSize(cameraWithCharacteristics!!.second, previewSize)
 
@@ -170,21 +160,24 @@ class CameraLollipopController(
 
     }
 
-    private fun prepareRecorder(){
-
-
+    private fun prepareRecorder() {
+        Log.d(TAG, "CameraLollipopController.prepareRecorder")
 
     }
 
     private fun setTextureAspectRatio(previewSize: Size) {
+        Log.d(TAG, "CameraLollipopController.setTextureAspectRatio")
+
         autoFitTextureView.setAspectRatio(previewSize.height, previewSize.width)
     }
 
 
     override fun startPreview() {
+        Log.d(TAG, "CameraLollipopController.startPreview")
 
         autoFitTextureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
+                Log.d(TAG, "CameraLollipopController.onSurfaceTextureSizeChanged")
 
             }
 
@@ -193,10 +186,14 @@ class CameraLollipopController(
             }
 
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+                Log.d(TAG, "CameraLollipopController.onSurfaceTextureDestroyed")
+
                 return true
             }
 
             override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+                Log.d(TAG, "CameraLollipopController.onSurfaceTextureAvailable")
+
                 onSurfaceTextureAvailable.onNext(surface)
             }
 
@@ -204,6 +201,8 @@ class CameraLollipopController(
     }
 
     override fun stopPreview() {
+        Log.d(TAG, "CameraLollipopController.stopPreview")
+
         imageReader.close()
     }
 

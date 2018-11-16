@@ -47,7 +47,8 @@ object LocationAccessor : LocationListener {
     }
 
     private fun accessCurrentLocation(c: Context): Location? {
-        Log.d(TAG, "getCurrentLocation: ")
+        Log.d(TAG, "LocationAccessor.accessCurrentLocation")
+
         accessedProvider = LocationManager.NETWORK_PROVIDER
 
         if (ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(c, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -66,6 +67,7 @@ object LocationAccessor : LocationListener {
     }
 
     fun getCurrentLocation(c: Context): Location? {
+        Log.d(TAG, "LocationAccessor.getCurrentLocation")
 
         if (System.currentTimeMillis() - lastMills > 3600000)
             return accessCurrentLocation(c)

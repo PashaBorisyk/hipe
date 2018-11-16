@@ -25,10 +25,12 @@ class TriangleView : View {
         mPaint = Paint()
         mPaint.style = Paint.Style.STROKE
         mPath = Path()
-        Log.e(TAG, "init: " + backGround)
+        Log.e(TAG, "init: $backGround")
     }
 
     private fun invalidateColor() {
+        Log.d(TAG, "TriangleView.invalidateColor")
+
         backGround = (background as? ColorDrawable)?.color ?: 0xffff00
         setBackgroundColor(0x00000000)
     }

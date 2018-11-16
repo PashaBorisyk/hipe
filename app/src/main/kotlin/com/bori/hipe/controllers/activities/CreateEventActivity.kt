@@ -100,7 +100,7 @@ class CreateNewEventActivity :
     val addedUsers = hashSetOf<Long>()
 
     private fun init() {
-        Log.d(TAG, "init() called")
+        Log.d(TAG, "CreateNewEventActivity.init")
 
         friendsListDialogFragment = FriendsListDialogFragment()
         photoDialogFragment = PhotoDialogFragment()
@@ -137,7 +137,8 @@ class CreateNewEventActivity :
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate() called with: savedInstanceState = [$savedInstanceState]")
+        Log.d(TAG, "CreateNewEventActivity.onCreate")
+
         setContentView(R.layout.activity_create_new_event)
         init()
         initToolBar()
@@ -147,12 +148,14 @@ class CreateNewEventActivity :
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "CreateNewEventActivity.onDestroy")
+
         super.onDestroy()
         RestService.unregisterCallback(restCallback)
     }
 
     private fun initToolBar() {
-        Log.d(TAG, "initToolBar() called")
+        Log.d(TAG, "CreateNewEventActivity.initToolBar")
 
         setSupportActionBar(new_event_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -161,7 +164,7 @@ class CreateNewEventActivity :
     }
 
     override fun chooseFromStorage() {
-        Log.d(TAG, "choosePhotoFromGallery() called")
+        Log.d(TAG, "CreateNewEventActivity.chooseFromStorage")
 
         val i = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(i, RC_CHOOSE_FROM_GALLERY)
@@ -170,6 +173,7 @@ class CreateNewEventActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         Log.d(TAG, "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]")
 
         if (requestCode == RC_CHOOSE_FROM_GALLERY && null != data) {
@@ -189,6 +193,7 @@ class CreateNewEventActivity :
     }
 
     private fun onPlaceChosen(data: Intent?) {
+        Log.d(TAG, "CreateNewEventActivity.onPlaceChosen")
 
         val place = PlacePicker.getPlace(this, data!!)
         val name = place.name
@@ -207,6 +212,7 @@ class CreateNewEventActivity :
     }
 
     private fun onImageChosenFormGallery(data: Intent?) {
+        Log.d(TAG, "CreateNewEventActivity.onImageChosenFormGallery")
 
         val selectedImage = data?.data
         val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
@@ -222,13 +228,15 @@ class CreateNewEventActivity :
     }
 
     private fun onImageCapturedOnCamera() {
+        Log.d(TAG, "CreateNewEventActivity.onImageCapturedOnCamera")
+
         setImageForUrl("file://" + photoLocalUrl!!, event_photo)
         galleryAddPic()
     }
 
     @Throws(IOException::class)
     private fun createImageFile(): File {
-        Log.d(TAG, "createImageFile() called")
+        Log.d(TAG, "CreateNewEventActivity.createImageFile")
 
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
@@ -245,7 +253,8 @@ class CreateNewEventActivity :
     }
 
     override fun captureFromCamera() {
-        Log.d(TAG, "captureFromCamera() called")
+        Log.d(TAG, " CreateNewEventActivity.captureFromCamera")
+
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
             var photoFile: File? = null
@@ -266,6 +275,7 @@ class CreateNewEventActivity :
     }
 
     private fun galleryAddPic() {
+        Log.d(TAG, "CreateNewEventActivity.galleryAddPic")
         Log.d(TAG, "galleryAddPic() called")
 
         val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
@@ -276,22 +286,26 @@ class CreateNewEventActivity :
     }
 
     private fun setImageForUrl(url: String, imageView: ImageView) {
+        Log.d(TAG, "CreateNewEventActivity.setImageForUrl")
         Log.d(TAG, "setImageForUrl() called with: url = [$url], imageView = [$imageView]")
 
         ImageLoader.getInstance().displayImage(url, imageView, DisplayImageOptions.createSimple(), object : ImageLoadingListener {
             override fun onLoadingStarted(s: String, view: View) {
+                Log.d(TAG, "CreateNewEventActivity.onLoadingStarted")
 
                 Log.d(TAG, "onLoadingStarted() called with: s = [$s], animatedView = [$view]")
 
             }
 
             override fun onLoadingFailed(s: String, view: View, failReason: FailReason) {
+                Log.d(TAG, "CreateNewEventActivity.onLoadingFailed")
                 Toast.makeText(this@CreateNewEventActivity, "Loading Failed", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, "onLoadingFailed() called with: s = [$s], animatedView = [$view], failReason = [$failReason]")
 
             }
 
             override fun onLoadingComplete(s: String, view: View, bitmap: Bitmap) {
+                Log.d(TAG, "CreateNewEventActivity.onLoadingComplete")
                 Toast.makeText(this@CreateNewEventActivity, "Loading complete", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, "onLoadingComplete() called with: s = [$s], animatedView = [$view], bitmap = [$bitmap]")
 
@@ -302,6 +316,7 @@ class CreateNewEventActivity :
             }
 
             override fun onLoadingCancelled(s: String, view: View) {
+                Log.d(TAG, "CreateNewEventActivity.onLoadingCancelled")
                 Toast.makeText(this@CreateNewEventActivity, "Loading cancelled", Toast.LENGTH_SHORT).show()
                 Log.d(TAG, "onLoadingCancelled() called with: s = [$s], animatedView = [$view]")
 
@@ -311,6 +326,7 @@ class CreateNewEventActivity :
     }
 
     private fun createEvent() {
+        Log.d(TAG, "CreateNewEventActivity.createEvent")
         Log.d(TAG, "createNewEvent() called")
 
         val me = User.thisUser
@@ -335,11 +351,13 @@ class CreateNewEventActivity :
     }
 
     private fun animateMainTintViewOn() {
+        Log.d(TAG, "CreateNewEventActivity.animateMainTintViewOn")
         Log.d(TAG, "animateMainTintViewOn() called")
         spining_scale_view_progress_main.catchContext().start(ANIMATION_ADD_USER_DURATION, main_tint_view)
     }
 
     private fun animateMainTintViewOff() {
+        Log.d(TAG, "CreateNewEventActivity.animateMainTintViewOff")
         Log.d(TAG, "animateMainTintViewOff() called")
 
         if (main_tint_view.visibility == View.VISIBLE) {
@@ -348,6 +366,7 @@ class CreateNewEventActivity :
                     .alpha(0f)
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator) {
+                            Log.d(TAG, "CreateNewEventActivity.onAnimationEnd")
                             super.onAnimationEnd(animation)
                             spining_scale_view_progress_main.catchContext().stopAndRelease()
                         }
@@ -357,6 +376,7 @@ class CreateNewEventActivity :
     }
 
     private fun refreshCalendar() {
+        Log.d(TAG, "CreateNewEventActivity.refreshCalendar")
         Log.d(TAG, "refreshCalendar() called")
 
         val c = Calendar.getInstance()
@@ -367,6 +387,7 @@ class CreateNewEventActivity :
     }
 
     private fun initPickerDialog() {
+        Log.d(TAG, "CreateNewEventActivity.initPickerDialog")
         Log.d(TAG, "initPickerDialog() called")
 
         datePickerDialog = DatePickerDialog(this, this, YEAR, MOUNTH, DAY)
@@ -384,6 +405,7 @@ class CreateNewEventActivity :
         }
 
     private fun setButtonTime(hour: Int, minute: Int) {
+        Log.d(TAG, "CreateNewEventActivity.setButtonTime")
         Log.d(TAG, "setButtonTime() called with: hour = [$hour], minute = [$minute]")
 
         timeMills = (hour * 3600 * 1000 + minute * 60 * 1000).toLong()
@@ -394,7 +416,7 @@ class CreateNewEventActivity :
     }
 
     private fun setButtonDate(dateMills: Long) {
-        Log.d(TAG, "setButtonDate() called with: dateMills = [$dateMills]")
+        Log.d(TAG, "CreateNewEventActivity.setButtonDate")
 
         this.dateMills = dateMills
         val simpleDateFormat = SimpleDateFormat("EEEE dd MMMM", currentLocale)
@@ -403,7 +425,7 @@ class CreateNewEventActivity :
     }
 
     override fun onDateSet(datePicker: DatePicker, year: Int, mounth: Int, day: Int) {
-        Log.d(TAG, "onDateSet() called with: datePicker = [$datePicker], year = [$year], mounth = [$mounth], day = [$day]")
+        Log.d(TAG, "CreateNewEventActivity.onDateSet")
 
         val c = Calendar.getInstance()
         c.set(Calendar.YEAR, year)
@@ -414,12 +436,14 @@ class CreateNewEventActivity :
     }
 
     override fun onTimeSet(timePicker: TimePicker, hour: Int, minute: Int) {
+        Log.d(TAG, "CreateNewEventActivity.onTimeSet")
         Log.d(TAG, "onTimeSet() called with: timePicker = [$timePicker], hour = [$hour], minute = [$minute]")
 
         setButtonTime(hour, minute)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.d(TAG, "CreateNewEventActivity.onRequestPermissionsResult")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG, "onRequestPermissionsResult() called with: requestCode = [$requestCode], permissions = [$permissions], grantResults = [$grantResults]")
 
@@ -492,6 +516,7 @@ class CreateNewEventActivity :
     }
 
     private fun validate(thisEvent: Event): Boolean {
+        Log.d(TAG, "CreateNewEventActivity.validate")
 
         if (true)
             return true
@@ -538,6 +563,7 @@ class CreateNewEventActivity :
     inner class CreateEventActivityRestCallbackAdapter : RestCallbackAdapter() {
 
         override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+            Log.d(TAG, "CreateEventActivityRestCallbackAdapter.onSimpleResponse")
             when (requestID) {
                 CREATE_NEW_EVENT_ID -> {
                     if (serverCode == Status.CREATED) {

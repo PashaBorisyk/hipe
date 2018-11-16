@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ import java.util.*
 class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
     companion object {
+        private const val TAG = "FragmentChatsDialog"
         private const val TYPE_MINE = 0
         private const val TYPE_USER = 1
     }
@@ -46,6 +48,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
     private var id: Long = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d(TAG, "FragmentChatsDialog.onCreateView")
 
         v = inflater.inflate(R.layout.fragment_chats_dialog, container, false)
 
@@ -82,12 +85,15 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "FragmentChatsDialog.onDestroyView")
+
         RestService.unregisterCallback(messagesAdapter.restCallback)
         WebSocketConnector.unregisterCallback(messagesAdapter.messageCallback)
 
     }
 
     override fun onClick(v: View) {
+        Log.d(TAG, "FragmentChatsDialog.onClick")
 
         when (v.id) {
 
@@ -124,6 +130,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED).build()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            Log.d(TAG, "MessagesAdapter.onCreateViewHolder")
 
             if (viewType == TYPE_MINE)
                 return VH(layoutInflater.inflate(R.layout.chats_row_my_message, parent, false))
@@ -133,6 +140,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         }
 
         override fun onBindViewHolder(holder: VH, position: Int) {
+            Log.d(TAG, "MessagesAdapter.onBindViewHolder")
 
             val chatMessage = chatMessages[position]
 
@@ -158,6 +166,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         val messageCallback = object : MessageCallbackAdapter() {
 
             override fun onTextMessage(payload: String) {
+                Log.d(TAG, "MessagesAdapter.onTextMessage")
 
                 try {
                     val chatMessage = Gson().fromJson<ChatMessageNOSQL>(payload, ChatMessageNOSQL::class.java)
@@ -177,16 +186,19 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         val restCallback = object : RestCallbackAdapter() {
 
             override fun onFailure(requestID: Long, t: Throwable) {
+                Log.d(TAG, "MessagesAdapter.onFailure")
 
             }
 
             override fun onOk(requestID: Long) {
+                Log.d(TAG, "MessagesAdapter.onOk")
 
             }
 
         }
 
         override fun onClick(v: View) {
+            Log.d(TAG, "MessagesAdapter.onClick")
 
             if (v.tag != null && v.tag is String) {
 

@@ -4,6 +4,7 @@ package com.bori.hipe.controllers.fragments
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,11 +20,16 @@ import com.bori.hipe.util.extensions.setContentView
 
 class AllChatsFragment : HipeBaseFragment() {
 
+    private companion object {
+        private const val TAG = "AllChatsFragment"
+    }
+
     private var v: View? = null
     private var recyclerView: RecyclerView? = null
     private var eventChatsAdapter: EventChatsAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.d(TAG, "AllChatsFragment.onCreateView")
 
         setContentView(R.layout.fragment_all_chats, inflater ,container)
         recyclerView = findViewById(R.id.fragment_all_chats_last_messages_list)
@@ -37,7 +43,7 @@ class AllChatsFragment : HipeBaseFragment() {
 
     private val onMessageListener = object : MessageCallbackAdapter() {
         override fun onTextMessage(payload: String) {
-
+            Log.d(TAG, "AllChatsFragment.onTextMessage")
         }
 
     }
@@ -66,6 +72,7 @@ class AllChatsFragment : HipeBaseFragment() {
         override fun getItemCount() = eventList.size
 
         override fun onClick(v: View) {
+            Log.d(TAG, "EventChatsAdapter.onClick")
 
             val tag = v.tag ?: return
             if (tag is Int) {

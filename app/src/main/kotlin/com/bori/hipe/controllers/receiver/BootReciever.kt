@@ -11,10 +11,16 @@ import android.util.Log
 
 class BootReciever : BroadcastReceiver() {
 
+
+    companion object {
+
+        var isConnected = false
+        private const val TAG = "BootReciever"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
 
-        Log.e(TAG, "onReceive: " + intent.action)
-
+        Log.d(TAG, "BootReciever.onReceive")
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.e(TAG, "onReceive: DEVICE_REBOOTED")
             //            context.startService(new Intent(context, AlkosService.class));
@@ -41,10 +47,5 @@ class BootReciever : BroadcastReceiver() {
 
     }
 
-    companion object {
-
-        var isConnected = false
-        private val TAG = "BootReciever"
-    }
 
 }
