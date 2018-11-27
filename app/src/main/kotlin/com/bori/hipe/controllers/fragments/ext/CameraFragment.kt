@@ -14,37 +14,46 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import com.bori.hipe.R
-import com.bori.hipe.controllers.camera.CameraLollipopController
+import com.bori.hipe.controllers.camera.Camera2Helper
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
+import com.bori.hipe.controllers.media.MediaTranslationHelper
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
 
-class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
+class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickListener {
 
     companion object {
-        const val TAG = "CameraFragment.kt"
-        const val CAMERA_PERMISSIONS_REQUEST = 12
+        private const val TAG = "CameraFragment.kt"
+        private const val CAMERA_PERMISSIONS_REQUEST = 12
+        private const val AUDIO_PERMISSION_REQUEST = 13
+        private const val INTERNET_PERMISSION_REQUEST = 14
     }
 
     private lateinit var autoFitTextureView: AutoFitTextureView
-    private lateinit var cameraController: CameraLollipopController
+    private lateinit var cameraHelper: Camera2Helper
+    private lateinit var startStreamView: View
+    private lateinit var mediaTranslationHelper: MediaTranslationHelper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "CameraFragment.onCreateView")
         setContentView(R.layout.camera_fragment, inflater, container)
-        init()
-        requestPermissions()
+
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onResume() {
-        Log.d(TAG, "CameraFragment.onResume")
+        super.onResume()
         Log.d(TAG, "CameraFragment.onResume")
 
-        super.onResume()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cameraController.startPreview()
+        init()
+        requestPermissions()
+
+        mediaTranslationHelper.prepareTranslation(cameraHelper.previewSize) { surface ->
+            Log.d(TAG, "CameraFragment.onResume surface achieved ")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cameraHelper.startCameraPreview(surface)
+            }
         }
 
     }
@@ -52,24 +61,32 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     private fun init() {
         Log.d(TAG, "CameraFragment.init")
         autoFitTextureView = findViewById(R.id.camera_preview_texture)
+        startStreamView = findViewById(R.id.start_stream_view_id)
+        startStreamView.setOnClickListener(this)
+
+        mediaTranslationHelper = MediaTranslationHelper(this.context!!)
     }
 
     private fun createCameraSession() {
         Log.d(TAG, "CameraFragment.createCameraSession")
         if (activity is AppCompatActivity) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cameraController = CameraLollipopController(activity as AppCompatActivity, autoFitTextureView)
+                cameraHelper = Camera2Helper(
+                        activity as AppCompatActivity,
+                        autoFitTextureView,
+                        mediaTranslationHelper
+                )
             }
         } else
             throw Exception("Parent activity must by of type AppCompatActivity")
+
     }
 
     private fun requestPermissions() {
         Log.d(TAG, "CameraFragment.requestPermissions")
-        if (ContextCompat.checkSelfPermission(activity!!,
-                        Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.d(CameraFragment.TAG, "Permission is not granted")
+        if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
+            Log.d(CameraFragment.TAG, "Camera permission is not granted")
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                             activity!!, Manifest.permission.CAMERA)) {
                 Log.d(CameraFragment.TAG, "Explonation needed")
@@ -79,9 +96,33 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
                 )
 
             }
-        } else {
-            createCameraSession()
         }
+        if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.RECORD_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Microphone permission is not granted")
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity!!, Manifest.permission.RECORD_AUDIO)) {
+                Log.d(CameraFragment.TAG, "Explonation for mic needed")
+            } else {
+                ActivityCompat.requestPermissions(activity!!,
+                        arrayOf(Manifest.permission.RECORD_AUDIO), CameraFragment.AUDIO_PERMISSION_REQUEST)
+            }
+        }
+        if (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.INTERNET) !=
+                PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Microphone permission is not granted")
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity!!, Manifest.permission.INTERNET)) {
+                Log.d(CameraFragment.TAG, "Explonation for mic needed")
+            } else {
+                ActivityCompat.requestPermissions(activity!!,
+                        arrayOf(Manifest.permission.INTERNET), CameraFragment.INTERNET_PERMISSION_REQUEST)
+            }
+        }
+
+
+        createCameraSession()
+
     }
 
     override fun onRequestPermissionsResult(
@@ -117,7 +158,21 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun surfaceCreated(holder: SurfaceHolder?) {
         Log.d(TAG, "CameraFragment.surfaceCreated")
-        cameraController.startPreview()
+        cameraHelper.startCameraPreview()
+    }
+
+    override fun onClick(v: View?) {
+        Log.d(TAG, "CameraFragment.onClick")
+        v ?: return
+
+        when (v.id) {
+
+            R.id.start_stream_view_id -> {
+                mediaTranslationHelper.startTranslation()
+            }
+
+        }
+
     }
 
 }
