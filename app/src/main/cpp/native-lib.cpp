@@ -47,8 +47,8 @@ using namespace std;
 //    address.sin_port = htons(port);
 //    address.sin_addr.s_addr = convertIpToInt(host);
 //
-//    if(connect(socketDescriptor,(struct sockaddr*) &address, sizeof(address)) < 0){
-//        __android_log_print(ANDROID_LOG_ERROR,TAG,"Cannot connect to host" + host);
+//    if(prepare(socketDescriptor,(struct sockaddr*) &address, sizeof(address)) < 0){
+//        __android_log_print(ANDROID_LOG_ERROR,TAG,"Cannot prepare to host" + host);
 //        return env->NewStringUTF("error");
 //    }
 //

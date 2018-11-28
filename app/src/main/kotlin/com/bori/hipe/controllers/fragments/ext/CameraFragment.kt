@@ -1,27 +1,27 @@
 package com.bori.hipe.controllers.fragments.ext
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import com.bori.hipe.R
 import com.bori.hipe.controllers.camera.Camera2Helper
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.media.MediaTranslationHelper
+import com.bori.hipe.controllers.socket.VideoTranslationHelper
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
+import java.net.URL
 
-class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickListener {
+class CameraFragment : HipeBaseFragment(), View.OnClickListener {
 
     companion object {
         private const val TAG = "CameraFragment.kt"
@@ -32,12 +32,16 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
 
     private lateinit var autoFitTextureView: AutoFitTextureView
     private lateinit var cameraHelper: Camera2Helper
+    private lateinit var videoTranslationHelper: VideoTranslationHelper
+
     private lateinit var startStreamView: View
-    private lateinit var mediaTranslationHelper: MediaTranslationHelper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "CameraFragment.onCreateView")
         setContentView(R.layout.camera_fragment, inflater, container)
+
+        init()
+        prepareCameraAndStartPreview()
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -45,41 +49,36 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "CameraFragment.onResume")
-
-        init()
         requestPermissions()
-
-        mediaTranslationHelper.prepareTranslation(cameraHelper.previewSize) { surface ->
-            Log.d(TAG, "CameraFragment.onResume surface achieved ")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cameraHelper.startCameraPreview(surface)
-            }
-        }
-
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun init() {
         Log.d(TAG, "CameraFragment.init")
         autoFitTextureView = findViewById(R.id.camera_preview_texture)
         startStreamView = findViewById(R.id.start_stream_view_id)
         startStreamView.setOnClickListener(this)
 
-        mediaTranslationHelper = MediaTranslationHelper(this.context!!)
+        val url = URL(getString(R.string.video_stream_url_address))
+        videoTranslationHelper = VideoTranslationHelper(url)
+        cameraHelper = Camera2Helper()
+
     }
 
-    private fun createCameraSession() {
-        Log.d(TAG, "CameraFragment.createCameraSession")
-        if (activity is AppCompatActivity) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cameraHelper = Camera2Helper(
-                        activity as AppCompatActivity,
-                        autoFitTextureView,
-                        mediaTranslationHelper
-                )
-            }
-        } else
-            throw Exception("Parent activity must by of type AppCompatActivity")
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun prepareCameraAndStartPreview() {
+        Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview")
 
+        cameraHelper.prepareCamera(this.context!!).flatMap { size ->
+            autoFitTextureView.surfaceTextureListener = MySurfaceTextureListener()
+            Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview preparing codec")
+            return@flatMap videoTranslationHelper.prepareCodec(size)
+
+        }.flatMap { surfaceWithSize ->
+            Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview starting encoding")
+            cameraHelper.startCameraPreview(surfaceWithSize.second, surfaceWithSize.first)
+            videoTranslationHelper.startEncoding()
+        }.subscribe()
     }
 
     private fun requestPermissions() {
@@ -121,8 +120,6 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
         }
 
 
-        createCameraSession()
-
     }
 
     override fun onRequestPermissionsResult(
@@ -134,7 +131,7 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d(CameraFragment.TAG, "Permissions granted")
-                    createCameraSession()
+                    prepareCameraAndStartPreview()
                 } else {
                     Log.d(CameraFragment.TAG, "Permissions declined")
                 }
@@ -147,20 +144,6 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
         }
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-        Log.d(TAG, "CameraFragment.surfaceChanged")
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        Log.d(TAG, "CameraFragment.surfaceDestroyed")
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        Log.d(TAG, "CameraFragment.surfaceCreated")
-        cameraHelper.startCameraPreview()
-    }
-
     override fun onClick(v: View?) {
         Log.d(TAG, "CameraFragment.onClick")
         v ?: return
@@ -168,7 +151,7 @@ class CameraFragment : HipeBaseFragment(), SurfaceHolder.Callback, View.OnClickL
         when (v.id) {
 
             R.id.start_stream_view_id -> {
-                mediaTranslationHelper.startTranslation()
+                prepareCameraAndStartPreview()
             }
 
         }

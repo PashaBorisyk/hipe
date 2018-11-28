@@ -5,11 +5,11 @@ import android.annotation.TargetApi
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
-import android.media.ImageReader
 import android.os.Build
 import android.util.Log
 import android.util.Size
 import android.view.Surface
+import com.bori.hipe.models.Trio
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import java.nio.ByteBuffer
@@ -89,83 +89,81 @@ internal object CameraService {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("MissingPermission")
     fun openCamera(
-            cameraId: String, cameraManager: CameraManager
-    ): Observable<Pair<DeviceStateEvents, CameraDevice>> {
+            cameraId: String, cameraManager: CameraManager,
+            surfaces: Array<Surface>
+    ) = Observable.create<Trio<DeviceStateEvents, CameraDevice, Array<Surface>>> { observable ->
         android.util.Log.d(TAG, "CameraService.openCamera")
+        cameraManager.openCamera(cameraId,
+                object : CameraDevice.StateCallback() {
+                    override fun onOpened(camera: CameraDevice) {
+                        Log.d(TAG, "CameraService.onOpened")
+                        observable.onNext(Trio(DeviceStateEvents.ON_OPEND, camera, surfaces))
+                    }
 
-        return Observable.create {
-            cameraManager.openCamera(cameraId,
-                    object : CameraDevice.StateCallback() {
-                        override fun onOpened(camera: CameraDevice) {
-                            Log.d(TAG, "CameraService.onOpened")
-                            it.onNext(DeviceStateEvents.ON_OPEND to camera)
-                        }
+                    override fun onDisconnected(camera: CameraDevice) {
+                        Log.d(TAG, "CameraService.onDisconnected")
+                        observable.onNext(Trio(DeviceStateEvents.ON_CLOSED, camera, surfaces))
+                        observable.onComplete()
+                    }
 
-                        override fun onDisconnected(camera: CameraDevice) {
-                            Log.d(TAG, "CameraService.onDisconnected")
-                            it.onNext(DeviceStateEvents.ON_CLOSED to camera)
-                            it.onComplete()
-                        }
+                    override fun onError(camera: CameraDevice?, error: Int) {
+                        Log.d(TAG, "CameraService.onError")
+                        observable.onError(CameraAccessException(error, "Some error accrued"))
+                    }
 
-                        override fun onError(camera: CameraDevice?, error: Int) {
-                            Log.d(TAG, "CameraService.onError")
-                            it.onError(CameraAccessException(error, "Some error accrued"))
-                        }
+                    override fun onClosed(camera: CameraDevice) {
+                        Log.d(TAG, "CameraService.onClosed")
+                        observable.onNext(Trio(DeviceStateEvents.ON_CLOSED, camera, surfaces))
+                        observable.onComplete()
+                    }
+                }, null)
 
-                        override fun onClosed(camera: CameraDevice) {
-                            Log.d(TAG, "CameraService.onClosed")
-                            it.onNext(DeviceStateEvents.ON_CLOSED to camera)
-                            it.onComplete()
-                        }
-                    }, null)
-        }
     }
+
 
     internal fun createCaptureSession(
             cameraDevice: CameraDevice, surfaceList: List<Surface>
-    ): Observable<Pair<CaptureSessionStateEvents, CameraCaptureSession>> {
+    ) = Observable.create<Trio<CaptureSessionStateEvents, CameraCaptureSession, List<Surface>>> {
         Log.d(TAG, "CameraService.createCaptureSession")
+        cameraDevice.createCaptureSession(surfaceList,
+                object : CameraCaptureSession.StateCallback() {
 
-        return Observable.create {
-            cameraDevice.createCaptureSession(surfaceList,
-                    object : CameraCaptureSession.StateCallback() {
+                    override fun onConfigured(session: CameraCaptureSession) {
+                        Log.d(TAG, "CameraService.onConfigured")
+                        it.onNext(Trio(CaptureSessionStateEvents.ON_CONFIGURED, session, surfaceList))
+                    }
 
-                        override fun onConfigured(session: CameraCaptureSession) {
-                            Log.d(TAG, "CameraService.onConfigured")
-                            it.onNext(CaptureSessionStateEvents.ON_CONFIGURED to session)
-                        }
+                    override fun onConfigureFailed(session: CameraCaptureSession) {
+                        Log.d(TAG, "CameraService.onConfigureFailed")
+                        it.onError(ExceptionInInitializerError("Some error during configuration $session"))
+                    }
 
-                        override fun onConfigureFailed(session: CameraCaptureSession) {
-                            Log.d(TAG, "CameraService.onConfigureFailed")
-                            it.onError(ExceptionInInitializerError("Some error during configuration $session"))
-                        }
+                    override fun onReady(session: CameraCaptureSession) {
+                        Log.d(TAG, "CameraService.onReady")
+                        it.onNext(Trio(CaptureSessionStateEvents.ON_READY, session, surfaceList))
+                    }
 
-                        override fun onReady(session: CameraCaptureSession) {
-                            Log.d(TAG, "CameraService.onReady")
-                            it.onNext(CaptureSessionStateEvents.ON_READY to session)
-                        }
+                    override fun onActive(session: CameraCaptureSession) {
+                        Log.d(TAG, "CameraService.onActive")
+                        it.onNext(Trio(CaptureSessionStateEvents.ON_ACTIVE, session, surfaceList))
+                    }
 
-                        override fun onActive(session: CameraCaptureSession) {
-                            Log.d(TAG, "CameraService.onActive")
-                            it.onNext(CaptureSessionStateEvents.ON_ACTIVE to session)
-                        }
+                    override fun onClosed(session: CameraCaptureSession) {
+                        Log.d(TAG, "CameraService.onClosed")
+                        it.onNext(Trio(CaptureSessionStateEvents.ON_CLOSED, session, surfaceList))
+                        it.onComplete()
+                    }
 
-                        override fun onClosed(session: CameraCaptureSession) {
-                            Log.d(TAG, "CameraService.onClosed")
-                            it.onNext(CaptureSessionStateEvents.ON_CLOSED to session)
-                            it.onComplete()
-                        }
+                    override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface?) {
+                        Log.d(TAG, "CameraService.onSurfacePrepared")
+                        it.onNext(Trio(CaptureSessionStateEvents.ON_SURFACE_PREPARED, session, surfaceList))
+                    }
 
-                        override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface?) {
-                            Log.d(TAG, "CameraService.onSurfacePrepared")
-                            it.onNext(CaptureSessionStateEvents.ON_SURFACE_PREPARED to session)
-                        }
+                }, null)
 
-                    }, null)
-        }
     }
 
-    internal fun createCaptureCallback(
+    private fun createCaptureCallback(
             observableEmitter: ObservableEmitter<CaptureSessionData>
     ): CameraCaptureSession.CaptureCallback {
         android.util.Log.d(TAG, "CameraService.createCaptureCallback")
@@ -210,65 +208,6 @@ internal object CameraService {
     ): Observable<CaptureSessionData> {
         android.util.Log.d(TAG, "CameraService.fromSetRepeatingRequest")
         return Observable.create { captureSession.setRepeatingRequest(captureRequest, createCaptureCallback(it), null) }
-    }
-
-    internal fun fromCapture(
-            cameraCaptureSession: CameraCaptureSession, captureRequest: CaptureRequest
-    ): Observable<CaptureSessionData> {
-        android.util.Log.d(TAG, "CameraService.fromCapture")
-
-        return Observable.create {
-            cameraCaptureSession.capture(captureRequest, createCaptureCallback(it), null)
-        }
-
-    }
-
-    internal fun createOnImageAvailableObservable(imageReader: ImageReader): Observable<ImageReader> {
-        Log.d(TAG, "CameraService.createOnImageAvailableObservable")
-
-        return Observable.create { subscriber ->
-            imageReader.setOnImageAvailableListener({ reader ->
-                if (!subscriber.isDisposed) {
-                    subscriber.onNext(reader)
-                }
-            }, null)
-            subscriber.setCancellable { imageReader.setOnImageAvailableListener(null, null) }
-        }
-
-    }
-
-    var firstTime = true
-    var t1 = 0L
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    internal fun processWithNDK(image: Image?, imageReader: ImageReader, targetSurface: Surface): Single<Any> =
-            Single.fromCallable {
-
-            if (firstTime) {
-                t1 = System.currentTimeMillis()
-                firstTime = false
-            }
-            image ?: return@fromCallable "Image was null"
-
-                val format = imageReader.imageFormat
-                Log.d(TAG, "bob image format: $format")
-
-                if (format != ImageFormat.YUV_420_888)
-                    throw IllegalArgumentException("Image format must be YUV_420_888.")
-
-            val planes = image.planes
-
-            if (planes[1].pixelStride != 1 && planes[1].pixelStride != 2)
-                throw IllegalArgumentException("image chroma plane must have a pixel stride of 1 or 2 :got ${planes[1].pixelStride}")
-
-
-            val result = processJNI(image.width, image.height, planes[0].buffer)
-            image.close()
-            val mills = System.currentTimeMillis() - t1
-            Log.d(TAG, "Frames per second : ${1000 / mills} ")
-            t1 = System.currentTimeMillis()
-            result
-        }
     }
 
     internal fun getPreviewSize(characteristics: CameraCharacteristics): Size {

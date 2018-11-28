@@ -273,7 +273,7 @@
 //
 //        if (webSocketServiceHashMap.containsKey(id)){
 //            if (!webSocketServiceHashMap.get(id).isConnected())
-//                webSocketServiceHashMap.get(id).connect();
+//                webSocketServiceHashMap.get(id).prepare();
 //
 //            Log.e(TAG, "registerNewChatId: Contained such connection ");
 //        }
@@ -291,7 +291,7 @@
 //                }
 //            }, id);
 //
-//            webSocketService.connect();
+//            webSocketService.prepare();
 //            webSocketServiceHashMap.put(id, webSocketService);
 //        }
 //
