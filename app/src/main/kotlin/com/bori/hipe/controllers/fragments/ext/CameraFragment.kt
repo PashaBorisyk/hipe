@@ -19,6 +19,8 @@ import com.bori.hipe.controllers.socket.VideoTranslationHelper
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.net.URL
 
 class CameraFragment : HipeBaseFragment(), View.OnClickListener {
@@ -41,7 +43,6 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
         setContentView(R.layout.camera_fragment, inflater, container)
 
         init()
-        prepareCameraAndStartPreview()
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -50,6 +51,8 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
         super.onResume()
         Log.d(TAG, "CameraFragment.onResume")
         requestPermissions()
+        prepareCameraAndStartPreview()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -69,16 +72,28 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
     private fun prepareCameraAndStartPreview() {
         Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview")
 
+        videoTranslationHelper.createSocketConnection()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe()
+
         cameraHelper.prepareCamera(this.context!!).flatMap { size ->
-            autoFitTextureView.surfaceTextureListener = MySurfaceTextureListener()
             Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview preparing codec")
             return@flatMap videoTranslationHelper.prepareCodec(size)
 
         }.flatMap { surfaceWithSize ->
             Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview starting encoding")
-            cameraHelper.startCameraPreview(surfaceWithSize.second, surfaceWithSize.first)
+            cameraHelper.prepareSurface(autoFitTextureView, arrayOf(surfaceWithSize.first), surfaceWithSize.second)
+        }.subscribe {
             videoTranslationHelper.startEncoding()
-        }.subscribe()
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+        }
+
+
+
+
     }
 
     private fun requestPermissions() {
@@ -131,7 +146,6 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d(CameraFragment.TAG, "Permissions granted")
-                    prepareCameraAndStartPreview()
                 } else {
                     Log.d(CameraFragment.TAG, "Permissions declined")
                 }
@@ -151,7 +165,7 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
         when (v.id) {
 
             R.id.start_stream_view_id -> {
-                prepareCameraAndStartPreview()
+
             }
 
         }

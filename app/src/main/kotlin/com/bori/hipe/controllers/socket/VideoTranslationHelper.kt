@@ -23,14 +23,14 @@ class VideoTranslationHelper(
 
     private companion object {
         private const val TAG = "VideoTranslationHelper"
-        private const val timeoutSec = 10000L
+        private const val timeoutSec = 1L
     }
 
     @Volatile
     var shouldRun = true
 
     private lateinit var encoder: MediaCodec
-    private lateinit var clientSocketChannel: SocketChannel
+    private val clientSocketChannel: SocketChannel = SocketChannel.open()
     private val bufferInfo = MediaCodec.BufferInfo()
 
 
@@ -55,10 +55,10 @@ class VideoTranslationHelper(
         return Observable.create {
             val socketAddress = InetSocketAddress(url.host, url.port)
 
-            clientSocketChannel = SocketChannel.open()
-            clientSocketChannel.configureBlocking(false)
+            clientSocketChannel.configureBlocking(true)
             clientSocketChannel.connect(socketAddress)
             clientSocketChannel.finishConnect()
+            Log.d(TAG, "VideoTranslationHelper.createSocketConnection finished. Connected : ${clientSocketChannel.isConnected}")
             it.onNext(Unit)
         }
 
@@ -66,6 +66,7 @@ class VideoTranslationHelper(
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun prepareCodec(size: Size): Observable<Pair<Surface, Size>> = Observable.create {
+        Log.d(TAG, "VideoTranslationHelper.prepareCodec")
 
         val colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
         val videoBitrate = 300000
@@ -81,19 +82,21 @@ class VideoTranslationHelper(
         encoder = MediaCodec.createEncoderByType("video/avc")
 
         encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-        val surface = encoder.createInputSurface()
+        val surface = MediaCodec.createPersistentInputSurface()
+        encoder.setInputSurface(surface)
+        encoder.start()
+
         it.onNext(surface to size)
 
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun startEncoding() = Observable.create<Boolean> {
-        encoder.start()
+        Log.d(TAG, "VideoTranslationHelper.startEncoding")
+
 
         if (shouldRun)
             encoder.signalEndOfInputStream()
-
-        var outputBuffers = encoder.outputBuffers
 
         it.onNext(shouldRun)
 
@@ -101,25 +104,27 @@ class VideoTranslationHelper(
 
             val status = encoder.dequeueOutputBuffer(bufferInfo, timeoutSec)
 
-            if (status != MediaCodec.INFO_TRY_AGAIN_LATER) {
-
+            if (status == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (!shouldRun) break
 
             } else if (status == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                outputBuffers = encoder.outputBuffers
+                Log.d(TAG, "VideoTranslationHelper.startEncoding OUTPUT_BUFFERS_CHANGED")
             } else if (status < 0) {
 
             } else {
+                Log.d(TAG, "VideoTranslationHelper.startEncoding writing buffers")
 
-                val data = outputBuffers[status]
+                val data = encoder.getOutputBuffer(status)
                 data.position(bufferInfo.offset)
                 data.limit(bufferInfo.offset + bufferInfo.size)
-                Log.d(TAG, "Current frame lenght : ${data.array().size}")
+                clientSocketChannel.configureBlocking(false)
+                Log.d(TAG, "VideoTranslationHelper.startEncoding buffer : $data")
+                clientSocketChannel.write(data)
                 encoder.releaseOutputBuffer(status, false)
 
                 if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                         == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
-                    break
+                    Log.d(TAG, "VideoTranslationHelper.startEncoding BUFFER_FLAG_END_OF_STREAM")
 
                 }
 

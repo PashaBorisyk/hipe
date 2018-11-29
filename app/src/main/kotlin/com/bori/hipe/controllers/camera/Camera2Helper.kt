@@ -11,11 +11,13 @@ import android.view.Surface
 import android.view.TextureView
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class Camera2Helper : CameraController() {
+    override fun startCameraPreview(param: Any?, vararg surfaces: Surface) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     companion object {
         const val TAG = "CameraController.kt"
@@ -24,21 +26,16 @@ class Camera2Helper : CameraController() {
     private val onSurfaceTextureAvailable = PublishSubject.create<Array<Surface>>()
 
 
-    fun prepareCamera(context: Context, autoFitTextureView: AutoFitTextureView) = Observable.create<Size> { sizeObservable ->
+    fun prepareCamera(context: Context) = Observable.create<Size> { sizeObservable ->
         Log.d(TAG, "Camera2Helper.prepareCamera")
 
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val cameraWithCharacteristics = CameraService.createCameraWithFacing(cameraManager, 1)
         cameraWithCharacteristics ?: throw Exception("Fucking camera doesnt want to initialize")
 
-        val previewSize = CameraService.getPreviewSize(cameraWithCharacteristics.second)
-        setTextureAspectRatio(previewSize)
-
         onSurfaceTextureAvailable
                 .firstElement()
                 .toObservable()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap { surfaces ->
                     Log.d(TAG, "Camera2Helper.prepareCamera : opening camera")
                     CameraService.openCamera(cameraWithCharacteristics.first, cameraManager, surfaces)
@@ -66,10 +63,19 @@ class Camera2Helper : CameraController() {
                     return@flatMap CameraService.fromSetRepeatingRequest(pair.first, previewBuilder.build())
                 }.subscribe()
 
-        autoFitTextureView.setAspectRatio(previewSize.height, previewSize.width)
-        autoFitTextureView.surfaceTextureListener = MySurfaceTextureListener(previewSize, )
-
+        val previewSize = CameraService.getPreviewSize(cameraWithCharacteristics.second)
         sizeObservable.onNext(previewSize)
+
+    }
+
+    fun prepareSurface(
+            autoFitTextureView: AutoFitTextureView,
+            surfaces: Array<Surface>,
+            previewSize: Size
+    ) = Observable.create<Unit> { observable ->
+        autoFitTextureView.setAspectRatio(previewSize.height, previewSize.width)
+        autoFitTextureView.surfaceTextureListener = MySurfaceTextureListener(previewSize, surfaces)
+        observable.onNext(Unit)
     }
 
     private fun createPreviewBuilder(
@@ -79,10 +85,11 @@ class Camera2Helper : CameraController() {
     ): CaptureRequest.Builder {
         Log.d(TAG, "Camera2Helper.createPreviewBuilder")
 
-        val buidler = captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-        buidler.addTarget(surfaces[0])
-        configureFeatures(buidler, cameraWithCharacteristics)
-        return buidler
+        val builder = captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD)
+//        builder.addTarget(surfaces[0])
+        builder.addTarget(surfaces[1])
+        configureFeatures(builder, cameraWithCharacteristics)
+        return builder
     }
 
     private fun configureFeatures(
@@ -120,18 +127,6 @@ class Camera2Helper : CameraController() {
 
     }
 
-    private fun setTextureAspectRatio(previewSize: Size) {
-        Log.d(TAG, "Camera2Helper.setTextureAspectRatio")
-
-
-    }
-
-
-    override fun startCameraPreview(param: Any?, vararg surfaces: Surface) {
-        Log.d(TAG, "Camera2Helper.startCameraPreview")
-
-    }
-
     override fun stopCameraPreview(surfaces: List<Surface>) {
         Log.d(TAG, "Camera2Helper.stopCameraPreview")
         surfaces.forEach { it.release() }
@@ -145,10 +140,7 @@ class Camera2Helper : CameraController() {
 
         }
 
-        override fun onSurfaceTextureUpdated(surfaceTexture: SurfaceTexture) {
-            Log.d(TAG, "Camera2Helper.onSurfaceTextureUpdated")
-
-        }
+        override fun onSurfaceTextureUpdated(surfaceTexture: SurfaceTexture) {}
 
         override fun onSurfaceTextureDestroyed(surfaceTexture: SurfaceTexture): Boolean {
             Log.d(TAG, "Camera2Helper.onSurfaceTextureDestroyed")

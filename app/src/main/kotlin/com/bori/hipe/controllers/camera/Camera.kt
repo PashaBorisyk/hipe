@@ -92,7 +92,7 @@ internal object CameraService {
             cameraId: String, cameraManager: CameraManager,
             surfaces: Array<Surface>
     ) = Observable.create<Trio<DeviceStateEvents, CameraDevice, Array<Surface>>> { observable ->
-        android.util.Log.d(TAG, "CameraService.openCamera")
+        Log.d(TAG, "CameraService.openCamera")
         cameraManager.openCamera(cameraId,
                 object : CameraDevice.StateCallback() {
                     override fun onOpened(camera: CameraDevice) {
@@ -108,7 +108,7 @@ internal object CameraService {
 
                     override fun onError(camera: CameraDevice?, error: Int) {
                         Log.d(TAG, "CameraService.onError")
-                        observable.onError(CameraAccessException(error, "Some error accrued"))
+                        observable.onError(CameraAccessException(error, ""))
                     }
 
                     override fun onClosed(camera: CameraDevice) {
@@ -174,6 +174,7 @@ internal object CameraService {
                     request: CaptureRequest,
                     result: TotalCaptureResult
             ) {
+                Log.d(TAG, "CameraService.onCaptureCompleted")
 
                 if (!observableEmitter.isDisposed) {
 
@@ -191,12 +192,6 @@ internal object CameraService {
                     failure: CaptureFailure
             ) {
                 android.util.Log.d(TAG, "CameraService.onCaptureFailed")
-
-                if (!observableEmitter.isDisposed) {
-
-                    observableEmitter.onError(Exception("Failed to capture camera content"))
-
-                }
 
             }
 
