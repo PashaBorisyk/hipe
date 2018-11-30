@@ -106,6 +106,6 @@
     <string name="privacy_policy_agreement">I agree with privacy policy \n provided by this service</string>
     <string name="confirm_email_request">We\'ve send a confirmation mail to the address provided before. Please confirm your registration until tomorrow</string>
     <string name="time_remaining">Time remaining:</string>
-    <string name="video_stream_url_address">http://40.115.101.135:3333</string>
+    <string name="video_stream_url_address">http://168.63.95.70:3333</string>
 
 </resources>

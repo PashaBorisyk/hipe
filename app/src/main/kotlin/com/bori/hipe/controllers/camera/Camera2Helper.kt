@@ -14,10 +14,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class Camera2Helper : CameraController() {
-    override fun startCameraPreview(param: Any?, vararg surfaces: Surface) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+class Camera2Helper : CameraController {
 
     companion object {
         const val TAG = "CameraController.kt"
@@ -26,49 +23,45 @@ class Camera2Helper : CameraController() {
     private val onSurfaceTextureAvailable = PublishSubject.create<Array<Surface>>()
 
 
-    fun prepareCamera(context: Context) = Observable.create<Size> { sizeObservable ->
+    override fun prepareCameraAndStartPreview(context: Context) = Observable.create<Size> { sizeObservable ->
         Log.d(TAG, "Camera2Helper.prepareCamera")
 
         val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        val cameraWithCharacteristics = CameraService.createCameraWithFacing(cameraManager, 1)
-        cameraWithCharacteristics ?: throw Exception("Fucking camera doesnt want to initialize")
+        val cameraWithCharacteristics = Camera2Service.createCameraWithFacing(cameraManager, 1)
+        cameraWithCharacteristics
+                ?: throw Exception("Can not initialize camera with its characteristics")
 
         onSurfaceTextureAvailable
                 .firstElement()
                 .toObservable()
                 .flatMap { surfaces ->
-                    Log.d(TAG, "Camera2Helper.prepareCamera : opening camera")
-                    CameraService.openCamera(cameraWithCharacteristics.first, cameraManager, surfaces)
-                }.filter { trio ->
-                    trio.first == DeviceStateEvents.ON_OPEND
+                    Camera2Service.openCamera(cameraWithCharacteristics.first, cameraManager, surfaces)
+                }.filter { deviceCameraSurfaces ->
+                    deviceCameraSurfaces.first == DeviceStateEvents.ON_OPEND
                 }
-                .map { trio ->
-                    trio.second to trio.third
+                .map { deviceCameraSurfaces ->
+                    deviceCameraSurfaces.second to deviceCameraSurfaces.third
                 }
-                .flatMap { pair ->
-                    Log.d(TAG, "Camera2Helper.prepareCamera : creating capture session")
-                    CameraService.createCaptureSession(pair.first, pair.second.asList())
+                .flatMap { cameraSurfaces ->
+                    Camera2Service.createCaptureSession(cameraSurfaces.first, cameraSurfaces.second.asList())
                 }
-                .filter { trio ->
-                    trio.first == CaptureSessionStateEvents.ON_CONFIGURED
+                .filter { eventSessionSurfaces ->
+                    eventSessionSurfaces.first == CaptureSessionStateEvents.ON_CONFIGURED
                 }
-                .map { trio ->
-                    trio.second to trio.third
+                .map { eventSessionSurfaces ->
+                    eventSessionSurfaces.second to eventSessionSurfaces.third
                 }
-                .flatMap { pair ->
-                    val previewBuilder = createPreviewBuilder(pair.first, cameraWithCharacteristics, pair.second)
-
-                    Log.d(TAG, "Camera2Helper.prepareCamera : setting repeating request")
-
-                    return@flatMap CameraService.fromSetRepeatingRequest(pair.first, previewBuilder.build())
+                .flatMap { sessionSurfaces ->
+                    val previewBuilder = createPreviewBuilder(sessionSurfaces.first, cameraWithCharacteristics, sessionSurfaces.second)
+                    return@flatMap Camera2Service.fromSetRepeatingRequest(sessionSurfaces.first, previewBuilder.build())
                 }.subscribe()
 
-        val previewSize = CameraService.getPreviewSize(cameraWithCharacteristics.second)
+        val previewSize = Camera2Service.getPreviewSize(cameraWithCharacteristics.second)
         sizeObservable.onNext(previewSize)
 
-    }
+    }!!
 
-    fun prepareSurface(
+    override fun prepareSurface(
             autoFitTextureView: AutoFitTextureView,
             surfaces: Array<Surface>,
             previewSize: Size
@@ -86,7 +79,7 @@ class Camera2Helper : CameraController() {
         Log.d(TAG, "Camera2Helper.createPreviewBuilder")
 
         val builder = captureSession.device.createCaptureRequest(CameraDevice.TEMPLATE_RECORD)
-//        builder.addTarget(surfaces[0])
+        builder.addTarget(surfaces[0])
         builder.addTarget(surfaces[1])
         configureFeatures(builder, cameraWithCharacteristics)
         return builder
@@ -133,7 +126,10 @@ class Camera2Helper : CameraController() {
 
     }
 
-    internal inner class MySurfaceTextureListener(val param: Any?, val surfaces: Array<Surface>) : TextureView.SurfaceTextureListener {
+    internal inner class MySurfaceTextureListener(
+            private val param: Any?,
+            private val surfaces: Array<Surface>
+    ) : TextureView.SurfaceTextureListener {
 
         override fun onSurfaceTextureSizeChanged(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
             Log.d(TAG, "Camera2Helper.onSurfaceTextureSizeChanged")

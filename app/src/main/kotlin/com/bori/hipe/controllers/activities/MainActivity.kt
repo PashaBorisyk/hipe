@@ -9,8 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import com.bori.hipe.controllers.fragments.CameraFragment
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.fragments.ext.CameraFragment
 
 
 class MainActivity : AppCompatActivity() {

@@ -27,7 +27,7 @@ class VideoTranslationHelper(
     }
 
     @Volatile
-    var shouldRun = true
+    var shouldRun = false
 
     private lateinit var encoder: MediaCodec
     private val clientSocketChannel: SocketChannel = SocketChannel.open()
@@ -82,8 +82,7 @@ class VideoTranslationHelper(
         encoder = MediaCodec.createEncoderByType("video/avc")
 
         encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-        val surface = MediaCodec.createPersistentInputSurface()
-        encoder.setInputSurface(surface)
+        val surface = encoder.createInputSurface()
         encoder.start()
 
         it.onNext(surface to size)
@@ -94,10 +93,6 @@ class VideoTranslationHelper(
     fun startEncoding() = Observable.create<Boolean> {
         Log.d(TAG, "VideoTranslationHelper.startEncoding")
 
-
-        if (shouldRun)
-            encoder.signalEndOfInputStream()
-
         it.onNext(shouldRun)
 
         while (true) {
@@ -105,7 +100,7 @@ class VideoTranslationHelper(
             val status = encoder.dequeueOutputBuffer(bufferInfo, timeoutSec)
 
             if (status == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (!shouldRun) break
+
 
             } else if (status == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 Log.d(TAG, "VideoTranslationHelper.startEncoding OUTPUT_BUFFERS_CHANGED")
@@ -114,12 +109,17 @@ class VideoTranslationHelper(
             } else {
                 Log.d(TAG, "VideoTranslationHelper.startEncoding writing buffers")
 
-                val data = encoder.getOutputBuffer(status)
-                data.position(bufferInfo.offset)
-                data.limit(bufferInfo.offset + bufferInfo.size)
-                clientSocketChannel.configureBlocking(false)
-                Log.d(TAG, "VideoTranslationHelper.startEncoding buffer : $data")
-                clientSocketChannel.write(data)
+
+
+                if (shouldRun) {
+                    val data = encoder.getOutputBuffer(status)
+
+                    data.position(bufferInfo.offset)
+                    data.limit(bufferInfo.offset + bufferInfo.size)
+                    clientSocketChannel.configureBlocking(false)
+                    Log.d(TAG, "VideoTranslationHelper.startEncoding buffer : $data")
+                    clientSocketChannel.write(data)
+                }
                 encoder.releaseOutputBuffer(status, false)
 
                 if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM)
