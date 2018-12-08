@@ -25,7 +25,7 @@ object Const {
     const val EVENT_ID = "event_id"
     const val CREATOR_NICK = "creator_nick"
     const val EVENT_DATE = "event_date"
-    const val LONGTITUDE = "longtitude"
+    const val LONGTITUDE = "longitude"
     const val LATITUDE = "latitude"
     const val COUNTRY = "country"
     const val CITY = "city"

@@ -9,17 +9,12 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Vibrator
-import android.support.design.widget.TabLayout
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
 import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.CreateNewEventActivity
@@ -31,6 +26,7 @@ import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.services.HipeService
 import com.bori.hipe.controllers.views.BubblesView
 import com.bori.hipe.util.extensions.setContentView
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection {
@@ -48,7 +44,7 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
 
     private var oldPosition: Int = 0
 
-    private lateinit var fragments: Array<Fragment>
+    private lateinit var fragments: Array<androidx.fragment.app.Fragment>
     private lateinit var views: Array<View>
     private lateinit var backgroundViews: Array<View>
     private lateinit var itemIndicators: Array<ImageButton>
@@ -377,14 +373,14 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
     private inner class ViewPagerAdapter(
-            fm: FragmentManager
-    ) : FragmentStatePagerAdapter(fm) {
+            fm: androidx.fragment.app.FragmentManager
+    ) : androidx.fragment.app.FragmentStatePagerAdapter(fm) {
 
         init {
             Log.d(TAG, "ViewPagerAdapter: ")
         }
 
-        override fun getItem(position: Int): Fragment {
+        override fun getItem(position: Int): androidx.fragment.app.Fragment {
             Log.d(TAG, "ViewPagerAdapter.getItem")
 
             return fragments[position]
@@ -394,7 +390,7 @@ class MainFragment : HipeBaseFragment(), View.OnClickListener, ServiceConnection
     }
 
 
-    class QuickEventDialog : DialogFragment() {
+    class QuickEventDialog : androidx.fragment.app.DialogFragment() {
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             Log.d(TAG, "QuickEventDialog.onCreateDialog")

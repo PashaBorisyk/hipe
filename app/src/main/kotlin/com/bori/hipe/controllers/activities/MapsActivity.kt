@@ -1,9 +1,7 @@
 package com.bori.hipe.controllers.activities
 
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
 import android.util.Log
-
 import com.bori.hipe.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,7 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 private const val TAG = "MapsActivity.kt"
 
-class MapsActivity : FragmentActivity(), OnMapReadyCallback {
+class MapsActivity : androidx.fragment.app.FragmentActivity(), OnMapReadyCallback {
 
     private var mMap: GoogleMap? = null
 

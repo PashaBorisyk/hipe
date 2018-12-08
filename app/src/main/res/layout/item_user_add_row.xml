@@ -17,7 +17,7 @@
         android:src="@drawable/me_photo" />
 
 
-    <android.support.design.widget.CheckableImageButton
+    <com.google.android.material.internal.CheckableImageButton
         android:id="@+id/checkable_user_added"
         android:layout_width="24dp"
         android:layout_height="24dp"

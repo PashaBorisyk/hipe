@@ -7,11 +7,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v7.content.res.AppCompatResources
 import android.util.Log
 import android.view.View
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 
 private const val TAG = "ViewsExtensions"
 

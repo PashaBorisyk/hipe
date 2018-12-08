@@ -17,7 +17,7 @@
         android:src="@drawable/me_photo" />
 
 
-    <android.support.design.widget.CheckableImageButton
+    <com.google.android.material.internal.CheckableImageButton
         android:id="@+id/checkable_user_add_to_friends"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -29,7 +29,7 @@
         android:scaleType="center"
         android:src="@drawable/is_user_friend_selector" />
 
-    <android.support.v4.widget.ContentLoadingProgressBar
+    <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progress_user_add_to_friends"
         android:layout_width="24dp"
         android:layout_height="24dp"

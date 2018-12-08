@@ -2,10 +2,6 @@ package com.bori.hipe.controllers.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.design.widget.CheckableImageButton
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +17,7 @@ import com.bori.hipe.models.HipeImage
 import com.bori.hipe.models.Tuple
 import com.bori.hipe.models.User
 import com.bori.hipe.util.web.Status
+import com.google.android.material.internal.CheckableImageButton
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
@@ -39,13 +36,13 @@ private const val SEARCH_DELAY: Long = 200
 private var prevQuery = ""
 private val nickName: String? = null
 
-class SearchFragment : Fragment() {
+class SearchFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var v: View
     private lateinit var timer: Timer
     private lateinit var searchTask: TimerTask
     private lateinit var resultsAdapter: ResultsAdapter
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,7 +57,7 @@ class SearchFragment : Fragment() {
         resultsAdapter = ResultsAdapter()
 
         recyclerView = v.findViewById(R.id.result_list)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         recyclerView.adapter = resultsAdapter
 
         Log.e(TAG, "onCreateView: thisUserDoesNotExists")
@@ -202,7 +199,7 @@ class SearchFragment : Fragment() {
     }
 
 
-    private inner class ResultsAdapter internal constructor() : RecyclerView.Adapter<ResultsAdapter.VH>(), View.OnClickListener {
+    private inner class ResultsAdapter internal constructor() : androidx.recyclerview.widget.RecyclerView.Adapter<ResultsAdapter.VH>(), View.OnClickListener {
 
         val inflater: LayoutInflater = activity!!.layoutInflater
         val users = mutableListOf<Tuple<User, HipeImage>>()
@@ -309,7 +306,7 @@ class SearchFragment : Fragment() {
 
         }
 
-        internal inner class VH(var rootView: View) : RecyclerView.ViewHolder(rootView) {
+        internal inner class VH(var rootView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(rootView) {
 
             var nickName: TextView
             var nameSurname: TextView

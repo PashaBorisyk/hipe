@@ -2,8 +2,6 @@ package com.bori.hipe.controllers.fragments
 
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,7 +23,7 @@ class AllChatsFragment : HipeBaseFragment() {
     }
 
     private var v: View? = null
-    private var recyclerView: RecyclerView? = null
+    private var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
     private var eventChatsAdapter: EventChatsAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,7 +31,7 @@ class AllChatsFragment : HipeBaseFragment() {
 
         setContentView(R.layout.fragment_all_chats, inflater ,container)
         recyclerView = findViewById(R.id.fragment_all_chats_last_messages_list)
-        recyclerView?.layoutManager = LinearLayoutManager(context)
+        recyclerView?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
         eventChatsAdapter = EventChatsAdapter()
         recyclerView?.adapter = eventChatsAdapter
@@ -48,7 +46,7 @@ class AllChatsFragment : HipeBaseFragment() {
 
     }
 
-    internal inner class EventChatsAdapter : RecyclerView.Adapter<EventChatsAdapter.VH>(), View.OnClickListener {
+    internal inner class EventChatsAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<EventChatsAdapter.VH>(), View.OnClickListener {
 
         private val eventList = arrayListOf<Event>()
         private val lastChatMessages = arrayListOf<ChatMessageNOSQL>()
@@ -87,7 +85,7 @@ class AllChatsFragment : HipeBaseFragment() {
 
         }
 
-        internal inner class VH(val v: View) : RecyclerView.ViewHolder(v) {
+        internal inner class VH(val v: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(v) {
 
             val eventName: TextView = v.findViewById(R.id.all_chats_event_name)
             val lastMessage: TextView = v.findViewById(R.id.all_chats_last_message)

@@ -34,7 +34,7 @@ object EventService {
     }
 
     fun getEvents(requestID: Long, latitude: Double, longtitude: Double, plastReadEventId: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getEvents() called with: userId = [$userId], latitude = [$latitude], longtitude = [$longtitude], plastReadEventId = [$plastReadEventId]")
+        Log.d(TAG, "getEvents() called with: userId = [$userId], latitude = [$latitude], longitude = [$longtitude], plastReadEventId = [$plastReadEventId]")
         eventEvoke.getEvents(userId, latitude, longtitude, plastReadEventId).enqueue(EventListCallback(requestID))
     }
 

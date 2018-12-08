@@ -1,7 +1,7 @@
 package com.bori.hipe.controllers.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.bori.hipe.R
 
 class TestActivity : AppCompatActivity(){

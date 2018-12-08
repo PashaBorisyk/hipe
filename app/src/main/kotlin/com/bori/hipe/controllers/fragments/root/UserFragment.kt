@@ -4,9 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.bori.hipe.R
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.rest.RestService
@@ -93,11 +91,11 @@ class UserFragment : HipeBaseFragment() {
                 .cacheInMemory(true)
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED).build()
 
-        user_activity_data_view.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        user_activity_data_view.layoutManager = androidx.recyclerview.widget.StaggeredGridLayoutManager(2, androidx.recyclerview.widget.StaggeredGridLayoutManager.VERTICAL)
         dataAdapter = DataAdapter()
         user_activity_data_view.adapter = dataAdapter
-        user_activity_data_view.setOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+        user_activity_data_view.setOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 user_photo.imageMatrix.postScale(0.5f, 0.5f)
                 user_photo.invalidate()
@@ -253,7 +251,7 @@ class UserFragment : HipeBaseFragment() {
 
     }
 
-    private inner class DataAdapter : RecyclerView.Adapter<DataAdapter.VH>() {
+    private inner class DataAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<DataAdapter.VH>() {
 
         val events = arrayListOf<Tuple<Event, HipeImage>>()
         val users = arrayListOf<Tuple<User, HipeImage>>()
@@ -316,7 +314,7 @@ class UserFragment : HipeBaseFragment() {
 
         override fun getItemViewType(position: Int) = dataType.ordinal
 
-        internal inner class VH(rootView: View, dataType: DataType) : RecyclerView.ViewHolder(rootView) {
+        internal inner class VH(rootView: View, dataType: DataType) : androidx.recyclerview.widget.RecyclerView.ViewHolder(rootView) {
 
             lateinit var userPhoto: CircleImageView
             lateinit var userNick: TextView

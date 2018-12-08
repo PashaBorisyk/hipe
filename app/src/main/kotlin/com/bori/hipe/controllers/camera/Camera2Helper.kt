@@ -4,11 +4,11 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
+import androidx.annotation.RequiresApi
 import com.bori.hipe.controllers.views.AutoFitTextureView
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject

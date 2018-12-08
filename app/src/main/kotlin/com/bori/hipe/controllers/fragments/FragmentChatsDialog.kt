@@ -2,11 +2,6 @@ package com.bori.hipe.controllers.fragments
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.bori.hipe.R
 import com.bori.hipe.controllers.messenger.WebSocketConnector
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
@@ -29,7 +26,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import kotlinx.android.synthetic.main.fragment_chats_dialog.*
 import java.util.*
 
-class FragmentChatsDialog : Fragment(), View.OnClickListener {
+class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListener {
 
     companion object {
         private const val TAG = "FragmentChatsDialog"
@@ -38,7 +35,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
     }
 
     private lateinit var v: View
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var messagesAdapter: MessagesAdapter
     private lateinit var nickname: String
     private lateinit var url: String
@@ -73,7 +70,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
         recyclerView = v.findViewById(R.id.messages_list)
         messagesAdapter = MessagesAdapter()
         recyclerView.adapter = messagesAdapter
-        val linearLayoutManager = LinearLayoutManager(context)
+        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         linearLayoutManager.stackFromEnd = true
         recyclerView.layoutManager = linearLayoutManager
         RestService.registerCallback(messagesAdapter.restCallback)
@@ -118,7 +115,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
     }
 
-    private inner class MessagesAdapter : RecyclerView.Adapter<MessagesAdapter.VH>(), View.OnClickListener {
+    private inner class MessagesAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<MessagesAdapter.VH>(), View.OnClickListener {
 
         private val chatMessages = arrayListOf<ChatMessageNOSQL>()
         private val layoutInflater: LayoutInflater = activity!!.layoutInflater
@@ -211,7 +208,7 @@ class FragmentChatsDialog : Fragment(), View.OnClickListener {
 
         }
 
-        internal inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        internal inner class VH(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
             var message: TextView = itemView.findViewById(R.id.message_message)
             var time: TextView = itemView.findViewById(R.id.messaage_time)

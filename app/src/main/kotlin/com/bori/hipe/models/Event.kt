@@ -11,7 +11,7 @@ data class Event(
         val dateMills: Long = 0L,
         val creationDateMills: Long = 0L,
         val maxMembers: Long = 0L,
-        val longtitude: Double = 0.0,
+        val longitude: Double = 0.0,
         val latitude: Double = 0.0,
         val creatorNickname: String = "",
         val country: String = "",

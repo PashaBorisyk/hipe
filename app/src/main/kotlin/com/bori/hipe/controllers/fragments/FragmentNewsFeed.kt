@@ -3,16 +3,13 @@ package com.bori.hipe.controllers.fragments
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.CardView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.bori.hipe.HipeApplication
 import com.bori.hipe.HipeApplication.Companion.IS_KIT_KAT
 import com.bori.hipe.HipeApplication.Companion.IS_LOLLIPOP
@@ -30,7 +27,14 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType
 private const val TAG = "FragmentNewsFeed.kt"
 private const val GET_EVENTS_ID = 1L
 
-class FragmentNewsFeed : Fragment() {
+class FragmentNewsFeed : androidx.fragment.app.Fragment() {
+
+    private enum class RowType {
+        VERTICAL,
+        HORIZONTAL,
+        EMPTY,
+        HEADER,
+    }
 
     private var test = false
 
@@ -47,7 +51,7 @@ class FragmentNewsFeed : Fragment() {
         v = inflater.inflate(R.layout.fragment_news_feed, container, false)
         recyclerView = findViewById(R.id.news_feed_recycler_view)
         recyclerViewAdapter = RecyclerViewAdapter()
-        val linearLayoutManager = LinearLayoutManager(activity!!.applicationContext)
+        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity!!.applicationContext)
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
@@ -56,8 +60,8 @@ class FragmentNewsFeed : Fragment() {
         val startWidth = HipeApplication.screenWidth - doubledMargin
         val maxMargin = doubledMargin * 0.95f
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+        recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
                 for ((holder, image) in views) {
@@ -95,12 +99,7 @@ class FragmentNewsFeed : Fragment() {
 
     private fun <T : View> findViewById(id: Int) = v.findViewById<T>(id)
 
-    private inner class RecyclerViewAdapter internal constructor() : RecyclerView.Adapter<RecyclerViewAdapter.VH>(), View.OnClickListener {
-
-        private val TYPE_VERTICAL = 0
-        private val TYPE_HORIZONTAL = 1
-        private val TYPE_EMPTY = 2
-        private val TYPE_HEADER = 3
+    private inner class RecyclerViewAdapter internal constructor() : androidx.recyclerview.widget.RecyclerView.Adapter<RecyclerViewAdapter.VH>(), View.OnClickListener {
 
         private val events = mutableListOf<Tuple<Event, HipeImage>>()
 
@@ -139,18 +138,20 @@ class FragmentNewsFeed : Fragment() {
             views.remove(holder.rootView)
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        override fun onCreateViewHolder(parent: ViewGroup, iViewType: Int): VH {
 
-            if (viewType == TYPE_HORIZONTAL)
+            val viewType = RowType.values()[iViewType]
+
+            if (viewType == RowType.HORIZONTAL)
                 return VH(layoutInflater.inflate(R.layout.item_news_feed_horizontal, parent, false), viewType)
 
-            if (viewType == TYPE_VERTICAL)
+            if (viewType == RowType.VERTICAL)
                 return VH(layoutInflater.inflate(R.layout.item_news_feed_vertical, parent, false), viewType)
 
-            if (viewType == TYPE_EMPTY)
+            if (viewType == RowType.EMPTY)
                 return VH(layoutInflater.inflate(R.layout.item_news_feed_no_image, parent, false), viewType)
 
-            if (viewType == TYPE_HEADER)
+            if (viewType == RowType.HEADER)
                 return VH(layoutInflater.inflate(R.layout.status_bar_header, parent, false), viewType)
 
             return VH(layoutInflater.inflate(R.layout.item_news_feed_no_image, parent, false), viewType)
@@ -167,7 +168,7 @@ class FragmentNewsFeed : Fragment() {
 
             imageLoader.displayImage(entry._1.creatorsImageUrl, holder.userPhoto, displayImageOptions)
 
-            if (getItemViewType(position) != TYPE_EMPTY)
+            if (RowType.values()[position] != RowType.EMPTY)
                 imageLoader.displayImage(entry._2.urlLarge, holder.eventPhoto, displayImageOptions)
 
             holder.nickName?.text = entry._1.creatorNickname
@@ -191,16 +192,16 @@ class FragmentNewsFeed : Fragment() {
         override fun getItemViewType(position: Int): Int {
 
             if (IS_KIT_KAT && position == 0)
-                return TYPE_HEADER
+                return RowType.HEADER.ordinal
 
             if (!events[position - 1]._2.exist)
-                return TYPE_EMPTY
+                return RowType.EMPTY.ordinal
 
             val ratio = events[position - 1]._2.ratio
             return if (ratio > 1)
-                TYPE_HORIZONTAL
+                RowType.HORIZONTAL.ordinal
             else
-                TYPE_VERTICAL
+                RowType.VERTICAL.ordinal
         }
 
         override fun getItemCount() = events.size + 1
@@ -230,7 +231,7 @@ class FragmentNewsFeed : Fragment() {
 
         }
 
-        internal inner class VH(itemView: View, itemViewType: Int) : RecyclerView.ViewHolder(itemView) {
+        internal inner class VH(itemView: View, rowType: RowType) : RecyclerView.ViewHolder(itemView) {
 
             var nickName: TextView? = null
             var description: TextView? = null
@@ -238,15 +239,15 @@ class FragmentNewsFeed : Fragment() {
             var buttonAdd: View? = null
             var buttonChat: View? = null
             var buttonInfo: View? = null
-            var rootCardView: CardView? = null
+            var rootCardView: androidx.cardview.widget.CardView? = null
             var eventPhoto: ImageView? = null
             var imageContainer: View? = null
-            var imageCardView: CardView? = null
+            var imageCardView: androidx.cardview.widget.CardView? = null
             var rootView: View? = null
 
             init {
 
-                if (itemViewType != TYPE_HEADER) {
+                if (rowType != RowType.HEADER) {
 
                     nickName = itemView.findViewById(R.id.nickname)
                     description = itemView.findViewById(R.id.description_time)
@@ -258,7 +259,7 @@ class FragmentNewsFeed : Fragment() {
                     imageCardView = itemView.findViewById(R.id.image_card_view)
                     imageContainer = itemView.findViewById(R.id.image_container)
                     rootView = itemView.findViewById(R.id.root)
-                    eventPhoto = if (itemViewType != TYPE_EMPTY)
+                    eventPhoto = if (rowType != RowType.EMPTY)
                         itemView.findViewById(R.id.event_photo)
                     else null
                 }

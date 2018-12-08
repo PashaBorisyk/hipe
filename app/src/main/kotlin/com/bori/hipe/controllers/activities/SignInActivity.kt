@@ -6,11 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.bori.hipe.R
 import com.bori.hipe.controllers.rest.RestService
 import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_sign_in.*
 private const val CHECK_USER_EXISTENCE_ID = 3L
 
 private const val TAG = "SignInActivity"
-private const val SPINING_AND_SCALING_DURATION = 200L
+private const val SEINING_AND_SCALING_DURATION = 200L
 private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1345566
 private const val RC_CHOOSE_FROM_GALLERY = 54321
 
@@ -172,7 +172,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun mainTintViewAnimateOn() {
         Log.d(TAG, "SignInActivity.mainTintViewAnimateOn")
-        spining_scale_view_progress_main.catchContext().start(SPINING_AND_SCALING_DURATION, main_tint_view)
+        spining_scale_view_progress_main.catchContext().start(SEINING_AND_SCALING_DURATION, main_tint_view)
     }
 
     private fun mainTintViewAnimateOff() {

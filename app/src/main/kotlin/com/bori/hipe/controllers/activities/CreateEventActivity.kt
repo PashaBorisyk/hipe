@@ -13,14 +13,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.content.FileProvider
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.bori.hipe.R
 import com.bori.hipe.controllers.dialogs.FriendsListDialogFragment
 import com.bori.hipe.controllers.dialogs.PhotoDialogFragment
@@ -81,7 +81,9 @@ class CreateNewEventActivity :
     private var eventImageLarge: HipeImage? = null
     private var photoLocalUrl: String? = null
 
+    private lateinit var friendsListDialogFragment: FriendsListDialogFragment
     private lateinit var photoDialogFragment: PhotoDialogFragment
+
     private lateinit var datePickerDialog: DatePickerDialog
     private lateinit var timePickerDialog: TimePickerDialog
 
@@ -133,7 +135,6 @@ class CreateNewEventActivity :
 
     }
 
-    private lateinit var friendsListDialogFragment: FriendsListDialogFragment
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -533,7 +534,7 @@ class CreateNewEventActivity :
 
         }
 
-        if (thisEvent.latitude + thisEvent.longtitude == 0.0) {
+        if (thisEvent.latitude + thisEvent.longitude == 0.0) {
 
             validated = false
             create_event_members_hint.setTextColor(0xFFF12652.toInt())

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_coordinator_layout"
@@ -8,7 +8,7 @@
     android:layout_height="match_parent">
 
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/content_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -31,7 +31,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1">
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop"
@@ -40,7 +40,7 @@
 
                 </RelativeLayout>
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/inputs_root"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -61,7 +61,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/password_input_layout">
 
 
-                        <android.support.design.widget.TextInputLayout
+                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/confirm_password_input_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                             app:hintTextAppearance="@style/LoginScreenFormsHintStyle"
                             app:passwordToggleEnabled="true">
 
-                            <android.support.design.widget.TextInputEditText
+                            <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/confirm_password"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                                 android:maxLines="1"
                                 android:singleLine="false" />
 
-                        </android.support.design.widget.TextInputLayout>
+                        </com.google.android.material.textfield.TextInputLayout>
 
                     </com.bori.hipe.controllers.views.CircularRevealFrameLayout>
 
@@ -97,7 +97,7 @@
                     <!--app:layout_constraintEnd_toEndOf="parent"-->
                     <!--app:layout_constraintStart_toStartOf="parent" />-->
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/password_input_layout"
                         style="@style/LoginScreenFormsInputStyle"
                         android:layout_margin="16dp"
@@ -115,7 +115,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/username_input_layout"
                         app:passwordToggleEnabled="true">
 
-                        <android.support.design.widget.TextInputEditText
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -124,10 +124,10 @@
                             android:maxLines="1"
                             android:singleLine="false" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
-                    <android.support.design.widget.TextInputLayout
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/username_input_layout"
                         style="@style/LoginScreenFormsInputStyle"
                         android:layout_margin="16dp"
@@ -141,7 +141,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:title="not">
 
-                        <android.support.design.widget.TextInputEditText
+                        <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                             android:maxLines="1"
                             android:singleLine="false" />
 
-                    </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
                     <com.bori.hipe.controllers.views.FlippingEdgesView
@@ -185,7 +185,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/password_input_layout" />
 
 
-                </android.support.constraint.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -210,7 +210,7 @@
                     android:layout_margin="20dp"
                     android:padding="10dp">
 
-                    <android.support.v7.widget.CardView
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/window_card"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -225,7 +225,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
 
-                            <android.support.constraint.ConstraintLayout
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:visibility="gone">
@@ -292,7 +292,7 @@
 
                                 </LinearLayout>
 
-                                <android.support.design.widget.TextInputLayout
+                                <com.google.android.material.textfield.TextInputLayout
                                     android:id="@+id/email_input_layout"
                                     style="@style/LoginScreenFormsInputStyle"
                                     android:layout_margin="16dp"
@@ -315,7 +315,7 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:passwordToggleEnabled="true">
 
-                                    <android.support.design.widget.TextInputEditText
+                                    <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/email"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -324,9 +324,9 @@
                                         android:maxLines="1"
                                         android:singleLine="false" />
 
-                                </android.support.design.widget.TextInputLayout>
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <android.support.design.widget.FloatingActionButton
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
                                     android:id="@+id/confirm_registration_button"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -379,9 +379,9 @@
                                     app:layout_constraintTop_toBottomOf="@+id/privacy_check_box"
                                     app:layout_constraintVertical_bias="0.100000024" />
 
-                            </android.support.constraint.ConstraintLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                            <android.support.constraint.ConstraintLayout
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
 
@@ -439,12 +439,12 @@
                                     app:layout_constraintStart_toStartOf="@+id/email_confirmation_counter_view"
                                     app:layout_constraintTop_toTopOf="@+id/email_confirmation_counter_view" />
 
-                            </android.support.constraint.ConstraintLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
                         </RelativeLayout>
 
 
-                    </android.support.v7.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
 
                 </com.bori.hipe.controllers.views.CircularRevealFrameLayout>
@@ -453,6 +453,6 @@
 
         </RelativeLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

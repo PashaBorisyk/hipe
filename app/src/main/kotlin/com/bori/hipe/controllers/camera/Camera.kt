@@ -46,10 +46,6 @@ internal data class CaptureSessionData(
 @TargetApi(21)
 internal object Camera2Service {
 
-    init {
-        System.loadLibrary("native-lib")
-    }
-
     internal val TAG = Camera2Service::class.java.simpleName
     private const val MAX_PREVIEW_WIDTH = 1920
     private const val MAX_PREVIEW_HEIGHT = 1920
@@ -173,8 +169,6 @@ internal object Camera2Service {
                     request: CaptureRequest,
                     result: TotalCaptureResult
             ) {
-                Log.d(TAG, "Camera2Service.onCaptureCompleted")
-
                 if (!observableEmitter.isDisposed) {
 
                     observableEmitter.onNext(CaptureSessionData(
@@ -190,8 +184,6 @@ internal object Camera2Service {
                     request: CaptureRequest,
                     failure: CaptureFailure
             ) {
-                android.util.Log.d(TAG, "Camera2Service.onCaptureFailed")
-
             }
 
         }

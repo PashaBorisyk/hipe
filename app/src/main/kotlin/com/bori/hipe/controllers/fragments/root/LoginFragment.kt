@@ -4,11 +4,6 @@ import android.animation.Animator
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.design.widget.TextInputEditText
-import android.support.design.widget.TextInputLayout
-import android.support.v4.content.res.ResourcesCompat.getColor
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -19,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat.getColor
 import com.bori.hipe.HipeApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.MainActivity
@@ -36,6 +32,11 @@ import com.bori.hipe.util.Const
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
 import com.bori.hipe.util.web.Status
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.jaredrummler.materialspinner.MaterialSpinner
 import java.util.*
 
@@ -154,7 +155,7 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         loginButton.setOnClickListener(this)
         restCallback = LoginActivityRestCallbackAdapter()
         snackbar = Snackbar.make(mainLayout, R.string.no_connection_detected, Snackbar.LENGTH_LONG)
-        snackbar.duration = SNACK_BAR_ANIMATION_DURATION
+        snackbar.duration = BaseTransientBottomBar.LENGTH_LONG
 
         liftAnimationListener = LiftAnimationListener()
         snackbar.setAction(R.string.dismiss) {
@@ -163,7 +164,6 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         }
 
     }
-
 
     private fun initWindowLayout() {
         Log.d(TAG, "LoginFragment.initWindowLayout")
@@ -181,7 +181,6 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         updatesCheckBox = findViewById(R.id.receive_email_check_box)
         windowCard = findViewById(R.id.window_card)
         counterView = findViewById(R.id.email_confirmation_counter_view)
-
 
         windowInputsViews.add(updatesCheckBox)
         windowInputsViews.add(privacyCheckBox)
@@ -415,7 +414,7 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         createAccountText.visibility = View.VISIBLE
         createAccountText.animate().alpha(1f).setDuration(300).start()
         mainRevealFrameLayout.showOut()
-        confirmPassword.text.clear()
+        confirmPassword.text?.clear()
 
     }
 
