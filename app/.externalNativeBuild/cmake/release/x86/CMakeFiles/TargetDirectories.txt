@@ -1,3 +1,0 @@
-/home/pashaborisyk/pasha/projects/hipe/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/rebuild_cache.dir
-/home/pashaborisyk/pasha/projects/hipe/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/edit_cache.dir
-/home/pashaborisyk/pasha/projects/hipe/app/.externalNativeBuild/cmake/release/x86/CMakeFiles/native-lib.dir

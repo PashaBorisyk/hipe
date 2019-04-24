@@ -10,11 +10,10 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bori.hipe.R
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.UserService
-import com.bori.hipe.models.HipeImage
-import com.bori.hipe.models.Tuple
+import com.bori.hipe.models.Image
 import com.bori.hipe.models.User
 import com.bori.hipe.util.web.Status
 import com.google.android.material.internal.CheckableImageButton
@@ -25,10 +24,10 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import java.util.*
 
 private const val TAG = "SearchFragment.kt"
-private const val GET_FRIENDS_LIST_ID = 16L
-private const val ADD_USER_TO_FRIENDS_ID = 17L
-private const val REMOVE_USER_FROM_FRIENDS_ID = 18L
-private const val FIND_USER_WITH_QUERY_ID = 19L
+private const val GET_FRIENDS_LIST_ID = 16
+private const val ADD_USER_TO_FRIENDS_ID = 17
+private const val REMOVE_USER_FROM_FRIENDS_ID = 18
+private const val FIND_USER_WITH_QUERY_ID = 19
 
 private const val ANIMATiON_DURATION: Long = 100
 private const val SEARCH_DELAY: Long = 200
@@ -61,15 +60,15 @@ class SearchFragment : androidx.fragment.app.Fragment() {
         recyclerView.adapter = resultsAdapter
 
         Log.e(TAG, "onCreateView: thisUserDoesNotExists")
-        UserService.getFriendsIdsList(
+        UserService.getFriendsIDs(
                 requestID = GET_FRIENDS_LIST_ID,
-                userId = User.thisUser.id
+                userID = User().id
         )
 
         searchTask = SearchTask()
         timer = Timer(false)
         timer.schedule(searchTask, SEARCH_DELAY, SEARCH_DELAY)
-        RestService.registerCallback(restCallbackAdapter)
+        RestCallbackRepository.registerCallback(RestCallback)
 
         return v
 
@@ -79,7 +78,7 @@ class SearchFragment : androidx.fragment.app.Fragment() {
         super.onDestroyView()
         Log.d(TAG, "SearchFragment.onDestroyView")
 
-        RestService.unregisterCallback(restCallbackAdapter)
+        RestCallbackRepository.unregisterCallback(RestCallback)
         searchTask.cancel()
         timer.cancel()
         timer.purge()
@@ -104,9 +103,8 @@ class SearchFragment : androidx.fragment.app.Fragment() {
 
                         recyclerView.animate().alpha(0f).setStartDelay(delay).duration = ANIMATiON_DURATION
                         progress_bar_container.animate().alpha(1f).setStartDelay(delay).duration = ANIMATiON_DURATION
-                        UserService.findUser(
+                        UserService.find(
                                 requestID = FIND_USER_WITH_QUERY_ID,
-                                userID = User.thisUser.id,
                                 query = query
                         )
 
@@ -121,22 +119,22 @@ class SearchFragment : androidx.fragment.app.Fragment() {
 
     }
 
-    private var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
+    private var RestCallback: RestCallback = object : RestCallback() {
 
-        override fun onFailure(requestID: Long, t: Throwable) {
+        override fun onFailure(requestID: Int, t: Throwable) {
             Log.d(TAG, "onFailure() called with: t = [$t]")
         }
 
-        override fun onUserListResponse(requestID: Long, users: List<Tuple<User, HipeImage>>?, serverStatus: Int) {
-            Log.d(TAG, "onUserListResponse() called with: users = [${users?.size}], status = [$serverStatus]")
+        override fun onUserResponse(requestID: Int, users: List<Pair<User, Image>>?, responseStatus: Int) {
+            Log.d(TAG, "onUserResponse() called with: users = [${users?.size}], status = [$responseStatus]")
 
-            if (Status.isSuccessful(serverStatus)) {
+            if (Status.isSuccessful(responseStatus)) {
 
                 if (requestID == GET_FRIENDS_LIST_ID) {
-                    Log.e(TAG, "onUserListResponse: CONST_STATUS_FREINDS_LIST_ACCESSED")
+                    Log.e(TAG, "onUserResponse: CONST_STATUS_FREINDS_LIST_ACCESSED")
 
                     val longs = users
-                            ?.map { it._1.id }
+                            ?.map { it.first.id }
                             ?.toSet() ?: emptySet()
 
                     resultsAdapter.friendsIds.clear()
@@ -144,7 +142,7 @@ class SearchFragment : androidx.fragment.app.Fragment() {
                     resultsAdapter.notifyDataSetChanged()
 
                 } else if (requestID == FIND_USER_WITH_QUERY_ID) {
-                    Log.e(TAG, "onUserListResponse: USERS_FOUND : ${users?.size}")
+                    Log.e(TAG, "onUserResponse: USERS_FOUND : ${users?.size}")
 
                     progress_bar_container.animate().alpha(0f).setStartDelay(0).duration = ANIMATiON_DURATION
 
@@ -161,18 +159,18 @@ class SearchFragment : androidx.fragment.app.Fragment() {
             }
         }
 
-        override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+        override fun onSimpleResponse(requestID: Int, response: Any?, responseStatus: Int) {
             Log.e(TAG, "onSimpleResponse: $response")
 
             response ?: return
-            val id = response as Long
+            val id = response as Int
 
             resultsAdapter.usersStack.remove(id)
 
-            if (requestID == ADD_USER_TO_FRIENDS_ID && serverCode == Status.OK)
+            if (requestID == ADD_USER_TO_FRIENDS_ID && responseStatus == Status.OK)
                 resultsAdapter.friendsIds.add(id)
 
-            if (requestID == REMOVE_USER_FROM_FRIENDS_ID && serverCode == Status.ACCEPTED) {
+            if (requestID == REMOVE_USER_FROM_FRIENDS_ID && responseStatus == Status.ACCEPTED) {
                 Log.d(TAG, "User with id: $id deleted")
                 resultsAdapter.friendsIds.remove(id)
             }
@@ -181,17 +179,15 @@ class SearchFragment : androidx.fragment.app.Fragment() {
 
         }
 
-        override fun onLongListResponse(requestID: Long, ids: List<Long>?, serverStatus: Int) {
-            Log.d(TAG, "onLongListResponse requestID = [$requestID], ids = [$ids], serverStatus = [$serverStatus]")
+        override fun onIntCollectionResponse(requestID: Int, ids: Collection<Int>, responseStatus: Int) {
+            Log.d(TAG, "onIntCollectionResponse requestID = [$requestID], ids = [$ids], serverStatus = [$responseStatus]")
 
-            ids ?: return
+            if (responseStatus == Status.OK) {
 
-            if (serverStatus == Status.OK) {
-
-                Log.d(TAG, "onLongListResponse: friends list is == " + ids)
+                Log.d(TAG, "onIntCollectionResponse: friends list is == " + ids)
                 resultsAdapter.friendsIds.clear()
                 resultsAdapter.friendsIds.addAll(ids)
-                Log.e(TAG, "onLongListResponse: now my list is == " + resultsAdapter.friendsIds)
+                Log.e(TAG, "onIntCollectionResponse: now my list is == " + resultsAdapter.friendsIds)
                 resultsAdapter.notifyDataSetChanged()
 
             }
@@ -202,9 +198,9 @@ class SearchFragment : androidx.fragment.app.Fragment() {
     private inner class ResultsAdapter internal constructor() : androidx.recyclerview.widget.RecyclerView.Adapter<ResultsAdapter.VH>(), View.OnClickListener {
 
         val inflater: LayoutInflater = activity!!.layoutInflater
-        val users = mutableListOf<Tuple<User, HipeImage>>()
-        val friendsIds = arrayListOf<Long>()
-        val usersStack = arrayListOf<Long>()
+        val users = mutableListOf<Pair<User, Image>>()
+        val friendsIds = arrayListOf<Int>()
+        val usersStack = arrayListOf<Int>()
         val imageLoader = ImageLoader.getInstance()!!
         val displayImageOptions = DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
@@ -222,27 +218,27 @@ class SearchFragment : androidx.fragment.app.Fragment() {
 
             val entry = users[position]
 
-            holder.nickName.text = entry._1.username
-            holder.nameSurname.text = entry._1.name + " " + entry._1.surname
-            holder.rootView.tag = entry._1.id
-            imageLoader.displayImage(entry._2.urlSmall, holder.userPhoto, displayImageOptions)
+            holder.nickName.text = entry.first.username
+            holder.nameSurname.text = entry.first.name + " " + entry.first.surname
+            holder.rootView.tag = entry.first.id
+            imageLoader.displayImage(entry.second.urlSmall, holder.userPhoto, displayImageOptions)
 
 
-            if (usersStack.contains(entry._1.id)) {
+            if (usersStack.contains(entry.first.id)) {
                 holder.checkableImageButton.animate().alpha(0f).duration = ANIMATiON_DURATION
                 holder.progressBar.animate().alpha(1f).duration = ANIMATiON_DURATION
 
             } else {
                 holder.progressBar.animate().alpha(0f).duration = ANIMATiON_DURATION
                 holder.checkableImageButton.animate().alpha(1f).duration = ANIMATiON_DURATION
-                holder.checkableImageButton.isChecked = friendsIds.contains(entry._1.id)
+                holder.checkableImageButton.isChecked = friendsIds.contains(entry.first.id)
                 holder.checkableImageButton.tag = position
             }
         }
 
         override fun getItemCount(): Int = users.size
 
-        fun setUsers(users: List<Tuple<User, HipeImage>>) {
+        fun setUsers(users: List<Pair<User, Image>>) {
             Log.d(TAG, "ResultsAdapter.setUsers")
 
             val mutableUsersIn = users.toMutableList()
@@ -274,21 +270,7 @@ class SearchFragment : androidx.fragment.app.Fragment() {
 
                 if (view is CheckableImageButton) {
 
-                    usersStack.add(users[tag]._1.id)
-
-                    if (friendsIds.contains(users[tag]._1.id))
-                        UserService.removeUserFromFriend(
-                                requestID = REMOVE_USER_FROM_FRIENDS_ID,
-                                userId = User.thisUser.id,
-                                advancedUserId = users[tag]._1.id
-                        )
-                    else {
-                        UserService.addUserToFriend(
-                                requestID = ADD_USER_TO_FRIENDS_ID,
-                                userId = User.thisUser.id,
-                                advancedUserId = users[tag]._1.id
-                        )
-                    }
+                    usersStack.add(users[tag].first.id)
                     notifyDataSetChanged()
                     Log.d(TAG, "onClick: before" + usersStack)
 

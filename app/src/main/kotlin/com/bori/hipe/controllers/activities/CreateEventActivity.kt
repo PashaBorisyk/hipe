@@ -24,12 +24,12 @@ import androidx.core.content.FileProvider
 import com.bori.hipe.R
 import com.bori.hipe.controllers.dialogs.FriendsListDialogFragment
 import com.bori.hipe.controllers.dialogs.PhotoDialogFragment
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.EventService
-import com.bori.hipe.controllers.rest.service.HipeImageService
+import com.bori.hipe.controllers.rest.service.ImageService
 import com.bori.hipe.models.Event
-import com.bori.hipe.models.HipeImage
+import com.bori.hipe.models.Image
 import com.bori.hipe.models.User
 import com.bori.hipe.util.web.Status
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -47,8 +47,8 @@ import java.util.*
 
 private const val TAG = "CreateNewEventActivity"
 
-private const val CREATE_NEW_EVENT_ID = 0L
-private const val UPLOAD_EVENT_PHOTO_ID = 1L
+private const val CREATE_NEW_EVENT_ID = 0
+private const val UPLOAD_EVENT_PHOTO_ID = 1
 
 private const val RC_CHOOSE_FROM_GALLERY = 54321
 private const val RC_CAPTURE_FROM_CAMERA = 5431
@@ -78,7 +78,7 @@ class CreateNewEventActivity :
         DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
 
-    private var eventImageLarge: HipeImage? = null
+    private var eventImageLarge: Image? = null
     private var photoLocalUrl: String? = null
 
     private lateinit var friendsListDialogFragment: FriendsListDialogFragment
@@ -97,9 +97,9 @@ class CreateNewEventActivity :
     private var longtitude = -1.0
     private var latitude = -1.0
 
-    private lateinit var restCallback: CreateEventActivityRestCallbackAdapter
+    private lateinit var restCallback: CreateEventActivityRestCallback
 
-    val addedUsers = hashSetOf<Long>()
+    val addedUsers = hashSetOf<Int>()
 
     private fun init() {
         Log.d(TAG, "CreateNewEventActivity.init")
@@ -129,7 +129,7 @@ class CreateNewEventActivity :
 //        button_create_new_event.setOnClickListener(myOnClickListener)
 
         timePickerDialog = TimePickerDialog(this, this, 0, 0, true)
-        restCallback = CreateEventActivityRestCallbackAdapter()
+        restCallback = CreateEventActivityRestCallback()
 
         setButtonDate(Calendar.getInstance().timeInMillis)
 
@@ -144,7 +144,7 @@ class CreateNewEventActivity :
         init()
         initToolBar()
         initPickerDialog()
-        RestService.registerCallback(restCallback)
+        RestCallbackRepository.registerCallback(restCallback)
 
     }
 
@@ -152,7 +152,7 @@ class CreateNewEventActivity :
         Log.d(TAG, "CreateNewEventActivity.onDestroy")
 
         super.onDestroy()
-        RestService.unregisterCallback(restCallback)
+        RestCallbackRepository.unregisterCallback(restCallback)
     }
 
     private fun initToolBar() {
@@ -327,25 +327,22 @@ class CreateNewEventActivity :
     }
 
     private fun createEvent() {
-        Log.d(TAG, "CreateNewEventActivity.createEvent")
-        Log.d(TAG, "createNewEvent() called")
+        Log.d(TAG, "CreateNewEventActivity.create")
+        Log.d(TAG, "create() called")
 
-        val me = User.thisUser
+        val me = User()
 
         val thisEvent = Event(
 
-                creatorId = me.id,
+                ownerID = me.id,
                 dateMills = dateMills + timeMills,
                 creationDateMills = System.currentTimeMillis(),
-                isPublic = !switch_is_private_event.isChecked,
-                description = button_date.text.toString() + " " + button_time.text.toString(),
-                isForOneGender = !(button_gender_man.isSelected && button_gender_woman.isSelected),
-                isForMale = button_gender_man.isSelected
+                description = button_date.text.toString() + " " + button_time.text.toString()
 
         )
 
         if (validate(thisEvent))
-            EventService.createNewEvent(CREATE_NEW_EVENT_ID, thisEvent)
+            EventService.create(CREATE_NEW_EVENT_ID, thisEvent, intArrayOf(1,2))
         else
             animateMainTintViewOff()
 
@@ -542,7 +539,7 @@ class CreateNewEventActivity :
 
         }
 
-        if (!thisEvent.isPublic && addedUsers.isEmpty()) {
+        if (addedUsers.isEmpty()) {
 
             validated = false
             create_event_members_hint.setTextColor(0xFFF12652.toInt())
@@ -550,7 +547,7 @@ class CreateNewEventActivity :
 
         }
 
-        if (thisEvent.isPublic && !button_gender_man.isSelected && !button_gender_woman.isSelected) {
+        if (!button_gender_man.isSelected && !button_gender_woman.isSelected) {
 
             validated = false
             create_event_members_hint.setTextColor(0xFFF12652.toInt())
@@ -561,19 +558,19 @@ class CreateNewEventActivity :
         return validated
     }
 
-    inner class CreateEventActivityRestCallbackAdapter : RestCallbackAdapter() {
+    inner class CreateEventActivityRestCallback : RestCallback() {
 
-        override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
-            Log.d(TAG, "CreateEventActivityRestCallbackAdapter.onSimpleResponse")
+        override fun onSimpleResponse(requestID: Int, response: Any?, responseStatus: Int) {
+            Log.d(TAG, "CreateEventActivityRestCallback.onSimpleResponse")
             when (requestID) {
                 CREATE_NEW_EVENT_ID -> {
-                    if (serverCode == Status.CREATED) {
+                    if (responseStatus == Status.CREATED) {
                         if (photoLocalUrl != null)
-                            HipeImageService.upload(UPLOAD_EVENT_PHOTO_ID, response as Long, File(photoLocalUrl))
+                            ImageService.upload(UPLOAD_EVENT_PHOTO_ID, response as Long, File(photoLocalUrl))
                     }
 
                 }
-                UPLOAD_EVENT_PHOTO_ID -> if (serverCode == Status.CREATED) {
+                UPLOAD_EVENT_PHOTO_ID -> if (responseStatus == Status.CREATED) {
                     Log.d(TAG, "photo uploaded")
                 } else {
                     Log.e(TAG, "photo upload error")

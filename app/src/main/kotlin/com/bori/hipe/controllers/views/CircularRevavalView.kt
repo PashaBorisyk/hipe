@@ -12,7 +12,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import com.bori.hipe.HipeApplication
+import com.bori.hipe.MainApplication
 
 
 class CircularRevavalView @JvmOverloads constructor(
@@ -164,8 +164,8 @@ class CircularRevavalView @JvmOverloads constructor(
             this.fromX = fromX
             this.fromY = fromY
         } else {
-            this.fromX = event.rawX - (HipeApplication.screenWidth - width)
-            this.fromY = event.rawY - (HipeApplication.screenHeight - height)
+            this.fromX = event.rawX - (MainApplication.screenWidth - width)
+            this.fromY = event.rawY - (MainApplication.screenHeight - height)
         }
         animator.start()
 

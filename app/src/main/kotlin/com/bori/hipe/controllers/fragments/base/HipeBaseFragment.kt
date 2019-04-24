@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bori.hipe.models.Trio
 import io.reactivex.subjects.PublishSubject
 
 open class HipeBaseFragment : androidx.fragment.app.Fragment() {
@@ -20,7 +19,7 @@ open class HipeBaseFragment : androidx.fragment.app.Fragment() {
     var shouldCallOnFragment: Boolean = false
         protected set
 
-    protected val permissionPublishSubject = PublishSubject.create<Trio<Int, String, Int>>()
+    protected val permissionPublishSubject = PublishSubject.create<Triple<Int, String, Int>>()
 
     open fun onBackPressed() {
         Log.d(TAG, "HipeBaseFragment.onBackPressed")
@@ -33,7 +32,7 @@ open class HipeBaseFragment : androidx.fragment.app.Fragment() {
     ) {
         Log.d(TAG, "CameraFragment.onRequestPermissionsResult")
 
-        permissionPublishSubject.onNext(Trio(requestCode, permissions[0], grantResults[0]))
+        permissionPublishSubject.onNext(Triple(requestCode, permissions[0], grantResults[0]))
 
     }
 
@@ -47,7 +46,7 @@ open class HipeBaseFragment : androidx.fragment.app.Fragment() {
         if (ContextCompat.checkSelfPermission(activity!!, permissionName) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(activity!!, arrayOf(permissionName), requestCode)
         else
-            permissionPublishSubject.onNext(Trio(requestCode, permissionName, PackageManager.PERMISSION_GRANTED))
+            permissionPublishSubject.onNext(Triple(requestCode, permissionName, PackageManager.PERMISSION_GRANTED))
 
     }
 

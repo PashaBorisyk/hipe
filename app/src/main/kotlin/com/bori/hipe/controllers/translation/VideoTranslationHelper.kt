@@ -3,14 +3,18 @@ package com.bori.hipe.controllers.translation
 import android.annotation.TargetApi
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
+import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Build.VERSION_CODES.JELLY_BEAN
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.util.Size
 import android.view.Surface
 import androidx.annotation.RequiresApi
+import com.bori.hipe.controllers.translation.VideoTranslationHelper.Flag.*
 import io.reactivex.Observable
+import java.io.FileDescriptor
 import java.io.IOException
 import java.net.ConnectException
 import java.net.InetSocketAddress
@@ -29,6 +33,11 @@ class VideoTranslationHelper(
         DECODE
     }
 
+    private enum class Flag {
+        CONTINUE,
+        BREAK
+    }
+
     private companion object {
         private const val TAG = "VideoTranslationHelper"
         private const val timeoutSec = 1L
@@ -39,12 +48,27 @@ class VideoTranslationHelper(
 
     private var isPrepared = false
 
-    private lateinit var encoder: MediaCodec
+    private lateinit var codec: MediaCodec
     private lateinit var surface: Surface
-    private lateinit var decoder: MediaCodec
 
     private val clientSocketChannel: SocketChannel = SocketChannel.open()
     private val bufferInfo = MediaCodec.BufferInfo()
+
+    fun getSocketFileDescriptor(): FileDescriptor {
+        Log.d(TAG, "VideoTranslationHelper.getSocketFileDescriptor")
+
+        if (!clientSocketChannel.isOpen)
+            throw IllegalStateException("Socket must be opened")
+
+        if (!clientSocketChannel.isConnected)
+            throw IllegalStateException("Socket must be connected")
+
+        if (clientSocketChannel.socket().isOutputShutdown)
+            throw IllegalStateException("OutputStream must be opened")
+
+        return ParcelFileDescriptor.fromSocket(clientSocketChannel.socket()).fileDescriptor
+
+    }
 
 
     fun createSocketConnection() = Observable.create<Unit> {
@@ -87,11 +111,11 @@ class VideoTranslationHelper(
                 format.setInteger(MediaFormat.KEY_FRAME_RATE, videoFramePerSecond)
                 format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, iFrameInterval)
 
-                encoder = MediaCodec.createEncoderByType("video/avc")
+                codec = MediaCodec.createEncoderByType("video/avc")
 
-                encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-                surface = encoder.createInputSurface()
-                encoder.start()
+                codec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+                surface = codec.createInputSurface()
+                codec.start()
             }
             Mode.DECODE -> {
 
@@ -124,7 +148,8 @@ class VideoTranslationHelper(
         try {
 
             while (true) {
-                encode()
+                if (encode() == BREAK)
+                    break
             }
 
         } catch (e: IllegalStateException) {
@@ -141,9 +166,6 @@ class VideoTranslationHelper(
 
         } finally {
 
-            clientSocketChannel.close()
-            encoder.stop()
-            encoder.release()
             it.onComplete()
 
         }
@@ -151,12 +173,11 @@ class VideoTranslationHelper(
 
     }!!
 
-    private fun encode() = Observable.create<Unit> {
+    private fun encode(): Flag {
 
-        val status = encoder.dequeueOutputBuffer(bufferInfo, timeoutSec)
+        val status = codec.dequeueOutputBuffer(bufferInfo, timeoutSec)
 
         if (status == MediaCodec.INFO_TRY_AGAIN_LATER) {
-
 
         } else if (status == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
             Log.d(TAG, "VideoTranslationHelper.startEncoding OUTPUT_BUFFERS_CHANGED")
@@ -165,22 +186,24 @@ class VideoTranslationHelper(
         } else {
 
             if (shouldRun) {
-                val data = encoder.getOutputBuffer(status)
+                val data = codec.getOutputBuffer(status)!!
 
                 data.position(bufferInfo.offset)
                 data.limit(bufferInfo.offset + bufferInfo.size)
                 if (clientSocketChannel.isConnected)
                     clientSocketChannel.write(data)
             }
-            encoder.releaseOutputBuffer(status, false)
+            codec.releaseOutputBuffer(status, false)
 
             if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                     == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
                 Log.d(TAG, "VideoTranslationHelper.startEncoding BUFFER_FLAG_END_OF_STREAM")
-
+                return BREAK
             }
 
         }
+
+        return CONTINUE
 
     }
 
@@ -196,10 +219,10 @@ class VideoTranslationHelper(
             while (shouldRun) {
                 if (isPrepared) {
 
-                    val index = decoder.dequeueOutputBuffer(bufferInfo, timeoutSec)
+                    val index = codec.dequeueOutputBuffer(bufferInfo, timeoutSec)
                     if (index >= 0) {
 
-                        decoder.releaseOutputBuffer(index, bufferInfo.size > 0)
+                        codec.releaseOutputBuffer(index, bufferInfo.size > 0)
                         if ((bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) == MediaCodec.BUFFER_FLAG_END_OF_STREAM) {
                             shouldRun = false
                             break
@@ -215,8 +238,7 @@ class VideoTranslationHelper(
                 }
             }
         } finally {
-            decoder.stop()
-            decoder.release()
+            close()
         }
     }
 
@@ -247,12 +269,12 @@ class VideoTranslationHelper(
 
         if (isPrepared) {
 
-            val index = encoder.dequeueInputBuffer(timeoutSec)
+            val index = codec.dequeueInputBuffer(timeoutSec)
             if (index >= 0) {
-                val buffer = decoder.getInputBuffer(index)
+                val buffer = codec.getInputBuffer(index)!!
                 buffer.clear()
                 buffer.put(data, offset, size)
-                decoder.queueInputBuffer(index, 0, size, presentationTime, flags)
+                codec.queueInputBuffer(index, 0, size, presentationTime, flags)
             }
 
         }
@@ -264,10 +286,11 @@ class VideoTranslationHelper(
         return clientSocketChannel.isConnected
     }
 
-    fun close() {
+    private fun close() {
         Log.d(TAG, "VideoTranslationHelper.close")
+        codec.stop()
+        codec.release()
         clientSocketChannel.close()
-        encoder.release()
     }
 
 }

@@ -8,7 +8,6 @@ import android.os.Build
 import android.util.Log
 import android.util.Size
 import android.view.Surface
-import com.bori.hipe.models.Trio
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import java.util.*
@@ -86,18 +85,18 @@ internal object Camera2Service {
     fun openCamera(
             cameraId: String, cameraManager: CameraManager,
             surfaces: Array<Surface>
-    ) = Observable.create<Trio<DeviceStateEvents, CameraDevice, Array<Surface>>> { observable ->
+    ) = Observable.create<Triple<DeviceStateEvents, CameraDevice, Array<Surface>>> { observable ->
         Log.d(TAG, "Camera2Service.openCamera")
         cameraManager.openCamera(cameraId,
                 object : CameraDevice.StateCallback() {
                     override fun onOpened(camera: CameraDevice) {
                         Log.d(TAG, "Camera2Service.onOpened")
-                        observable.onNext(Trio(DeviceStateEvents.ON_OPEND, camera, surfaces))
+                        observable.onNext(Triple(DeviceStateEvents.ON_OPEND, camera, surfaces))
                     }
 
                     override fun onDisconnected(camera: CameraDevice) {
                         Log.d(TAG, "Camera2Service.onDisconnected")
-                        observable.onNext(Trio(DeviceStateEvents.ON_CLOSED, camera, surfaces))
+                        observable.onNext(Triple(DeviceStateEvents.ON_CLOSED, camera, surfaces))
                         observable.onComplete()
                     }
 
@@ -108,7 +107,7 @@ internal object Camera2Service {
 
                     override fun onClosed(camera: CameraDevice) {
                         Log.d(TAG, "Camera2Service.onClosed")
-                        observable.onNext(Trio(DeviceStateEvents.ON_CLOSED, camera, surfaces))
+                        observable.onNext(Triple(DeviceStateEvents.ON_CLOSED, camera, surfaces))
                         observable.onComplete()
                     }
                 }, null)
@@ -118,14 +117,14 @@ internal object Camera2Service {
 
     internal fun createCaptureSession(
             cameraDevice: CameraDevice, surfaceList: List<Surface>
-    ) = Observable.create<Trio<CaptureSessionStateEvents, CameraCaptureSession, List<Surface>>> {
+    ) = Observable.create<Triple<CaptureSessionStateEvents, CameraCaptureSession, List<Surface>>> {
         Log.d(TAG, "Camera2Service.createCaptureSession")
         cameraDevice.createCaptureSession(surfaceList,
                 object : CameraCaptureSession.StateCallback() {
 
                     override fun onConfigured(session: CameraCaptureSession) {
                         Log.d(TAG, "Camera2Service.onConfigured")
-                        it.onNext(Trio(CaptureSessionStateEvents.ON_CONFIGURED, session, surfaceList))
+                        it.onNext(Triple(CaptureSessionStateEvents.ON_CONFIGURED, session, surfaceList))
                     }
 
                     override fun onConfigureFailed(session: CameraCaptureSession) {
@@ -135,23 +134,23 @@ internal object Camera2Service {
 
                     override fun onReady(session: CameraCaptureSession) {
                         Log.d(TAG, "Camera2Service.onReady")
-                        it.onNext(Trio(CaptureSessionStateEvents.ON_READY, session, surfaceList))
+                        it.onNext(Triple(CaptureSessionStateEvents.ON_READY, session, surfaceList))
                     }
 
                     override fun onActive(session: CameraCaptureSession) {
                         Log.d(TAG, "Camera2Service.onActive")
-                        it.onNext(Trio(CaptureSessionStateEvents.ON_ACTIVE, session, surfaceList))
+                        it.onNext(Triple(CaptureSessionStateEvents.ON_ACTIVE, session, surfaceList))
                     }
 
                     override fun onClosed(session: CameraCaptureSession) {
                         Log.d(TAG, "Camera2Service.onClosed")
-                        it.onNext(Trio(CaptureSessionStateEvents.ON_CLOSED, session, surfaceList))
+                        it.onNext(Triple(CaptureSessionStateEvents.ON_CLOSED, session, surfaceList))
                         it.onComplete()
                     }
 
                     override fun onSurfacePrepared(session: CameraCaptureSession, surface: Surface?) {
                         Log.d(TAG, "Camera2Service.onSurfacePrepared")
-                        it.onNext(Trio(CaptureSessionStateEvents.ON_SURFACE_PREPARED, session, surfaceList))
+                        it.onNext(Triple(CaptureSessionStateEvents.ON_SURFACE_PREPARED, session, surfaceList))
                     }
 
                 }, null)

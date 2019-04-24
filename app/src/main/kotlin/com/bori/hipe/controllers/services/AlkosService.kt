@@ -23,7 +23,7 @@
 //import com.bori.hipe.Models.ChatMessage;
 //import com.bori.hipe.Models.Event;
 //import com.bori.hipe.Models.User;
-//import com.bori.hipe.HipeApplication;
+//import com.bori.hipe.MainApplication;
 //import com.bori.hipe.R;
 //
 //import java.util.HashMap;
@@ -69,7 +69,7 @@
 //        resourceInit();
 //
 //        webSocketServiceHashMap = new HashMap<>();
-//        alkosSharedPreferences = getSharedPreferences(HipeApplication.ALKOS_SHARED, MODE_PRIVATE);
+//        alkosSharedPreferences = getSharedPreferences(MainApplication.ALKOS_SHARED, MODE_PRIVATE);
 //        idStringSet = alkosSharedPreferences.getStringSet(SHARED_IDS_KEY, null);
 //        idSet = new HashSet<>();
 //
@@ -146,9 +146,9 @@
 //         * @param events
 //         */
 //        @Override
-//        protected void onEventListResponse(Response response, List<Event> events) {
-//            super.onEventListResponse(response, events);
-//            Log.e(TAG, "onEventListResponse: ");
+//        protected void onEventResponse(Response response, List<Event> events) {
+//            super.onEventResponse(response, events);
+//            Log.e(TAG, "onEventResponse: ");
 //
 //            if (events.size() == 1){
 //                showNotification(events.get(0));

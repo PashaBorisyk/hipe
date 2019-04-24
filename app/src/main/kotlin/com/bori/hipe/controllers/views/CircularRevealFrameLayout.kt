@@ -12,7 +12,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.bori.hipe.HipeApplication
+import com.bori.hipe.MainApplication
 
 
 class CircularRevealFrameLayout @JvmOverloads constructor(
@@ -129,8 +129,8 @@ class CircularRevealFrameLayout @JvmOverloads constructor(
             this.fromX = fromX
             this.fromY = fromY
         } else {
-            this.fromX = event.rawX - (HipeApplication.screenWidth - width)
-            this.fromY = event.rawY - (HipeApplication.screenHeight - height)
+            this.fromX = event.rawX - (MainApplication.screenWidth - width)
+            this.fromY = event.rawY - (MainApplication.screenHeight - height)
         }
         animator.start()
 

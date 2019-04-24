@@ -60,7 +60,11 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
                 Manifest.permission.CAMERA
         )
 
+    }
 
+    override fun onPause() {
+        super.onPause()
+        videoTranslationHelper.shouldRun = false
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -78,7 +82,7 @@ class CameraFragment : HipeBaseFragment(), View.OnClickListener {
         Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview")
 
         val url = URL(getString(R.string.video_stream_url_address))
-        videoTranslationHelper = VideoTranslationHelper(url)
+        videoTranslationHelper = VideoTranslationHelper(VideoTranslationHelper.Mode.ENCODE,url)
         cameraHelper = Camera2Helper()
         cameraHelper.prepareCameraAndStartPreview(this.context!!).flatMap { size ->
             Log.d(TAG, "CameraFragment.prepareCameraAndStartPreview preparing codec")

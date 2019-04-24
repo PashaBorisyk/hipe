@@ -1,34 +1,33 @@
 package com.bori.hipe.controllers.rest.service
 
 import android.util.Log
-import com.bori.hipe.controllers.rest.StringCallback
-import com.bori.hipe.controllers.rest.routes.UserRegistrationRouter
+import com.bori.hipe.controllers.rest.callback.StringCallback
+import com.bori.hipe.controllers.rest.routes.UserRegistrationRoute
 
 object UserRegistrationService {
 
     private const val TAG = "UserRegistrationService"
 
-    lateinit var userRegistrationRouter:UserRegistrationRouter
+    lateinit var userRegistrationRoute: UserRegistrationRoute
 
     fun registerUserStepOne(
+            requestID: Int,
             username: String,
             password: String,
-            requestID: Long
-    ){
+            email: String
+    ) {
         Log.d(TAG, "UserRegistrationService.registerUserStepOne")
-        userRegistrationRouter.registerUserStepOne(username,password)
+        userRegistrationRoute.registerUserStepOne(username, password, email)
                 .enqueue(StringCallback(requestID))
     }
 
     fun registerUserStepTwo(
-            username: String,
-            email: String,
-            publicToken:String,
-            requestID:Long
-    ){
+            requestID: Int,
+            registrationToken: String
+    ) {
         Log.d(TAG, "UserRegistrationService.registerUserStepTwo")
 
-        userRegistrationRouter.registerUserStepTwo(username,email,publicToken)
+        userRegistrationRoute.registerUserStepTwo(registrationToken)
                 .enqueue(StringCallback(requestID))
     }
 

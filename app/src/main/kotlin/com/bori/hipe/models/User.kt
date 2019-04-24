@@ -1,26 +1,20 @@
 package com.bori.hipe.models
 
-import com.google.gson.annotations.Expose
+import java.io.Serializable
 
 data class User(
-        @Expose
-        val id: Long = 1L,
-        @Expose
-        val username: String = "pashaborisyk",
-        val password: String = "Puschinarij1",
-        @Expose
-        val name: String = "pasha",
-        @Expose
-        val surname: String = "borisyk",
-        val isMale: Boolean = true,
-        val isOnline: Boolean = false,
-        val status: String = "Lets dance",
-        val latitude: Double = 10.0,
-        val longitude: Double = 10.0,
-        @Expose
-        val imageId: Long = 1L
-) : java.io.Serializable {
-    companion object {
-        val thisUser: User = User()
-    }
-}
+        val id: Int = 0,
+        val username: String = "",
+        val token: String = "",
+        val name: String = "",
+        val surname: String = "",
+        val sex: UserSex = UserSex.ANY,
+        @JvmField
+        val isOnline: Boolean = true,
+        val status: String = "",
+        val latitude: Double = 0.0,
+        val longitude: Double = 0.0,
+        val imageID: Long = 1L,
+        val email: String = "",
+        val state: UserState = UserState.REGISTRATION
+) : Serializable

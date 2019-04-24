@@ -10,7 +10,6 @@ import android.widget.TextView
 import com.bori.hipe.R
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
-import com.bori.hipe.models.ChatMessageNOSQL
 import com.bori.hipe.models.Event
 import com.bori.hipe.util.extensions.findViewById
 import com.bori.hipe.util.extensions.setContentView
@@ -49,7 +48,6 @@ class AllChatsFragment : HipeBaseFragment() {
     internal inner class EventChatsAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<EventChatsAdapter.VH>(), View.OnClickListener {
 
         private val eventList = arrayListOf<Event>()
-        private val lastChatMessages = arrayListOf<ChatMessageNOSQL>()
         private val layoutInflater: LayoutInflater = activity!!.layoutInflater
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -58,13 +56,9 @@ class AllChatsFragment : HipeBaseFragment() {
         override fun onBindViewHolder(holder: VH, position: Int) {
 
             val event = eventList[position]
-            val chatMessage = lastChatMessages[position]
 
             holder.v.tag = position
 
-            holder.membersCount.text = "${chatMessage.users.size} участников"
-            holder.eventName.text = event.localName
-            holder.lastMessage.text = "${chatMessage} : ${chatMessage.message}"
         }
 
         override fun getItemCount() = eventList.size

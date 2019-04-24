@@ -11,23 +11,22 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.CreateNewEventActivity
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.UserService
-import com.bori.hipe.models.HipeImage
-import com.bori.hipe.models.Tuple
+import com.bori.hipe.models.Image
 import com.bori.hipe.models.User
 import com.google.android.material.internal.CheckableImageButton
 import de.hdodenhof.circleimageview.CircleImageView
 
-private const val GET_FRIENDS_LIST_ID = 14L
+private const val GET_FRIENDS_LIST_ID = 14
 private const val TAG = "FriendsLstDlgFrg"
 
 class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
 
     private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
     private lateinit var adapter: Adapter
-    private var addedIds = hashSetOf<Long>()
+    private var addedIds = hashSetOf<Int>()
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -39,7 +38,7 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
         recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         adapter = Adapter()
         recyclerView.adapter = adapter
-        RestService.registerCallback(adapter.restCallback)
+        RestCallbackRepository.registerCallback(adapter.restCallback)
 
         builder.setCustomTitle(activity!!.layoutInflater.inflate(R.layout.add_friends_dialog_title, null, false))
         builder.setView(rootView)
@@ -54,12 +53,12 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
         super.onDestroyView()
         Log.d(TAG, "FriendsListDialogFragment.onDestroyView")
 
-        RestService.unregisterCallback(adapter.restCallback)
+        RestCallbackRepository.unregisterCallback(adapter.restCallback)
     }
 
     private inner class Adapter internal constructor() : androidx.recyclerview.widget.RecyclerView.Adapter<Adapter.VH>(), View.OnClickListener {
 
-        private val users = arrayListOf<Tuple<User, HipeImage>>()
+        private val users = arrayListOf<Pair<User, Image>>()
         private val layoutInflater: LayoutInflater
 
         init {
@@ -67,7 +66,7 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
 
             addedIds = (activity as CreateNewEventActivity).addedUsers
 
-            UserService.getFriendsList(GET_FRIENDS_LIST_ID, User.thisUser.id)
+            UserService.getFriends(GET_FRIENDS_LIST_ID, User().id)
             layoutInflater = activity!!.layoutInflater
 
         }
@@ -82,9 +81,9 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
 
 //            ImageLoader.getInstance().displayImage(entry.smallImage.url, holder.userPhoto)
 
-            holder.checkableImageButton.isChecked = addedIds.contains(entry._1.id)
+            holder.checkableImageButton.isChecked = addedIds.contains(entry.first.id)
 
-            holder.nickame.text = entry._1.username
+            holder.nickame.text = entry.first.username
             holder.rootView.tag = position
             holder.rootView.setOnClickListener(this)
 
@@ -99,16 +98,16 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
             if (view.tag != null && view.tag is Int) {
                 val tag = view.tag as Int
 
-                val userId = users[tag]._1.id
+                val userID = users[tag].first.id
 
-                if (addedIds.contains(userId)) {
+                if (addedIds.contains(userID)) {
 
-                    addedIds.remove(userId)
+                    addedIds.remove(userID)
                     (view.findViewById<CheckableImageButton>(R.id.checkable_user_added)).isChecked = false
 
                 } else {
 
-                    addedIds.add(userId)
+                    addedIds.add(userID)
                     (view.findViewById<CheckableImageButton>(R.id.checkable_user_added)).isChecked = true
 
                 }
@@ -121,14 +120,14 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
 
         }
 
-        val restCallback = object : RestCallbackAdapter() {
+        val restCallback = object : RestCallback() {
 
-            override fun onUserListResponse(requestID: Long, users: List<Tuple<User, HipeImage>>?, serverStatus: Int) {
-                Log.d(TAG, "onUserListResponse() called with: users = [$users],  serverStatus = [$serverStatus]")
+            override fun onUserResponse(requestID: Int, users: List<Pair<User, Image>>?, responseStatus: Int) {
+                Log.d(TAG, "onUserResponse() called with: users = [$users],  serverStatus = [$responseStatus]")
                 users ?: return
                 if (users.isNotEmpty()) {
 
-                    Log.e(TAG, "onUserListResponse:  users list not null ")
+                    Log.e(TAG, "onUserResponse:  users list not null ")
 
                     this@Adapter.users.addAll(users)
                     notifyDataSetChanged()
@@ -136,20 +135,16 @@ class FriendsListDialogFragment : androidx.fragment.app.DialogFragment() {
                 }
             }
 
-            override fun onFailure(requestID: Long, t: Throwable) {
-                Log.d(TAG, "onFailure: ")
+            override fun onFailure(requestID: Int, t: Throwable) {
+                Log.e(TAG, "onFailure: ",t)
             }
 
-            override fun onOk(requestID: Long) {
-                Log.d(TAG, "onOk: ")
-            }
         }
 
         internal inner class VH(val rootView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(rootView) {
             val userPhoto: CircleImageView = rootView.findViewById(R.id.user_photo)
             val nickame: TextView = rootView.findViewById(R.id.nickname)
             val checkableImageButton: CheckableImageButton = rootView.findViewById(R.id.checkable_user_added)
-
         }
 
     }

@@ -3,8 +3,6 @@ package com.bori.hipe.controllers.messenger
 import android.util.Log
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
 import com.bori.hipe.controllers.receiver.BootReciever
-import com.bori.hipe.models.ChatMessageNOSQL
-import com.google.gson.Gson
 import com.orm.SugarRecord
 import de.tavendo.autobahn.WebSocketConnection
 import de.tavendo.autobahn.WebSocketHandler
@@ -13,13 +11,12 @@ object WebSocketConnector : WebSocketConnection() {
 
     private const val TAG = "WebSocketConnector.kt"
     const val URL = "ws://192.168.100.41:8081/"
-    private val gson = Gson()
 
     private val messageCallBacks = linkedSetOf<MessageCallbackAdapter>()
 
     fun createConncetion() {
 
-        Log.d(TAG,"Creating connection with : $URL")
+        Log.d(TAG,"Creating connection with: $URL")
 
         if (isConnected)
             return
@@ -64,7 +61,7 @@ object WebSocketConnector : WebSocketConnection() {
         })
     }
 
-    fun sendMessage(chatMessageNOSQL: ChatMessageNOSQL): Boolean {
+    fun sendMessage(chatMessageNOSQL: Any): Boolean {
 
         Log.d(TAG, "WebSocketConnector.sendMessage")
 
@@ -73,7 +70,7 @@ object WebSocketConnector : WebSocketConnection() {
             return false
         }
         try {
-            sendTextMessage(gson.toJson(chatMessageNOSQL))
+            sendTextMessage(chatMessageNOSQL.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             return false

@@ -15,14 +15,15 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat.getColor
-import com.bori.hipe.HipeApplication
+import com.bori.hipe.MainApplication
 import com.bori.hipe.R
 import com.bori.hipe.controllers.activities.MainActivity
 import com.bori.hipe.controllers.activities.SignInActivity
 import com.bori.hipe.controllers.crypto.encode
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
+import com.bori.hipe.controllers.rest.routes.Route
 import com.bori.hipe.controllers.rest.service.UserRegistrationService
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.controllers.views.CircularRevealFrameLayout
@@ -44,9 +45,9 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
 
     companion object {
         private const val TAG = "LoginFragment.kt"
-        private const val LOGIN_USER_REQ_ID = 8L
-        private const val REGISTER_STEP_ONE_REQ_USER_ID = 9L
-        private const val REGISTER_STEP_TWO_REQ_USER_ID = 10L
+        private const val LOGIN_USER_REQ_ID = 8
+        private const val REGISTER_STEP_ONE_REQ_USER_ID = 9
+        private const val REGISTER_STEP_TWO_REQ_USER_ID = 10
         private const val SNACK_BAR_ANIMATION_DURATION = 3000
         private const val LIFT_ANIMATION_DURATION = 250L
         private const val WINDOW_ELEMENT_ANIMATION_DURATION = 200L
@@ -56,7 +57,7 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
     //Main views
     private lateinit var loginButton: FlippingEdgesView
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var restCallback: LoginActivityRestCallbackAdapter
+    private lateinit var restCallback: LoginActivityRestCallback
     private lateinit var createAccountText: View
     private lateinit var mainLayout: View
     private lateinit var contentLayout: View
@@ -94,14 +95,14 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         setContentView(R.layout.fragment_login, inflater, container)
         init()
         setInputsValidator()
-        RestService.registerCallback(restCallback)
+        RestCallbackRepository.registerCallback(restCallback)
         return null
     }
 
     override fun onDestroy() {
         Log.d(TAG, "LoginFragment.onDestroy")
         super.onDestroy()
-        RestService.unregisterCallback(restCallback)
+        RestCallbackRepository.unregisterCallback(restCallback)
     }
 
     private fun init() {
@@ -153,7 +154,7 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         createAccountText.setOnClickListener(this)
 
         loginButton.setOnClickListener(this)
-        restCallback = LoginActivityRestCallbackAdapter()
+        restCallback = LoginActivityRestCallback()
         snackbar = Snackbar.make(mainLayout, R.string.no_connection_detected, Snackbar.LENGTH_LONG)
         snackbar.duration = BaseTransientBottomBar.LENGTH_LONG
 
@@ -280,21 +281,21 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
         activity?.finish()
     }
 
-    inner class LoginActivityRestCallbackAdapter : RestCallbackAdapter() {
+    inner class LoginActivityRestCallback : RestCallback() {
 
-        override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
-            Log.d(TAG, "LoginActivityRestCallbackAdapter.onSimpleResponse")
-            Log.d(TAG, " onSimple Response with code:  $serverCode; Response : $response")
+        override fun onSimpleResponse(requestID: Int, response: Any?, responseStatus: Int) {
+            Log.d(TAG, "LoginActivityRestCallback.onSimpleResponse")
+            Log.d(TAG, " onSimple Response with code:  $responseStatus; Response : $response")
 
             when (requestID) {
-                LOGIN_USER_REQ_ID -> if (serverCode == Status.OK) {
-                    HipeApplication.sharedPreferences.edit().putString(Const.USER_PUBLIC_TOKEN, response as String).apply()
+                LOGIN_USER_REQ_ID -> if (responseStatus == Status.OK) {
+                    MainApplication.sharedPreferences?.edit()?.putString(Route.TOKEN, response as String)?.apply()
                     startActivity(Intent(context, MainActivity::class.java))
-                } else if (serverCode == Status.NOT_FOUND) {
+                } else if (responseStatus == Status.NOT_FOUND) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
                     loginButton.stopLoading()
                     contentLayout.animate()
-                            .translationY(-48f * HipeApplication.pixelsPerDp)
+                            .translationY(-48f * MainApplication.pixelsPerDp)
                             .setListener(liftAnimationListener)
                             .setDuration(LIFT_ANIMATION_DURATION)
                             .setStartDelay(0)
@@ -302,10 +303,10 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
 
                     snackbar.setText(getString(R.string.invalid_credentials)).show()
                 }
-                REGISTER_STEP_ONE_REQ_USER_ID -> if (serverCode == Status.CREATED) {
-                    HipeApplication.sharedPreferences.edit().putString(Const.USER_PUBLIC_TOKEN, response as String).apply()
+                REGISTER_STEP_ONE_REQ_USER_ID -> if (responseStatus == Status.CREATED) {
+                    MainApplication.sharedPreferences?.edit()?.putString(Const.USER_PUBLIC_TOKEN, response as String)?.apply()
                     showWindow()
-                } else if (serverCode == Status.CONFLICT) {
+                } else if (responseStatus == Status.CONFLICT) {
                     loginButton.circleColor = resources.getColor(R.color.colorAccent)
                     loginButton.stopLoading()
                     usernameInputLayout.error = getString(R.string.user_already_exists)
@@ -318,15 +319,8 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
             }
         }
 
-        override fun onOk(requestID: Long) {
-            Log.d(TAG, "LoginActivityRestCallbackAdapter.onOk")
-            loginButton.circleColor = resources.getColor(R.color.allowed)
-            loginButton.stopLoading()
-            Log.d(TAG, "onOk() called")
-        }
-
-        override fun onFailure(requestID: Long, t: Throwable) {
-            Log.d(TAG, "LoginActivityRestCallbackAdapter.onFailure")
+        override fun onFailure(requestID: Int, t: Throwable) {
+            Log.d(TAG, "LoginActivityRestCallback.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
             loginButton.circleColor = resources.getColor(R.color.colorAccent)
             loginButton.stopLoading()
@@ -360,12 +354,13 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
                     UserRegistrationService.registerUserStepOne(
                             requestID = REGISTER_STEP_ONE_REQ_USER_ID,
                             username = username.text.toString(),
+                            email = username.text.toString(),
                             password = encode(password.text.toString()
                             )
 
                     )
                 } else
-                    UserService.loginUser(
+                    UserService.login(
                             requestID = LOGIN_USER_REQ_ID,
                             username = username.text.toString(),
                             password = encode(password.text.toString())
@@ -450,7 +445,7 @@ class LoginFragment : HipeBaseFragment(), View.OnClickListener {
 
         override fun onAnimationEnd(animation: Animator?) {
             Log.d(TAG, "LiftAnimationListener.onAnimationEnd")
-            if (contentLayout.translationY == -48f * HipeApplication.pixelsPerDp) {
+            if (contentLayout.translationY == -48f * MainApplication.pixelsPerDp) {
                 contentLayout.animate().translationY(0f).startDelay = SNACK_BAR_ANIMATION_DURATION.toLong()
             }
         }

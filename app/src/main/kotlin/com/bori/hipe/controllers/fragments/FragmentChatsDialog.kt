@@ -14,17 +14,14 @@ import androidx.appcompat.widget.Toolbar
 import com.bori.hipe.R
 import com.bori.hipe.controllers.messenger.WebSocketConnector
 import com.bori.hipe.controllers.messenger.callback.MessageCallbackAdapter
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
-import com.bori.hipe.models.ChatMessageNOSQL
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.models.User
 import com.bori.hipe.util.Const
-import com.google.gson.Gson
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import kotlinx.android.synthetic.main.fragment_chats_dialog.*
-import java.util.*
 
 class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListener {
 
@@ -59,7 +56,7 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
-        nickname = User.thisUser.username
+        nickname = User().username
         nickname = "pashaborisyk"
         url = getActivity()!!.getSharedPreferences(Const.HIPE_APPLICATION_SHARED_PREFERENCES, Activity.MODE_PRIVATE).getString(Const.USER_IMAGE_SMALL, null)
 
@@ -73,7 +70,7 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
         val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         linearLayoutManager.stackFromEnd = true
         recyclerView.layoutManager = linearLayoutManager
-        RestService.registerCallback(messagesAdapter.restCallback)
+        RestCallbackRepository.registerCallback(messagesAdapter.restCallback)
         WebSocketConnector.registerCallback(messagesAdapter.messageCallback)
 
         return v
@@ -84,7 +81,7 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
         super.onDestroyView()
         Log.d(TAG, "FragmentChatsDialog.onDestroyView")
 
-        RestService.unregisterCallback(messagesAdapter.restCallback)
+        RestCallbackRepository.unregisterCallback(messagesAdapter.restCallback)
         WebSocketConnector.unregisterCallback(messagesAdapter.messageCallback)
 
     }
@@ -96,14 +93,7 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
 
             R.id.send_message_button -> {
 
-                val myChatMessage = ChatMessageNOSQL(
-
-                        eventID = id,
-                        mills = System.currentTimeMillis(),
-                        senderNickname = nickname,
-                        senderSmallImageUrl = url,
-                        message = message.text.toString()
-                )
+                val myChatMessage = Any()
 
                 WebSocketConnector.sendMessage(myChatMessage)
                 message.setText("")
@@ -117,7 +107,6 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
 
     private inner class MessagesAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<MessagesAdapter.VH>(), View.OnClickListener {
 
-        private val chatMessages = arrayListOf<ChatMessageNOSQL>()
         private val layoutInflater: LayoutInflater = activity!!.layoutInflater
 
         private val imageLoader = ImageLoader.getInstance()
@@ -139,25 +128,12 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
         override fun onBindViewHolder(holder: VH, position: Int) {
             Log.d(TAG, "MessagesAdapter.onBindViewHolder")
 
-            val chatMessage = chatMessages[position]
-
-            imageLoader.displayImage(chatMessage.senderSmallImageUrl, holder.userPhoto, displayImageOptions)
-            holder.userPhoto.tag = chatMessage.senderNickname
-            holder.userPhoto.setOnClickListener(this)
-            holder.nickname.text = chatMessage.senderNickname
-            holder.time.text = Date(chatMessage.mills).toString()
-            holder.message.text = chatMessage.message
-
         }
 
         override fun getItemCount() = 10
 
         override fun getItemViewType(position: Int): Int {
-
-            if (chatMessages[position].senderNickname == nickname)
-                return TYPE_MINE
             return TYPE_USER
-
         }
 
         val messageCallback = object : MessageCallbackAdapter() {
@@ -166,12 +142,7 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
                 Log.d(TAG, "MessagesAdapter.onTextMessage")
 
                 try {
-                    val chatMessage = Gson().fromJson<ChatMessageNOSQL>(payload, ChatMessageNOSQL::class.java)
-                    if (!chatMessage.informative) {
-                        chatMessages.add(0, chatMessage)
-                        notifyItemInserted(0)
-                    }
-
+                    notifyItemInserted(0)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -180,15 +151,10 @@ class FragmentChatsDialog : androidx.fragment.app.Fragment(), View.OnClickListen
 
         }
 
-        val restCallback = object : RestCallbackAdapter() {
+        val restCallback = object : RestCallback() {
 
-            override fun onFailure(requestID: Long, t: Throwable) {
+            override fun onFailure(requestID: Int, t: Throwable) {
                 Log.d(TAG, "MessagesAdapter.onFailure")
-
-            }
-
-            override fun onOk(requestID: Long) {
-                Log.d(TAG, "MessagesAdapter.onOk")
 
             }
 

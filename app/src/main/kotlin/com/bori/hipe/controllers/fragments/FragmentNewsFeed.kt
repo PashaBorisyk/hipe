@@ -10,22 +10,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bori.hipe.HipeApplication
-import com.bori.hipe.HipeApplication.Companion.IS_KIT_KAT
-import com.bori.hipe.HipeApplication.Companion.IS_LOLLIPOP
+import com.bori.hipe.MainApplication
+import com.bori.hipe.MainApplication.Companion.IS_KIT_KAT
+import com.bori.hipe.MainApplication.Companion.IS_LOLLIPOP
 import com.bori.hipe.R
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.EventService
 import com.bori.hipe.models.Event
-import com.bori.hipe.models.HipeImage
-import com.bori.hipe.models.Tuple
+import com.bori.hipe.models.Image
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
 import com.nostra13.universalimageloader.core.assist.ImageScaleType
 
 private const val TAG = "FragmentNewsFeed.kt"
-private const val GET_EVENTS_ID = 1L
+private const val GET_EVENTS_ID = 1
 
 class FragmentNewsFeed : androidx.fragment.app.Fragment() {
 
@@ -55,9 +54,9 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = recyclerViewAdapter
 
-        val halfOfScreen = HipeApplication.screenHeight / 2
-        val doubledMargin = 15 * HipeApplication.pixelsPerDp * 2
-        val startWidth = HipeApplication.screenWidth - doubledMargin
+        val halfOfScreen = MainApplication.screenHeight / 2
+        val doubledMargin = 15 * MainApplication.pixelsPerDp * 2
+        val startWidth = MainApplication.screenWidth - doubledMargin
         val maxMargin = doubledMargin * 0.95f
 
         recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
@@ -81,7 +80,7 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
             }
         })
 
-        RestService.registerCallback(recyclerViewAdapter.restCallbackAdapter)
+        RestCallbackRepository.registerCallback(recyclerViewAdapter.RestCallback)
         recyclerViewAdapter.update()
 
         return v
@@ -91,7 +90,7 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
         super.onDestroyView()
         Log.d(TAG, "FragmentNewsFeed.onDestroyView")
 
-        RestService.unregisterCallback(recyclerViewAdapter.restCallbackAdapter)
+        RestCallbackRepository.unregisterCallback(recyclerViewAdapter.RestCallback)
     }
 
     private fun test() {
@@ -101,7 +100,7 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
 
     private inner class RecyclerViewAdapter internal constructor() : androidx.recyclerview.widget.RecyclerView.Adapter<RecyclerViewAdapter.VH>(), View.OnClickListener {
 
-        private val events = mutableListOf<Tuple<Event, HipeImage>>()
+        private val events = mutableListOf<Pair<Event, Image>>()
 
         private val layoutInflater: LayoutInflater
         private val imageLoader = ImageLoader.getInstance()
@@ -120,11 +119,11 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
 
         }
 
-        fun update() = EventService.getEvents(
+        fun update() = EventService.get(
                 requestID = GET_EVENTS_ID,
                 latitude = 10.0,
-                longtitude = 10.0,
-                plastReadEventId = 0
+                longitude = 10.0,
+                lastReadEventID = 0
         )
 
         override fun onViewAttachedToWindow(holder: VH) {
@@ -166,13 +165,13 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
 
             val entry = events[position - 1]
 
-            imageLoader.displayImage(entry._1.creatorsImageUrl, holder.userPhoto, displayImageOptions)
+            imageLoader.displayImage(entry.first.creatorsImageUrl, holder.userPhoto, displayImageOptions)
 
             if (RowType.values()[position] != RowType.EMPTY)
-                imageLoader.displayImage(entry._2.urlLarge, holder.eventPhoto, displayImageOptions)
+                imageLoader.displayImage(entry.second.urlLarge, holder.eventPhoto, displayImageOptions)
 
-            holder.nickName?.text = entry._1.creatorNickname
-            holder.description?.text = entry._1.description
+            holder.nickName?.text = entry.first.ownerUsername
+            holder.description?.text = entry.first.description
 
             holder.buttonAdd?.tag = position - 1
             holder.buttonAdd?.setOnClickListener(this)
@@ -194,10 +193,7 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
             if (IS_KIT_KAT && position == 0)
                 return RowType.HEADER.ordinal
 
-            if (!events[position - 1]._2.exist)
-                return RowType.EMPTY.ordinal
-
-            val ratio = events[position - 1]._2.ratio
+            val ratio = events[position - 1].second.ratio
             return if (ratio > 1)
                 RowType.HORIZONTAL.ordinal
             else
@@ -266,11 +262,11 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
             }
         }
 
-        internal var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
+        internal var RestCallback: RestCallback = object : RestCallback() {
 
-            override fun onEventListResponse(requestID: Long, events: List<Tuple<Event, HipeImage>>?, serverStatus: Int) {
-                super.onEventListResponse(requestID, events, serverStatus)
-                Log.d(TAG, "onEventListResponse() called with: events = [$events], status = [$serverStatus]")
+            override fun onEventResponse(requestID: Int, events: List<Pair<Event, Image>>?, responseStatus: Int) {
+                super.onEventResponse(requestID, events, responseStatus)
+                Log.d(TAG, "onEventResponse() called with: events = [$events], status = [$responseStatus]")
                 events ?: return
 
                 val oldSize = this@RecyclerViewAdapter.events.size + 1
@@ -287,13 +283,10 @@ class FragmentNewsFeed : androidx.fragment.app.Fragment() {
 
             }
 
-            override fun onFailure(requestID: Long, t: Throwable) {
+            override fun onFailure(requestID: Int, t: Throwable) {
                 Log.d(TAG, "onFailure() called with: t = [$t]")
             }
 
-            override fun onOk(requestID: Long) {
-                Log.d(TAG, "onOk() called")
-            }
         }
     }
 }

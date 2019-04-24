@@ -1,46 +1,70 @@
 package com.bori.hipe.controllers.rest.service
 
 import android.util.Log
-import com.bori.hipe.HipeApplication
-import com.bori.hipe.controllers.rest.EventListCallback
-import com.bori.hipe.controllers.rest.LongCallback
-import com.bori.hipe.controllers.rest.routes.EventRouter
+import com.bori.hipe.MainApplication
+import com.bori.hipe.controllers.rest.callback.*
+import com.bori.hipe.controllers.rest.callback.EventCallback
+import com.bori.hipe.controllers.rest.callback.EventListCallback
+import com.bori.hipe.controllers.rest.callback.LongCallback
+import com.bori.hipe.controllers.rest.callback.LongCollectionCallback
+import com.bori.hipe.controllers.rest.callback.VoidCallback
+import com.bori.hipe.controllers.rest.routes.EventRoute
 import com.bori.hipe.models.Event
 
 object EventService {
 
     private const val TAG = "EventService"
 
-    lateinit var eventEvoke: EventRouter
+    lateinit var eventRouter: EventRoute
 
-    fun createNewEvent(requestID: Long, event: Event) {
-        Log.d(TAG, "createNewEvent() called with: event = [$event]")
-        eventEvoke.createEvent(event).enqueue(LongCallback(requestID))
+    fun create(requestID: Int, event: Event,userIDs:IntArray) {
+        Log.d(TAG, "create() called with: event = [$event]")
+        eventRouter.create(event to userIDs, MainApplication.getToken()).enqueue(LongCallback(requestID))
     }
 
-    fun updateEvent(requestID: Long, event: Event) {
-        Log.d(TAG, "updateEvent() called with: event = [$event]")
-        eventEvoke.updateEvent(event).enqueue(LongCallback(requestID))
+    fun update(requestID: Int, event: Event) {
+        Log.d(TAG, "update() called with: event = [$event]")
+        eventRouter.update(event,MainApplication.getToken()).enqueue(VoidCallback(requestID))
     }
 
-    fun cancelEvent(requestID: Long, eventId: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "cancelEvent() called with: eventId = [$eventId]")
-        eventEvoke.cancelEvent(userId, eventId).enqueue(LongCallback(requestID))
+    fun getByID(requestID: Int, eventID: Long) {
+        Log.d(TAG, "getByID() called with eventID = [$eventID]")
+        eventRouter.getByID(eventID,MainApplication.getToken()).enqueue(EventCallback(requestID))
     }
 
-    fun addMemberToEvent(requestID: Long, eventId: Long, advancedUserId: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "addMemberToEvent() called with: eventId = [$eventId], username = [$userId], advancedUserId = [$advancedUserId]")
-        eventEvoke.addMemberToEvent(eventId, userId, advancedUserId).enqueue(LongCallback(requestID))
+    fun getByOwnerID(requestID: Int, ownerID: Int) {
+        Log.d(TAG, "getByOwnerID() called with ownerID = [$ownerID]")
+        eventRouter.getByOwnerID(ownerID,MainApplication.getToken()).enqueue(EventListCallback(requestID))
     }
 
-    fun getEvents(requestID: Long, latitude: Double, longtitude: Double, plastReadEventId: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getEvents() called with: userId = [$userId], latitude = [$latitude], longitude = [$longtitude], plastReadEventId = [$plastReadEventId]")
-        eventEvoke.getEvents(userId, latitude, longtitude, plastReadEventId).enqueue(EventListCallback(requestID))
+    fun getByMemberID(requestID: Int, userID: Int) {
+        Log.d(TAG, "getEventByuserID() called with: userID = [$userID]")
+        eventRouter.getByUserID(userID,MainApplication.getToken()).enqueue(EventListCallback(requestID))
     }
 
-    fun getByMemberId(requestID: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getEventByUserID() called with: userId = [$userId]")
-        eventEvoke.getByMember(userId).enqueue(EventListCallback(requestID))
+    fun getIDsByUserID(requestID: Int, userID: Int) {
+        Log.d(TAG, "getIDsByUserID() called with userID = [$userID]")
+        eventRouter.getIDsByUserID(userID,MainApplication.getToken()).enqueue(LongCollectionCallback(requestID))
+    }
+
+    fun get(requestID: Int, latitude: Double, longitude: Double, lastReadEventID: Long) {
+        Log.d(TAG, "get() called with:latitude = [$latitude], longitude = [$longitude], lastReadEventID = [$lastReadEventID]")
+        eventRouter.get(latitude, longitude, lastReadEventID,MainApplication.getToken()).enqueue(EventListCallback(requestID))
+    }
+
+    fun cancel(requestID: Int, eventID: Long) {
+        Log.d(TAG, "cancel() called with: eventID = [$eventID]")
+        eventRouter.cancel(eventID,MainApplication.getToken()).enqueue(VoidCallback(requestID))
+    }
+
+    fun removeUser(requestID: Int, eventID: Long, userID: Int) {
+        Log.d(TAG, "removeUser() called with eventID = [$eventID], userID = [$userID]")
+        eventRouter.removeUser(eventID, userID,MainApplication.getToken()).enqueue(VoidCallback(requestID))
+    }
+
+    fun addUser(requestID: Int, eventId: Long, userID: Int) {
+        Log.d(TAG, "addUser() called with: eventId = [$eventId], username = [$userID]")
+        eventRouter.addUser(eventId, userID,MainApplication.getToken()).enqueue(VoidCallback(requestID))
     }
 
 }

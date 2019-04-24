@@ -12,15 +12,15 @@ import android.view.View.GONE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bori.hipe.R
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.util.web.Status
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
 //https://developers.facebook.com/docs/facebook-login/android/
 
-private const val CHECK_USER_EXISTENCE_ID = 3L
+private const val CHECK_USER_EXISTENCE_ID = 3
 
 private const val TAG = "SignInActivity"
 private const val SEINING_AND_SCALING_DURATION = 200L
@@ -41,14 +41,14 @@ class SignInActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_sign_in)
         init()
-        RestService.registerCallback(restCallback)
+        RestCallbackRepository.registerCallback(restCallback)
 
     }
 
     override fun onDestroy() {
         Log.d(TAG, "SignInActivity.onDestroy")
         super.onDestroy()
-        RestService.unregisterCallback(restCallback)
+        RestCallbackRepository.unregisterCallback(restCallback)
     }
 
     private fun init() {
@@ -188,15 +188,15 @@ class SignInActivity : AppCompatActivity() {
         Log.d(TAG, "SignInActivity.buildAndRegisterUser")
     }
 
-    private val restCallback = object : RestCallbackAdapter() {
+    private val restCallback = object : RestCallback() {
 
         var photoCreationsCount = 0
 
-        override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+        override fun onSimpleResponse(requestID: Int, response: Any?, responseStatus: Int) {
             Log.d(TAG, "SignInActivity.onSimpleResponse")
-            Log.d(TAG, "onSimpleResponse: $serverCode")
+            Log.d(TAG, "onSimpleResponse: $responseStatus")
 
-            when (serverCode) {
+            when (responseStatus) {
                 Status.FOUND -> {
                     Log.e(TAG, "onSimpleResponse: USER_ALREADY_EXIST")
 
@@ -220,16 +220,10 @@ class SignInActivity : AppCompatActivity() {
             }
         }
 
-        override fun onFailure(requestID: Long, t: Throwable) {
+        override fun onFailure(requestID: Int, t: Throwable) {
             Log.d(TAG, "SignInActivity.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
             Toast.makeText(this@SignInActivity, "Error!", Toast.LENGTH_SHORT).show()
-            mainTintViewAnimateOff()
-            stopImageLoadingAnimation()
-        }
-
-        override fun onOk(requestID: Long) {
-            Log.d(TAG, "SignInActivity.onOk")
             mainTintViewAnimateOff()
             stopImageLoadingAnimation()
         }

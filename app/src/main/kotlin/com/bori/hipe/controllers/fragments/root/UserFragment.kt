@@ -14,13 +14,12 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.bori.hipe.R
 import com.bori.hipe.controllers.fragments.base.HipeBaseFragment
-import com.bori.hipe.controllers.rest.RestService
-import com.bori.hipe.controllers.rest.callbacks.RestCallbackAdapter
+import com.bori.hipe.controllers.rest.callback.RestCallback
+import com.bori.hipe.controllers.rest.callback.RestCallbackRepository
 import com.bori.hipe.controllers.rest.service.EventService
 import com.bori.hipe.controllers.rest.service.UserService
 import com.bori.hipe.models.Event
-import com.bori.hipe.models.HipeImage
-import com.bori.hipe.models.Tuple
+import com.bori.hipe.models.Image
 import com.bori.hipe.models.User
 import com.bori.hipe.util.Const
 import com.bori.hipe.util.extensions.setContentView
@@ -40,10 +39,10 @@ class UserFragment : HipeBaseFragment() {
         private const val CROSSFADE_DURATION: Long = 500
         private const val CROSSFADE_DELAY: Long = 1500
 
-        private const val GET_USER_BY_ID = 12L
-        private const val GET_EVENTS_BY_MEMBER_ID = 14L
-        private const val GET_FRIENDS_LIST_ID = 16L
-        private const val ADD_USER_TO_FRIEND_ID = 13L
+        private const val GET_USER_BY_ID = 12
+        private const val GET_EVENTS_BY_MEMBER_ID = 14
+        private const val GET_FRIENDS_LIST_ID = 16
+        private const val ADD_USER_TO_FRIEND_ID = 13
         private const val RECYCLER_VIEW_ANIMATION_DURATION = 100L
 
     }
@@ -55,7 +54,7 @@ class UserFragment : HipeBaseFragment() {
         NONE, TYPE_USERS, TYPE_EVENTS
     }
 
-    private var userID: Long = 0
+    private var userID: Int = 0
     private val imageLoader = ImageLoader.getInstance()
     private var dataType = DataType.TYPE_USERS
 
@@ -66,12 +65,12 @@ class UserFragment : HipeBaseFragment() {
         setContentView(R.layout.activity_user, inflater, container)
         init()
 
-        userID = arguments!![Const.ADVANCED_USER_ID] as Long
+        userID = arguments!![Const.ADVANCED_USER_ID] as Int
 
-        RestService.registerCallback(restCallbackAdapter)
-        UserService.getUserById(GET_USER_BY_ID, userID)
-        EventService.getByMemberId(GET_EVENTS_BY_MEMBER_ID, userID)
-        UserService.getFriendsList(GET_FRIENDS_LIST_ID, userID)
+        RestCallbackRepository.registerCallback(restCallback)
+        UserService.getById(GET_USER_BY_ID, userID)
+        EventService.getByMemberID(GET_EVENTS_BY_MEMBER_ID, userID)
+        UserService.getFriends(GET_FRIENDS_LIST_ID, userID)
 
         return rootView
     }
@@ -80,7 +79,7 @@ class UserFragment : HipeBaseFragment() {
         super.onDestroy()
 
         Log.d(TAG, "UserFragment.onDestroy")
-        RestService.unregisterCallback(restCallbackAdapter)
+        RestCallbackRepository.unregisterCallback(restCallback)
     }
 
     private fun init() {
@@ -125,10 +124,6 @@ class UserFragment : HipeBaseFragment() {
 
         } else if (id == R.id.user_activity_button_follow || id == R.id.follow_indicator) {
 
-            UserService.addUserToFriend(requestID = ADD_USER_TO_FRIEND_ID,
-                    userId = User.thisUser.id,
-                    advancedUserId = userID)
-
         } else if (id == R.id.user_activity_button_show_events || id == R.id.user_events_indicator) {
 
             animateDataView()
@@ -171,43 +166,39 @@ class UserFragment : HipeBaseFragment() {
 
     }
 
-    private var restCallbackAdapter: RestCallbackAdapter = object : RestCallbackAdapter() {
+    private var restCallback: RestCallback = object : RestCallback() {
 
-        override fun onFailure(requestID: Long, t: Throwable) {
+        override fun onFailure(requestID: Int, t: Throwable) {
 
             Log.d(TAG, "UserFragment.onFailure")
             Log.d(TAG, "onFailure() called with: t = [$t]")
 
         }
 
-        override fun onOk(requestID: Long) {
-            Log.d(TAG, "UserFragment.onOk")
-        }
-
-        override fun onUserResponse(requestID: Long, user: Tuple<User, HipeImage>?, serverStatus: Int) {
+        override fun onUserResponse(requestID: Int, user: Pair<User, Image>?, responseStatus: Int) {
 
             android.util.Log.d(TAG, "UserFragment.onUserResponse")
 
-            Log.d(TAG, "onUserListResponse() called with: status = [$serverStatus]")
+            Log.d(TAG, "onUserResponse() called with: status = [$responseStatus]")
 
             user ?: return
 
-            val loadedUser = user._1
-            imageLoader.displayImage(user._2.urlMedium, user_photo, displayImageOptions)
+            val loadedUser = user.first
+            imageLoader.displayImage(user.second.urlMedium, user_photo, displayImageOptions)
             nickname.text = loadedUser.username
             name_surname.text = "${loadedUser.name} ${loadedUser.surname}"
             user_status.text = loadedUser.status
 
         }
 
-        override fun onEventListResponse(requestID: Long, events: List<Tuple<Event, HipeImage>>?, serverStatus: Int) {
+        override fun onEventResponse(requestID: Int, events: List<Pair<Event, Image>>?, responseStatus: Int) {
 
-            android.util.Log.d(TAG, "UserFragment.onEventListResponse")
+            android.util.Log.d(TAG, "UserFragment.onEventResponse")
 
 
             if (requestID == GET_EVENTS_BY_MEMBER_ID) {
 
-                if (serverStatus == Status.OK) {
+                if (responseStatus == Status.OK) {
                     dataAdapter.events.clear()
                     dataAdapter.events.addAll(events ?: emptyList())
                     events_count.text = events?.size.toString()
@@ -218,13 +209,13 @@ class UserFragment : HipeBaseFragment() {
 
         }
 
-        override fun onUserListResponse(requestID: Long, users: List<Tuple<User, HipeImage>>?, serverStatus: Int) {
+        override fun onUserResponse(requestID: Int, users: List<Pair<User, Image>>?, responseStatus: Int) {
 
-            Log.d(TAG, "UserFragment.onUserListResponse")
+            Log.d(TAG, "UserFragment.onUserResponse")
 
             if (requestID == GET_FRIENDS_LIST_ID) {
 
-                if (serverStatus == Status.OK) {
+                if (responseStatus == Status.OK) {
                     dataAdapter.users.clear()
                     dataAdapter.users.addAll(users ?: emptyList())
                     dataAdapter.notifyDataSetChanged()
@@ -234,15 +225,15 @@ class UserFragment : HipeBaseFragment() {
 
         }
 
-        override fun onSimpleResponse(requestID: Long, response: Any?, serverCode: Int) {
+        override fun onSimpleResponse(requestID: Int, response: Any?, responseStatus: Int) {
             Log.d(TAG, "UserFragment.onSimpleResponse")
-            if (serverCode == Status.OK) {
+            if (responseStatus == Status.OK) {
                 //user added
                 follow_indicator.isSelected = true
                 Toast.makeText(context, "пользователь законтачен", Toast.LENGTH_SHORT).show()
             }
 
-            if (serverCode == Status.ACCEPTED) {
+            if (responseStatus == Status.ACCEPTED) {
                 //user removed
                 follow_indicator.isSelected = false
             }
@@ -253,8 +244,8 @@ class UserFragment : HipeBaseFragment() {
 
     private inner class DataAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<DataAdapter.VH>() {
 
-        val events = arrayListOf<Tuple<Event, HipeImage>>()
-        val users = arrayListOf<Tuple<User, HipeImage>>()
+        val events = arrayListOf<Pair<Event, Image>>()
+        val users = arrayListOf<Pair<User, Image>>()
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
 
@@ -278,13 +269,13 @@ class UserFragment : HipeBaseFragment() {
 
                 DataType.TYPE_USERS -> {
                     val user = users[position]
-                    holder.userNick.text = user._1.username
-                    holder.userNameSurname.text = user._1.name + " " + user._1.surname
+                    holder.userNick.text = user.first.username
+                    holder.userNameSurname.text = user.first.name + " " + user.first.surname
 
                 }
                 DataType.TYPE_EVENTS -> {
                     val event = events[position]
-                    holder.eventName.text = event._1.localName
+                    holder.eventName.text = event.first.localName
 
                 }
 
@@ -293,9 +284,9 @@ class UserFragment : HipeBaseFragment() {
             }
 
             val image = if (dataType == DataType.TYPE_EVENTS)
-                events[position]._2
+                events[position].second
             else
-                users[position]._2
+                users[position].second
 
             imageLoader.displayImage(image.urlSmall, holder.userPhoto, displayImageOptions)
 

@@ -1,65 +1,81 @@
 package com.bori.hipe.controllers.rest.service
 
 import android.util.Log
-import com.bori.hipe.HipeApplication
-import com.bori.hipe.controllers.rest.*
-import com.bori.hipe.controllers.rest.routes.UserRouter
+import com.bori.hipe.MainApplication
+import com.bori.hipe.controllers.rest.callback.BooleanCallback
+import com.bori.hipe.controllers.rest.callback.IntCollectionCallback
+import com.bori.hipe.controllers.rest.callback.StringCallback
+import com.bori.hipe.controllers.rest.callback.UserCallback
+import com.bori.hipe.controllers.rest.callback.UserListCallback
+import com.bori.hipe.controllers.rest.callback.VoidCallback
+import com.bori.hipe.controllers.rest.routes.UserRoutes
 import com.bori.hipe.models.User
+import com.bori.hipe.models.UsersRelationType
 
 object UserService {
 
     private const val TAG = "UserService.kt"
 
-    lateinit var userRouter: UserRouter
+    lateinit var userRouter: UserRoutes
 
-    fun registerUser(requestID: Long,username: String, password: String) {
-        Log.d(TAG, "registerUser() called with: username = [$username]")
-        userRouter.registerUser(username,password).enqueue(StringCallback(requestID))
-    }
-
-    fun updateUser(requestID: Long, user: User) {
-        Log.d(TAG, "updateUser() called with: user = [$user]")
-        userRouter.updateUser(user).enqueue(LongCallback(requestID))
-    }
-
-    fun loginUser(requestID: Long, username: String, password: String) {
-        Log.d(TAG, "loginUser() called with: username = [$username], password = [$password]")
-        userRouter.loginUser(username, password).enqueue(StringCallback(requestID))
-    }
-
-    fun addUserToFriend(requestID: Long, userId: Long, advancedUserId: Long) {
-        Log.d(TAG, "addUserToFriend() called with: userId = [$userId], advancedUserId = [$advancedUserId]")
-        userRouter.addUserToFriends(userId, advancedUserId).enqueue(LongCallback(requestID))
-    }
-
-    fun removeUserFromFriend(requestID: Long, userId: Long, advancedUserId: Long) {
-        Log.d(TAG, "addUserToFriend() called with: userSelfNick = [$userId], userToFriendsNick = [$advancedUserId]")
-        userRouter.removeUserFromFriends(userId, advancedUserId).enqueue(LongCallback(requestID))
-    }
-
-    fun findUser(requestID: Long, userID: Long, query: String) {
-        Log.d(TAG, "findUser() called with: username = [$query]")
-        userRouter.findUser(userID, query).enqueue(UserListCallback(requestID))
-    }
-
-    fun checkUserExistence(requestID: Long, nickName: String) {
+    fun checkUserExistence(requestID: Int, nickName: String) {
         Log.d(TAG, "checkUserExistence() called with: username = [$nickName]")
-        userRouter.checkUserExistence(nickName).enqueue(BooleanCallback(requestID))
+        userRouter.checkUserExistence(nickName,MainApplication.getToken()).enqueue(VoidCallback(requestID))
     }
 
-    fun getFriendsList(requestID: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getFriendsList() called with: userId = [$userId]")
-        userRouter.getFriends(userId).enqueue(UserListCallback(requestID))
+    fun login(requestID: Int, username: String, password: String) {
+        Log.d(TAG, "login() called with: username = [$username], password = [$password]")
+        userRouter.login(username, password).enqueue(StringCallback(requestID))
     }
 
-    fun getFriendsIdsList(requestID: Long, userId: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getFriendsIdsList() called with: userId = [$userId]")
-        userRouter.getFriendsIds(userId).enqueue(LongListCallback(requestID))
+    fun update(requestID: Int, user: User) {
+        Log.d(TAG, "update() called with: user = [$user]")
+        userRouter.update(user,MainApplication.getToken()).enqueue(VoidCallback(requestID))
     }
 
-    fun getUserById(requestID: Long, userID: Long = HipeApplication.THIS_USER_ID) {
-        Log.d(TAG, "getUserById  $userID")
-        userRouter.getById(userID).enqueue(UserCallback(requestID))
+    fun find(requestID: Int, query: String) {
+        Log.d(TAG, "find() called with: username = [$query]")
+        userRouter.find(query,MainApplication.getToken()).enqueue(UserListCallback(requestID))
+    }
+
+    fun createUsersRelation(requestID: Int, userID: Int, relationType:UsersRelationType){
+        Log.d(TAG,"createUsersRelation() called with userID = [$userID], relationType = [$relationType]")
+        userRouter.createUsersRelation(userID,relationType.name,MainApplication.getToken()).enqueue(VoidCallback(requestID))
+    }
+
+    fun removeUsersRelation(requestID: Int, userID: Int){
+        Log.d(TAG,"removeUsersRelation() called with userID = [$userID]")
+        userRouter.removeUsersRelation(userID,MainApplication.getToken()).enqueue(VoidCallback(requestID))
+    }
+
+    fun getById(requestID: Int, userID: Int) {
+        Log.d(TAG, "getById  $userID")
+        userRouter.getByID(userID,MainApplication.getToken()).enqueue(UserCallback(requestID))
+    }
+
+    fun getFriends(requestID: Int, userID: Int) {
+        Log.d(TAG, "getFriends() called with: userID = [$userID]")
+        userRouter.getFriends(userID,MainApplication.getToken()).enqueue(UserListCallback(requestID))
+    }
+
+    fun getFriendsIDs(requestID: Int, userID: Int) {
+        Log.d(TAG, "getFriendsIDs() called with: userID = [$userID]")
+        userRouter.getFriendsIDs(userID,MainApplication.getToken()).enqueue(IntCollectionCallback(requestID))
+    }
+
+    fun getByEventID(requestID: Int,eventID: Long) {
+        Log.d(TAG,"getByEventID() called with eventID = [$eventID]")
+        userRouter.getByEventID(eventID,MainApplication.getToken()).enqueue(UserListCallback(requestID))
+    }
+
+    fun getIDsByEventID(requestID: Int,eventID: Long) {
+        Log.d(TAG,"getIDsByEventID() called with eventID = [$eventID]")
+        userRouter.getIDsByEventID(eventID,MainApplication.getToken()).enqueue(IntCollectionCallback(requestID))
+    }
+
+    fun searchUser(requestID: Int, query: String) {
+        Log.d(TAG,"searchUser() called with query = [$query]")
+        userRouter.search(query,MainApplication.getToken()).enqueue(UserListCallback(requestID))
     }
 
 }
